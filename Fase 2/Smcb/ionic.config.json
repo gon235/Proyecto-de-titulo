@@ -1,7 +1,0 @@
-{
-  "name": "smcbtab",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular"
-}
