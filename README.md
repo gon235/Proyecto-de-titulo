@@ -8,7 +8,7 @@ Kevin Carrasco
 Gonzalo Rubilar
 Eder Dureaux
 
-La aplicacion esta en Ionic:
+La aplicacion en Ionic:
 
 1. Instalar node.js / npm y Ionic
 2. ingresar al directorio src desde cmd
