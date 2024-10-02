@@ -1,0 +1,84 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Perfil vehículo
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<ion-col class="ion-padding">
+  <div class="ion-padding-start ion-padding-end">
+
+      <div class="scrollable-list">
+        <ion-list [inset]="true">
+          <ion-card-header>
+            <ion-card-title>Vehículo 1</ion-card-title>
+            <ion-card-subtitle>Patente FC-PR-35</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card>
+            <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" />
+            <ion-card-header>
+              <ion-card-title>Scania</ion-card-title>
+              <ion-card-subtitle>P 410 XT</ion-card-subtitle>
+            </ion-card-header>
+
+            <ion-list>
+              <ion-item>
+                <ion-toggle color="tertiary" justify="space-between">Estado operativo del vehículo</ion-toggle>
+              </ion-item>
+            </ion-list>
+            <ion-button class="ion-padding-start" color="tertiary">Editar</ion-button>
+            <ion-button class="ion-padding-start" color="tertiary">Guardar</ion-button>
+          </ion-card>
+          <br/>
+          <ion-label class="ion-padding-start ion-padding-end"><b>Mantenciones:</b></ion-label>
+
+          <br/><br/>
+          <ion-item>
+            <ion-checkbox color="tertiary" checked="true" justify="start" labelPlacement="end">Cambio de aceite</ion-checkbox>
+            <ion-button color="tertiary">Editar</ion-button> <ion-button color="tertiary">Ver</ion-button>
+          </ion-item>
+          <ion-item>
+            <ion-checkbox color="tertiary" checked="true" justify="start" labelPlacement="end">Cambio filtro de aire</ion-checkbox>
+            <ion-button color="tertiary">Editar</ion-button> <ion-button color="tertiary">Ver</ion-button>
+          </ion-item>
+        <br>
+        </ion-list>
+      </div>
+    <br>
+
+<div class="align-right">
+  <ion-button color="tertiary" class="ion-padding-start ion-padding-end" routerLink="/crearmantencion">Crear mantención</ion-button>
+</div>
+  </div>
+</ion-col>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-tabs>
+      <ion-tab-bar slot="bottom">
+        <ion-tab-button page="Home" href="/home">
+          <ion-icon aria-hidden="true" name="home-outline"></ion-icon>
+          <ion-label>Inicio</ion-label>
+        </ion-tab-button>
+    
+        <ion-tab-button page="personal" href="/personal">
+          <ion-icon aria-hidden="true" name="person-outline"></ion-icon>
+          <ion-label>Personal</ion-label>
+        </ion-tab-button>
+    
+        <ion-tab-button page="vehiculos" href="/vehiculos">
+          <ion-icon aria-hidden="true" name="car-outline"></ion-icon>
+          <ion-label>Vehículos</ion-label>
+        </ion-tab-button>
+        
+        <ion-tab-button page="Notificaciones" href="/notificaciones">
+          <ion-icon aria-hidden="true" name="notifications-outline"></ion-icon>
+          <ion-label>Notificaciones</ion-label>
+        </ion-tab-button>
+      </ion-tab-bar>
+    </ion-tabs>
+  </ion-toolbar>
+</ion-footer>
