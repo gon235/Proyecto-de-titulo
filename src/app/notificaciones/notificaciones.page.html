@@ -1,5 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" color="tertiary"></ion-back-button>
+    </ion-buttons>
     <ion-title>
       Notificaciones
     </ion-title>
@@ -22,22 +25,22 @@
     <ion-tabs>
       <ion-tab-bar slot="bottom">
         <ion-tab-button page="Home" href="/home">
-          <ion-icon aria-hidden="true" name="home-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="home" color="tertiary"></ion-icon>
           <ion-label>Inicio</ion-label>
         </ion-tab-button>
     
         <ion-tab-button page="personal" href="/personal">
-          <ion-icon aria-hidden="true" name="person-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="person" color="tertiary"></ion-icon>
           <ion-label>Personal</ion-label>
         </ion-tab-button>
     
         <ion-tab-button page="vehiculos" href="/vehiculos">
-          <ion-icon aria-hidden="true" name="car-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="car" color="tertiary"></ion-icon>
           <ion-label>Vehículos</ion-label>
         </ion-tab-button>
         
         <ion-tab-button page="Notificaciones" href="/notificaciones">
-          <ion-icon aria-hidden="true" name="notifications-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="notifications" color="tertiary"></ion-icon>
           <ion-label>Notificaciones</ion-label>
         </ion-tab-button>
       </ion-tab-bar>
