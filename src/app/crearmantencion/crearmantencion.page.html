@@ -35,7 +35,7 @@
     </ion-item>
     <br>
     <ion-item>
-      <ion-datetime color="tertiary" display-format="MM/DD/YYYY" picker-format="MM/DD/YYYY"></ion-datetime>
+      <ion-datetime color="tertiary" display-format="MM/DD/YYYY" picker-format="MM/DD/YYYY"><span slot="time-label">Hora</span></ion-datetime>
     </ion-item>
     <br>
     <ion-item>
@@ -44,7 +44,7 @@
     <br>
 
 <div class="align-right">
-  <ion-button color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
+  <ion-button (click)="creacionMantencion()" color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
 </div>
   </div>
 </ion-col>

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-crearvehiculo',
@@ -7,8 +8,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CrearvehiculoPage implements OnInit {
 
-  constructor() { }
-// Valida el largo del año a un maximo de 4 números
+  constructor(public alertController: AlertController) { }
+
+  // Valida el largo del año a un maximo de 4 números
   validarLargoAno(event: any) {
     const input = event.target as HTMLInputElement;
     if (input.value.length > 4) {
@@ -17,6 +19,22 @@ export class CrearvehiculoPage implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+
+  async creacionVehiculo() {
+    const alert = await this.alertController.create({
+      cssClass: 'secondary',
+      header: 'Mensaje',
+      message: 'La creación del vehículo ha sido exitosa',
+      buttons: ['Aceptar'],
+    });
+
+    await alert.present();
+
+    const { role } = await alert.onDidDismiss();
+    console.log('onDidDismiss resolved with role', role);
+
   }
 
 }
