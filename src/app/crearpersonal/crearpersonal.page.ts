@@ -6,11 +6,27 @@ import { AlertController } from '@ionic/angular';
   templateUrl: './crearpersonal.page.html',
   styleUrls: ['./crearpersonal.page.scss'],
 })
+
 export class CrearpersonalPage implements OnInit {
+
+  usuario = {
+    nombres: '',
+    apellidos: '',
+    numeroTelefono: '',
+    email: '',
+    password: '',
+    rango: '',
+    imagen: ''
+  };
 
   constructor(public alertController: AlertController) { }
 
   ngOnInit() {
+  }
+
+  onSubmit() {
+    console.log('submit');
+    console.log(this.usuario);
   }
 
   async creacionPersonal() {
@@ -27,5 +43,5 @@ export class CrearpersonalPage implements OnInit {
     console.log('onDidDismiss resolved with role', role);
 
   }
-
 }
+

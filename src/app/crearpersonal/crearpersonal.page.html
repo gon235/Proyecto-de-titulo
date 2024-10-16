@@ -12,46 +12,65 @@
 <ion-content class="ion-padding" [fullscreen]="true" scroll-y="true">
 <ion-col>
   <div class="ion-padding-start ion-padding-end">
+
+    <!--Formulario de creación personal-->
+    <form #formulario="ngForm" (ngSubmit) ="onSubmit()">
+
     <ion-item>
-      <ion-input label="Nombres" labelPlacement="stacked" placeholder="" [clearInput]="true"></ion-input>
+      <ion-input name="nombres" type="text" label="Nombres" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)] = "usuario.nombres"></ion-input>
     </ion-item>
     <br>
     <ion-item>
-      <ion-input label="Apellidos" labelPlacement="stacked" placeholder="" [clearInput]="true"></ion-input>
+      <ion-input name="apellidos" type="text" label="Apellidos" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)] = "usuario.apellidos"></ion-input>
     </ion-item>
     <br>
     <ion-item>
-      <ion-input label="Número de teléfono" type="tel" labelPlacement="stacked" [counter]="true" maxlength="11" placeholder="569" [clearInput]="true"></ion-input>
+      <ion-input name="numeroTelefono" label="Número de teléfono" type="tel" labelPlacement="stacked" [counter]="true" maxlength="11" placeholder="569" [clearInput]="true" [(ngModel)] = "usuario.numeroTelefono"></ion-input>
     </ion-item>
     <br>
     <ion-item>
-      <ion-input label="Email" type="email" labelPlacement="stacked" errorText="Formato de correo incorrecto" ngModel
-      email placeholder="correo@dominio.com" [clearInput]="true"></ion-input>
+      <ion-input name="email" 
+                  label="Email" type="email" labelPlacement="stacked" 
+                  errorText="Formato de correo incorrecto" 
+                  [(ngModel)] = "usuario.email" 
+                  pattern="^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$" 
+                  placeholder="correo@dominio.com" [clearInput]="true">
+      </ion-input>
     </ion-item>
     <br>
     <ion-item>
-      <ion-input label="Contraseña" type="password" labelPlacement="stacked" value="" [clearInput]="true"></ion-input>
-    </ion-item>
-    <br>
-    <ion-item>
-      <ion-select label="Rango" label-placement="floating">
-        <ion-select-option value="idrango1">Capitán</ion-select-option>
-        <ion-select-option value="idrango2">Comandante</ion-select-option>
-        <ion-select-option value="idrango3">Teniente</ion-select-option>
-        <ion-select-option value="idrango4">Voluntario</ion-select-option>
-      </ion-select>
-    </ion-item>
-    <br>
-    <ion-label>Subir Imagen </ion-label><ion-icon name="cloud-upload-outline"></ion-icon>
-    <ion-item>
-      <input type="file" accept="image/*" />
+      <ion-input name="password" label="Contraseña" type="password" labelPlacement="stacked" value="" [clearInput]="true" name="password" [(ngModel)]="usuario.password"></ion-input>
     </ion-item>
     <br>
 
-<div class="align-right">
-  <ion-button (click)="creacionPersonal()" color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
-</div>
+    <ion-item>
+      <ion-select name="rango" label="Rango" label-placement="floating" [(ngModel)] = "usuario.rango">
+        <ion-select-option value="Capitán">Capitán</ion-select-option>
+        <ion-select-option value="Comandante">Comandante</ion-select-option>
+        <ion-select-option value="Teniente">Teniente</ion-select-option>
+        <ion-select-option value="Voluntario">Voluntario</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <br>
+
+    <ion-label>Subir Imagen </ion-label><ion-icon name="cloud-upload-outline" ></ion-icon>
+    <ion-item>
+      <input name="imagen" type="file" accept="image/*" [(ngModel)]="usuario.imagen" />
+    </ion-item>
+
+    <div class="align-right">
+      <ion-button type="submit" (click)="creacionPersonal()" color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
+    </div>
+
+  </form>
+
+    <br>
+
+
+
   </div>
+
+
 </ion-col>
 </ion-content>
 
