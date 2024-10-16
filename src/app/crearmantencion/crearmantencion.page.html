@@ -12,8 +12,12 @@
 <ion-content class="ion-padding" [fullscreen]="true" scroll-y="true">
 <ion-col>
   <div class="ion-padding-start ion-padding-end">
+
+    <!--Formulario de creación personal-->
+    <form #formulario="ngForm" (ngSubmit) ="onSubmit()">
+
     <ion-item>
-      <ion-select label="Seleccionar vehículo" label-placement="floating">
+      <ion-select name="selvehiculo" label="Seleccionar vehículo" label-placement="floating" [(ngModel)]="mantencion.selvehiculo">
         <ion-select-option value="idmodelo1">Scania P 410 XT</ion-select-option>
         <ion-select-option value="idmodelo2">Scania UV 500</ion-select-option>
         <ion-select-option value="idmodelo3">Scania UV 600</ion-select-option>
@@ -23,29 +27,32 @@
     </ion-item>
     <br>
     <ion-item>
-      <ion-input type="text" label="Nombre mantenimiento" labelPlacement="stacked" [clearInput]="true"></ion-input>
+      <ion-input name="nombremantencion" type="text" label="Nombre mantenimiento" labelPlacement="stacked" [clearInput]="true" [(ngModel)]="mantencion.nombremantencion"></ion-input>
     </ion-item>
     <br>
     <ion-item>
-      <ion-select label="Nivel de urgencia" label-placement="floating">
-        <ion-select-option value="idurgencia1">Bajo</ion-select-option>
-        <ion-select-option value="idurgencia2">Medio</ion-select-option>
-        <ion-select-option value="idurgencia3">Alto</ion-select-option>
+      <ion-select name="nivelurgencia" label="Nivel de urgencia" label-placement="floating" [(ngModel)]="mantencion.nivelurgencia">
+        <ion-select-option value="nivelbajo">Bajo</ion-select-option>
+        <ion-select-option value="nivelmedio">Medio</ion-select-option>
+        <ion-select-option value="nivelalto">Alto</ion-select-option>
       </ion-select>
     </ion-item>
     <br>
     <ion-item>
-      <ion-datetime color="tertiary" display-format="MM/DD/YYYY" picker-format="MM/DD/YYYY"><span slot="time-label">Hora</span></ion-datetime>
+      <ion-datetime name="fechahora" color="tertiary" display-format="MM/DD/YYYY" picker-format="MM/DD/YYYY" [(ngModel)]="mantencion.fechahora"><span slot="time-label">Hora</span></ion-datetime>
     </ion-item>
     <br>
     <ion-item>
-      <ion-textarea class="responsive-textarea" label="Detalle" labelPlacement="floating" placeholder="" style="height: 200px;"></ion-textarea>
+      <ion-textarea name="detalle" class="responsive-textarea" label="Detalle" labelPlacement="floating" placeholder="" style="height: 200px;" [(ngModel)]="mantencion.detalle"></ion-textarea>
     </ion-item>
     <br>
 
 <div class="align-right">
-  <ion-button (click)="creacionMantencion()" color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
+  <ion-button type="submit" (click)="creacionMantencion()" color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
 </div>
+
+  </form>
+
   </div>
 </ion-col>
 </ion-content>

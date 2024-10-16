@@ -6,11 +6,25 @@ import { AlertController } from '@ionic/angular';
   templateUrl: './crearmantencion.page.html',
   styleUrls: ['./crearmantencion.page.scss'],
 })
+
 export class CrearmantencionPage implements OnInit {
+
+  mantencion = {
+    selvehiculo: '',
+    nombremantencion: '',
+    nivelurgencia: '',
+    fechahora: '',
+    detalle: ''
+  };
 
   constructor(public alertController: AlertController) { }
 
   ngOnInit() {
+  }
+
+  onSubmit() {
+    console.log('submit');
+    console.log(this.mantencion);
   }
 
   async creacionMantencion() {

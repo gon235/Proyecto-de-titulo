@@ -24,7 +24,7 @@ export class AppComponent {
     {
       icon: 'log-in',
       name: 'Iniciar sesión',
-      redirecTo: '/personal'
+      redirecTo: '/iniciarsesion'
     },
     {
       icon: 'log-out',

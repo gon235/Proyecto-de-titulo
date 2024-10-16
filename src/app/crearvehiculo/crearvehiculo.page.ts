@@ -6,11 +6,21 @@ import { AlertController } from '@ionic/angular';
   templateUrl: './crearvehiculo.page.html',
   styleUrls: ['./crearvehiculo.page.scss'],
 })
+
 export class CrearvehiculoPage implements OnInit {
+
+  vehiculo = {
+    nombrevehiculo: '',
+    marca: '',
+    modelo: '',
+    anio: '',
+    patente: '',
+    imagen: ''
+  };
 
   constructor(public alertController: AlertController) { }
 
-  // Valida el largo del año a un maximo de 4 números
+  // Valida el largo del año a un máximo de 4 números
   validarLargoAno(event: any) {
     const input = event.target as HTMLInputElement;
     if (input.value.length > 4) {
@@ -21,6 +31,10 @@ export class CrearvehiculoPage implements OnInit {
   ngOnInit() {
   }
 
+  onSubmit() {
+    console.log('submit');
+    console.log(this.vehiculo);
+  }
 
   async creacionVehiculo() {
     const alert = await this.alertController.create({
