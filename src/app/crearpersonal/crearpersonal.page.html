@@ -13,38 +13,35 @@
 <ion-col>
   <div class="ion-padding-start ion-padding-end">
 
-    <!--Formulario de creación personal-->
-    <form #formulario="ngForm" (ngSubmit) ="onSubmit()">
-
     <ion-item>
-      <ion-input name="nombres" type="text" label="Nombres" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)] = "usuario.nombres"></ion-input>
+      <ion-input name="nombres" type="text" label="Nombres" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)] = "newDatoP.nombres"></ion-input>
     </ion-item>
     <br>
     <ion-item>
-      <ion-input name="apellidos" type="text" label="Apellidos" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)] = "usuario.apellidos"></ion-input>
+      <ion-input name="apellidos" type="text" label="Apellidos" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)] = "newDatoP.apellidos"></ion-input>
     </ion-item>
     <br>
     <ion-item>
-      <ion-input name="numeroTelefono" label="Número de teléfono" type="tel" labelPlacement="stacked" [counter]="true" maxlength="11" placeholder="569" [clearInput]="true" [(ngModel)] = "usuario.numeroTelefono"></ion-input>
+      <ion-input name="numeroTelefono" label="Número de teléfono" type="tel" labelPlacement="stacked" [counter]="true" maxlength="11" placeholder="569" [clearInput]="true" [(ngModel)] = "newDatoP.numeroTelefono"></ion-input>
     </ion-item>
     <br>
     <ion-item>
       <ion-input name="email" 
                   label="Email" type="email" labelPlacement="stacked" 
                   errorText="Formato de correo incorrecto" 
-                  [(ngModel)] = "usuario.email" 
+                  [(ngModel)] = "newDatoP.email" 
                   pattern="^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$" 
                   placeholder="correo@dominio.com" [clearInput]="true">
       </ion-input>
     </ion-item>
     <br>
     <ion-item>
-      <ion-input name="password" label="Contraseña" type="password" labelPlacement="stacked" value="" [clearInput]="true" name="password" [(ngModel)]="usuario.password"></ion-input>
+      <ion-input name="password" label="Contraseña" type="password" labelPlacement="stacked" value="" [clearInput]="true" name="password" [(ngModel)]="newDatoP.password"></ion-input>
     </ion-item>
     <br>
 
     <ion-item>
-      <ion-select name="rango" label="Rango" label-placement="floating" [(ngModel)] = "usuario.rango">
+      <ion-select name="rango" label="Rango" label-placement="floating" [(ngModel)] = "newDatoP.rango">
         <ion-select-option value="Capitán">Capitán</ion-select-option>
         <ion-select-option value="Comandante">Comandante</ion-select-option>
         <ion-select-option value="Teniente">Teniente</ion-select-option>
@@ -55,22 +52,15 @@
 
     <ion-label>Subir Imagen </ion-label><ion-icon name="cloud-upload-outline" ></ion-icon>
     <ion-item>
-      <input name="imagen" type="file" accept="image/*" [(ngModel)]="usuario.imagen" />
+      <input name="imagen" type="file" accept="image/*" [(ngModel)]="newDatoP.imagen" />
     </ion-item>
-
-    <div class="align-right">
-      <ion-button type="submit" (click)="creacionPersonal()" color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
-    </div>
-
-  </form>
-
     <br>
 
-
+    <div class="align-right">
+      <ion-button type="submit" (click)="addDatosPersonal()" color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
+    </div>
 
   </div>
-
-
 </ion-col>
 </ion-content>
 

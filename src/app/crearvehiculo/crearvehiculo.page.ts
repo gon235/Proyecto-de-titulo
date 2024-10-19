@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ServicedatosService, DatosVehiculo } from '../services/servicedatos.service';
+import { Platform, ToastController, AlertController, IonList } from '@ionic/angular';
 
 @Component({
   selector: 'app-crearvehiculo',
@@ -9,16 +10,20 @@ import { AlertController } from '@ionic/angular';
 
 export class CrearvehiculoPage implements OnInit {
 
-  vehiculo = {
-    nombrevehiculo: '',
-    marca: '',
-    modelo: '',
-    anio: '',
-    patente: '',
-    imagen: ''
-  };
+  datosV: DatosVehiculo[] = [];
+  newDatoV: DatosVehiculo = <DatosVehiculo>{};
 
-  constructor(public alertController: AlertController) { }
+  @ViewChild('myList') myList!: IonList;
+
+  constructor(private storageService: ServicedatosService, 
+    private plt: Platform, private toastController: ToastController, public alertController: AlertController) { 
+      this.plt.ready().then(()=>{
+        this.loadDatos();
+      });
+    }
+
+    ngOnInit() {
+    }
 
   // Valida el largo del año a un máximo de 4 números
   validarLargoAno(event: any) {
@@ -28,19 +33,55 @@ export class CrearvehiculoPage implements OnInit {
     }
   }
 
-  ngOnInit() {
+  //GET
+  loadDatos() {
+    this.storageService.getDatosVehiculo().then(datosV => {
+      this.datosV = datosV;
+    });
+  }
+
+  //CREATE
+  addDatosVehiculo() {
+    this.newDatoV.modified = Date.now();
+    this.newDatoV.id = Date.now();
+    this.storageService.addDatosVehiculo(this.newDatoV).then(dato => {
+      this.newDatoV = <DatosVehiculo>{};
+      //this.showToast('La creación del personal ha sido exitosa');
+      this.mensajePersonal('La creación del vehículo ha sido exitosa');
+      this.loadDatos();
+    });
+  }
+
+  //UPDATE (no funcional del todo bien)
+  updateDatosVehiculo(dato: DatosVehiculo) {
+    dato.nombrevehiculo = `ACTUALIZADO: ${dato.nombrevehiculo}`;
+    dato.modified = Date.now();
+    this.storageService.updateDatosVehiculo(dato).then(item => {
+      this.mensajePersonal('La actualización del vehículo ha sido exitosa');
+      this.myList.closeSlidingItems();
+      this.loadDatos();
+    });
+  }
+
+  //DELETE
+  deleteDatosVehiculo(dato: DatosVehiculo) {
+    this.storageService.deleteDatosVehiculo(dato.id).then(item => {
+      this.mensajePersonal('La eliminación del vehiculo ha sido exitosa');
+      this.myList.closeSlidingItems();
+      this.loadDatos();
+    });
   }
 
   onSubmit() {
     console.log('submit');
-    console.log(this.vehiculo);
+    console.log(this.datosV);
   }
 
-  async creacionVehiculo() {
+  async mensajePersonal(msg: string) {
     const alert = await this.alertController.create({
       cssClass: 'secondary',
       header: 'Mensaje',
-      message: 'La creación del vehículo ha sido exitosa',
+      message: msg,
       buttons: ['Aceptar'],
     });
 
@@ -49,6 +90,14 @@ export class CrearvehiculoPage implements OnInit {
     const { role } = await alert.onDidDismiss();
     console.log('onDidDismiss resolved with role', role);
 
+  }
+
+  async showToast(msg: string){
+    const toast = await this.toastController.create({
+      message: msg,
+      duration: 5000
+    });
+    toast.present();
   }
 
 }

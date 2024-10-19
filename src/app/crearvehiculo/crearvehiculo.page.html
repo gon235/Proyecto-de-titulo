@@ -13,40 +13,36 @@
 <ion-col class="ion-padding">
   <div class="ion-padding-start ion-padding-end">
 
-    <!--Formulario de creación personal-->
-    <form #formulario="ngForm" (ngSubmit) ="onSubmit()">
 
     <ion-item>
-      <ion-input name="nombrevehiculo" label="Nombre vehículo" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="vehiculo.nombrevehiculo"></ion-input>
+      <ion-input name="nombrevehiculo" label="Nombre vehículo" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="newDatoV.nombrevehiculo"></ion-input>
     </ion-item>
     <br>
     <ion-item>
-      <ion-input name="marca" label="Marca" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="vehiculo.marca"></ion-input>
+      <ion-input name="marca" label="Marca" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="newDatoV.marca"></ion-input>
     </ion-item>
     <br>
     <ion-item>
-      <ion-input name="modelo" label="Modelo" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="vehiculo.modelo"></ion-input>
+      <ion-input name="modelo" label="Modelo" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="newDatoV.modelo"></ion-input>
     </ion-item>
     <br>
     <ion-item>
-      <ion-input name="anio" label="Año" type="number" labelPlacement="stacked" placeholder="" [counter]="true" maxlength="4" [clearInput]="true" (ionInput)="validarLargoAno($event)" [(ngModel)]="vehiculo.anio"></ion-input>
+      <ion-input name="anio" label="Año" type="number" labelPlacement="stacked" placeholder="" [counter]="true" maxlength="4" [clearInput]="true" (ionInput)="validarLargoAno($event)" [(ngModel)]="newDatoV.anio"></ion-input>
     </ion-item>
     <br>
     <ion-item>
-      <ion-input name="patente" label="Patente" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="vehiculo.patente"></ion-input>
+      <ion-input name="patente" label="Patente" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="newDatoV.patente"></ion-input>
     </ion-item>
     <br>
     <ion-label>Subir Imagen </ion-label><ion-icon name="cloud-upload-outline"></ion-icon>
     <ion-item>
-      <input name="imagen" type="file" accept="image/*" [(ngModel)]="vehiculo.imagen" />
+      <input name="imagen" type="file" accept="image/*" [(ngModel)]="newDatoV.imagen" />
     </ion-item>
     <br>
 
 <div class="align-right">
-  <ion-button type="submit" (click)="creacionVehiculo()" color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
+  <ion-button type="submit" (click)="addDatosVehiculo()" color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
 </div>
-
-</form>
 
   </div>
 </ion-col>

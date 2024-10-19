@@ -1,7 +1,0 @@
-{
-  "name": "smcb",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular"
-}
