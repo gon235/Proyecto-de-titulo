@@ -15,7 +15,7 @@
 
     <ion-item>
       <ion-select name="selvehiculo" label="Seleccionar vehículo" label-placement="floating" [(ngModel)]="newDatoM.nombrevehiculo">
-        <ion-select-option *ngFor="let dato of datosM" value="{{ dato.nombrevehiculo }} {{dato.patente}}">{{ dato.nombrevehiculo }} - Patente {{dato.patente}}</ion-select-option>
+        <ion-select-option *ngFor="let dato of datosV" value="{{ dato.nombrevehiculo }} {{dato.patente}}">{{ dato.nombrevehiculo }} - Patente {{dato.patente}}</ion-select-option>
       </ion-select>
 
     </ion-item>

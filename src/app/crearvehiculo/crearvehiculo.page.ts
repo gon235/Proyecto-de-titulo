@@ -33,14 +33,27 @@ export class CrearvehiculoPage implements OnInit {
     }
   }
 
-  //GET
+  /*
+  //GET (original)
   loadDatos() {
     this.storageService.getDatosVehiculo().then(datosV => {
       this.datosV = datosV;
     });
   }
+  */
 
-  //CREATE
+  loadDatos() {
+    this.storageService.getDatosVehiculo().then(datosV => {
+      this.datosV = datosV || []; // Fallback a un array vacío
+    }).catch(error => {
+      console.error('Error loading data:', error);
+      this.datosV = [];
+    });
+  }
+
+
+  /*
+  //CREATE (original)
   addDatosVehiculo() {
     this.newDatoV.modified = Date.now();
     this.newDatoV.id = Date.now();
@@ -51,6 +64,37 @@ export class CrearvehiculoPage implements OnInit {
       this.loadDatos();
     });
   }
+  */
+
+  //CREATE
+  addDatosVehiculo() {
+    // Función para normalizar cadenas eliminando diacríticos y poniendo en minúsculas
+    const normalizeString = (str: string) => str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
+  
+    const normalizedNombre = normalizeString(this.newDatoV.nombrevehiculo);
+    const normalizedPatente = normalizeString(this.newDatoV.patente);
+  
+    const nombreExiste = this.datosV.some(dato => normalizeString(dato.nombrevehiculo) === normalizedNombre);
+    const patenteExiste = this.datosV.some(dato => normalizeString(dato.patente) === normalizedPatente);
+  
+    if (nombreExiste && patenteExiste) {
+      this.mensajePersonal('Ya existe un vehículo con el mismo nombre y patente, el vehículo no se ha podido crear');
+    } else if (nombreExiste) {
+      this.mensajePersonal('Ya existe un vehículo con el mismo nombre, pruebe con otro nombre');
+    } else if (patenteExiste) {
+      this.mensajePersonal('Ya existe un vehículo con la misma patente, el vehículo no se ha podido crear');
+    } else {
+      this.newDatoV.modified = Date.now();
+      this.newDatoV.id = Date.now();
+      this.storageService.addDatosVehiculo(this.newDatoV).then(dato => {
+        this.newDatoV = <DatosVehiculo>{};
+        this.mensajePersonal('La creación del vehículo ha sido exitosa');
+        this.loadDatos();
+      });
+    }
+  }
+
+
 
   //UPDATE (no funcional del todo bien)
   updateDatosVehiculo(dato: DatosVehiculo) {
