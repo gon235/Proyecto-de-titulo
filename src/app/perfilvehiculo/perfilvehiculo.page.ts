@@ -18,7 +18,6 @@ export class PerfilvehiculoPage implements OnInit {
     const vehicleId = this.route.snapshot.paramMap.get('id');
     if (vehicleId) {
       this.loadVehicle(Number(vehicleId));
-      this.loadMaintenances(Number(vehicleId));
     }
   }
 
@@ -27,15 +26,35 @@ export class PerfilvehiculoPage implements OnInit {
       const vehicles = await this.storageService.getDatosVehiculo();
       this.vehicle = vehicles.find(v => v.id === id);
       if (this.vehicle?.imagen) {
-        const file = new File([this.vehicle.imagen], 'imagen', { type: 'image/*' });
-        this.loadImage(file);
+        this.loadImage(this.vehicle.imagen as string);
       }
-      // Only load maintenances after vehicle is loaded
       if (this.vehicle) {
         this.loadMaintenances(id);
       }
     } catch (error) {
       console.error('Error loading vehicle:', error);
+    }
+  }
+
+  loadImage(imagenString: string) {
+    if (imagenString.startsWith('data:image')) {
+      // Si ya es una URL de datos, úsala directamente
+      this.imageUrl = imagenString;
+    } else {
+      // Si es una ruta de archivo, conviértela a URL de datos
+      fetch(imagenString)
+        .then(res => res.blob())
+        .then(blob => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            this.imageUrl = reader.result as string;
+          };
+          reader.readAsDataURL(blob);
+        })
+        .catch(error => {
+          console.error('Error loading image:', error);
+          this.imageUrl = undefined;
+        });
     }
   }
 
@@ -48,12 +67,6 @@ export class PerfilvehiculoPage implements OnInit {
     }
   }
 
-  loadImage(file: File) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      this.imageUrl = e.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-  }
+
 }
 

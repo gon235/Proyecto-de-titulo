@@ -59,7 +59,7 @@ export class CrearpersonalPage implements OnInit {
 
     //CREATE
     addDatosPersonal() {
-      // Función para normalizar cadenas eliminando diacríticos y poniendo en minúsculas
+      // Function to normalize strings by removing diacritics and converting to lowercase
       const normalizeString = (str: string) => str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
     
       const normalizedNombre = normalizeString(this.newDatoP.nombres);
@@ -69,20 +69,36 @@ export class CrearpersonalPage implements OnInit {
       const emailExiste = this.datosP.some(dato => normalizeString(dato.email) === normalizedEmail);
     
       if (nombreExiste && emailExiste) {
-        this.mensajePersonal('El nombre o el email ya existe, el personal no se ha podido crear');
+        this.mensajePersonal('Ya existe un personal con el mismo nombre y email, el personal no se ha podido crear');
       } else if (nombreExiste) {
         this.mensajePersonal('Ya existe un personal con el mismo nombre, pruebe con otro nombre');
       } else if (emailExiste) {
-        this.mensajePersonal('Ya existe un personal con el mismo correo, el personal no se ha podido crear');
+        this.mensajePersonal('Ya existe un personal con el mismo email, el personal no se ha podido crear');
       } else {
-        this.newDatoP.modified = Date.now();
-        this.newDatoP.id = Date.now();
-        this.storageService.addDatosPersonal(this.newDatoP).then(dato => {
-          this.newDatoP = <DatosPersonal>{};
-          this.mensajePersonal('La creación del personal ha sido exitosa');
-          this.loadDatos();
-        });
+        const imageInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+        const file = imageInput?.files?.[0];
+    
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            this.newDatoP.imagen = reader.result as string;
+            this.savePersonal();
+          };
+          reader.readAsDataURL(file);
+        } else {
+          this.savePersonal();
+        }
       }
+    }
+    
+    private savePersonal() {
+      this.newDatoP.modified = Date.now();
+      this.newDatoP.id = Date.now();
+      this.storageService.addDatosPersonal(this.newDatoP).then(dato => {
+        this.newDatoP = <DatosPersonal>{};
+        this.mensajePersonal('La creación del personal ha sido exitosa');
+        this.loadDatos();
+      });
     }
 
   //UPDATE (no funcional del todo bien)

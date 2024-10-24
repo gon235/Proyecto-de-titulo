@@ -33,15 +33,6 @@ export class CrearvehiculoPage implements OnInit {
     }
   }
 
-  /*
-  //GET (original)
-  loadDatos() {
-    this.storageService.getDatosVehiculo().then(datosV => {
-      this.datosV = datosV;
-    });
-  }
-  */
-
   loadDatos() {
     this.storageService.getDatosVehiculo().then(datosV => {
       this.datosV = datosV || []; // Fallback a un array vacío
@@ -52,19 +43,6 @@ export class CrearvehiculoPage implements OnInit {
   }
 
 
-  /*
-  //CREATE (original)
-  addDatosVehiculo() {
-    this.newDatoV.modified = Date.now();
-    this.newDatoV.id = Date.now();
-    this.storageService.addDatosVehiculo(this.newDatoV).then(dato => {
-      this.newDatoV = <DatosVehiculo>{};
-      //this.showToast('La creación del personal ha sido exitosa');
-      this.mensajePersonal('La creación del vehículo ha sido exitosa');
-      this.loadDatos();
-    });
-  }
-  */
 
   //CREATE
   addDatosVehiculo() {
@@ -84,17 +62,31 @@ export class CrearvehiculoPage implements OnInit {
     } else if (patenteExiste) {
       this.mensajePersonal('Ya existe un vehículo con la misma patente, el vehículo no se ha podido crear');
     } else {
-      this.newDatoV.modified = Date.now();
-      this.newDatoV.id = Date.now();
-      this.storageService.addDatosVehiculo(this.newDatoV).then(dato => {
-        this.newDatoV = <DatosVehiculo>{};
-        this.mensajePersonal('La creación del vehículo ha sido exitosa');
-        this.loadDatos();
-      });
+      const imageInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      const file = imageInput.files?.[0];
+  
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          this.newDatoV.imagen = reader.result as string;
+          this.saveVehicle();
+        };
+        reader.readAsDataURL(file);
+      } else {
+        this.saveVehicle();
+      }
     }
   }
-
-
+  
+  private saveVehicle() {
+    this.newDatoV.modified = Date.now();
+    this.newDatoV.id = Date.now();
+    this.storageService.addDatosVehiculo(this.newDatoV).then(dato => {
+      this.newDatoV = <DatosVehiculo>{};
+      this.mensajePersonal('La creación del vehículo ha sido exitosa');
+      this.loadDatos();
+    });
+  }
 
   //UPDATE (no funcional del todo bien)
   updateDatosVehiculo(dato: DatosVehiculo) {

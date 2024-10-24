@@ -9,7 +9,7 @@ export interface DatosPersonal {
   email: string;
   password: string;
   rango: string;
-  imagen: File;
+  imagen: string;
   rol: string;
   modified: number;
 }
@@ -21,7 +21,7 @@ export interface DatosVehiculo {
   modelo: string;
   anio: number;
   patente: string;
-  imagen: File;
+  imagen: string;
   estado: string;
   modified: number;
 }

@@ -24,8 +24,8 @@
             <ion-card-title>{{ personal?.nombres }} {{ personal?.apellidos }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <ion-img [src]="personal?.imagen" alt="Imagen de {{ personal?.nombres }}" *ngIf="personal?.imagen"></ion-img>
-            <p *ngIf="!personal?.imagen">No hay imagen disponible</p>
+            <ion-img [src]="imageUrl" alt="Imagen de {{ personal?.nombres }}" *ngIf="imageUrl"></ion-img>
+            <p *ngIf="!imageUrl">No hay imagen disponible</p>
             <br>
             <p><strong>Email:</strong> {{ personal?.email }}</p>
             <p><strong>Teléfono:</strong> {{ personal?.numeroTelefono }}</p>
