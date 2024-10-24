@@ -25,13 +25,25 @@ export class CrearpersonalPage implements OnInit {
   ngOnInit() {
   }
 
+  /*
   //GET
   loadDatos() {
     this.storageService.getDatosPersonal().then(datosP => {
       this.datosP = datosP;
     });
   }
+  */
+  
+  loadDatos() {
+    this.storageService.getDatosPersonal().then(datosP => {
+      this.datosP = datosP || []; // Fallback a un array vacío
+    }).catch(error => {
+      console.error('Error loading data:', error);
+      this.datosP = [];
+    });
+  }
 
+  /*
   //CREATE
   addDatosPersonal() {
     this.newDatoP.modified = Date.now();
@@ -43,6 +55,35 @@ export class CrearpersonalPage implements OnInit {
       this.loadDatos();
     });
   }
+  */
+
+    //CREATE
+    addDatosPersonal() {
+      // Función para normalizar cadenas eliminando diacríticos y poniendo en minúsculas
+      const normalizeString = (str: string) => str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
+    
+      const normalizedNombre = normalizeString(this.newDatoP.nombres);
+      const normalizedEmail = normalizeString(this.newDatoP.email);
+    
+      const nombreExiste = this.datosP.some(dato => normalizeString(dato.nombres) === normalizedNombre);
+      const emailExiste = this.datosP.some(dato => normalizeString(dato.email) === normalizedEmail);
+    
+      if (nombreExiste && emailExiste) {
+        this.mensajePersonal('El nombre o el email ya existe, el personal no se ha podido crear');
+      } else if (nombreExiste) {
+        this.mensajePersonal('Ya existe un personal con el mismo nombre, pruebe con otro nombre');
+      } else if (emailExiste) {
+        this.mensajePersonal('Ya existe un personal con el mismo correo, el personal no se ha podido crear');
+      } else {
+        this.newDatoP.modified = Date.now();
+        this.newDatoP.id = Date.now();
+        this.storageService.addDatosPersonal(this.newDatoP).then(dato => {
+          this.newDatoP = <DatosPersonal>{};
+          this.mensajePersonal('La creación del personal ha sido exitosa');
+          this.loadDatos();
+        });
+      }
+    }
 
   //UPDATE (no funcional del todo bien)
   updateDatosPersonal(dato: DatosPersonal) {

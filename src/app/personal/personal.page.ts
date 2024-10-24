@@ -1,10 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
-interface Personal {
-  icon: string;
-  name: string;
-  redirecTo: string;
-}
+import { ServicedatosService, DatosPersonal } from '../services/servicedatos.service';
 
 @Component({
   selector: 'app-personal',
@@ -12,20 +7,17 @@ interface Personal {
   styleUrls: ['./personal.page.scss'],
 })
 export class PersonalPage implements OnInit {
+  personales: DatosPersonal[] = [];
 
-  personales: Personal[] = [  
-    {
-      icon: "person-circle-outline",
-      name: "perfil",
-      redirecTo: "/perfil"
-    },
-  ];
-
-
-
-  constructor() { }
+  constructor(private servicedatosService: ServicedatosService) { }
 
   ngOnInit() {
+    this.loadDatosPersonal();
   }
 
+  loadDatosPersonal() {
+    this.servicedatosService.getDatosPersonal().then(data => {
+      this.personales = data || [];
+    });
+  }
 }

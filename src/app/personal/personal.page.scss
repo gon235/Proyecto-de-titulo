@@ -4,7 +4,7 @@
     justify-content: flex-end;
   }
 
-.scrollable-list {
-  height: 600px; /* Ajusta la altura según tus necesidades */
+.list-container {
+  max-height: 550px; /* Ajusta la altura máxima deseada */
   overflow-y: auto;
-}
+  }
