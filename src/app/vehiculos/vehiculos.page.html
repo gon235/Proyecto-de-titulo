@@ -11,15 +11,18 @@
   <ion-grid>
     <ion-row>
       <ion-col class="ion-padding">
-        <ion-searchbar color="light" placeholder="Buscar"></ion-searchbar>
+        <ion-searchbar color="light" placeholder="Buscar" (ionInput)="searchVehicles($event)"></ion-searchbar>
         <div class="ion-padding">
           <ion-button color="tertiary" routerLink="/crearvehiculo">Crear vehículo</ion-button>
         </div>
         <div class="list-container" style="height: 100vh; overflow-y: auto;">
           <ion-list [inset]="true">
-            <ion-item *ngFor="let vehicle of vehicles" [routerLink]="['/perfilvehiculo', vehicle.id]">
+            <ion-item *ngFor="let vehicle of filteredVehicles" [routerLink]="['/perfilvehiculo', vehicle.id]">
               <ion-icon slot="start" name="car-outline"></ion-icon>
-              <ion-label>{{ vehicle.nombrevehiculo }}</ion-label>
+              <ion-label>
+                <h2>{{ vehicle.nombrevehiculo }}</h2>
+                <p>Patente: {{ vehicle.patente }}</p>
+              </ion-label>
             </ion-item>
           </ion-list>
         </div>

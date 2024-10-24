@@ -43,15 +43,16 @@
     </div>
   </ion-col>
 
-  <ion-text >
+  <ion-text>
     <h2 class="ion-padding-start ion-padding-end">Mantenciones pendientes</h2>
   </ion-text>
   <ion-list>
-    <ion-item>
-      <ion-icon slot="start" name="time"></ion-icon><ion-label>Cambio de aceite</ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-icon slot="start" name="time"></ion-icon><ion-label>Cambio pastillas de freno</ion-label>
+    <ion-item *ngFor="let mantencion of mantenciones">
+      <ion-icon slot="start" name="time"></ion-icon>
+      <ion-label>
+        <h2>{{ mantencion.nombremantencion }}</h2>
+        <p>{{ mantencion.fechahora }}</p>
+      </ion-label>
     </ion-item>
   </ion-list>
 </ion-content>

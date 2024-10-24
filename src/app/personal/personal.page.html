@@ -11,13 +11,15 @@
   <ion-grid>
     <ion-row>
       <ion-col class="ion-padding">
-        <ion-searchbar color="light" placeholder="Buscar"></ion-searchbar>
+        <ion-searchbar color="light" placeholder="Buscar"
+                       [(ngModel)]="searchQuery"
+                       (ionInput)="filterPersonales()"></ion-searchbar>
         <div class="ion-padding">
           <ion-button color="tertiary" routerLink="/crearpersonal">Crear personal</ion-button>
         </div>
         <div class="list-container" style="height: 100vh; overflow-y: auto;">
           <ion-list [inset]="true">
-            <ion-item *ngFor="let personal of personales" [routerLink]="['/perfil', personal.id]">
+            <ion-item *ngFor="let personal of filteredPersonales" [routerLink]="['/perfil', personal.id]">
               <ion-icon slot="start" name="person-circle-outline"></ion-icon>
               <ion-label>
                 <h2>{{ personal.nombres }} {{ personal.apellidos }}</h2>
