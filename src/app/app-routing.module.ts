@@ -16,7 +16,7 @@ const routes: Routes = [
     loadChildren: () => import('./crearpersonal/crearpersonal.module').then( m => m.CrearpersonalPageModule)
   },
   {
-    path: 'perfil',
+    path: 'perfil/:id',
     loadChildren: () => import('./perfil/perfil.module').then( m => m.PerfilPageModule)
   },
   {
@@ -40,7 +40,7 @@ const routes: Routes = [
     loadChildren: () => import('./personal/personal.module').then( m => m.PersonalPageModule)
   },
   {
-    path: 'perfilvehiculo',
+    path: 'perfilvehiculo/:id',
     loadChildren: () => import('./perfilvehiculo/perfilvehiculo.module').then( m => m.PerfilvehiculoPageModule)
   },
 ];

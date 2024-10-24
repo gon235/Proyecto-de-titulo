@@ -4,58 +4,42 @@
       <ion-back-button defaultHref="/home" color="tertiary"></ion-back-button>
     </ion-buttons>
     <ion-title>
-      Perfil vehículo
+      Perfil del Vehículo
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="scrollable-list">
-<ion-col class="ion-padding">
-  <div class="ion-padding-start ion-padding-end">
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ vehicle?.nombrevehiculo || 'Vehículo' }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-      <div>
-        <ion-list [inset]="true">
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-card>
           <ion-card-header>
-            <ion-card-title>Vehículo 1</ion-card-title>
-            <ion-card-subtitle>Patente FC-PR-35</ion-card-subtitle>
+            <ion-card-title>{{ vehicle?.nombrevehiculo }}</ion-card-title>
+            <ion-card-subtitle>{{ vehicle?.marca }} {{ vehicle?.modelo }}</ion-card-subtitle>
           </ion-card-header>
-          <ion-card>
-            <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" />
-            <ion-card-header>
-              <ion-card-title>Scania</ion-card-title>
-              <ion-card-subtitle>P 410 XT</ion-card-subtitle>
-            </ion-card-header>
-
-            <ion-list>
-              <ion-item>
-                <ion-toggle color="tertiary" justify="space-between">Estado operativo del vehículo</ion-toggle>
-              </ion-item>
-            </ion-list>
+          <ion-card-content>
+            <ion-img [src]="vehicle?.imagen" alt="Imagen del {{ vehicle?.nombrevehiculo }}" *ngIf="vehicle?.imagen"></ion-img>
+            <p *ngIf="!vehicle?.imagen">No hay imagen disponible</p>
+            <br>
+            <p><strong>Año:</strong> {{ vehicle?.anio }}</p>
+            <p><strong>Patente:</strong> {{ vehicle?.patente }}</p>
+            <br>
             <ion-button class="ion-padding-start" color="tertiary">Editar</ion-button>
             <ion-button class="ion-padding-start" color="tertiary">Guardar</ion-button>
-          </ion-card>
-          <br/>
-          <ion-label class="ion-padding-start ion-padding-end"><b>Mantenciones:</b></ion-label>
-
-          <br/><br/>
-          <ion-item>
-            <ion-checkbox color="tertiary" checked="true" justify="start" labelPlacement="end">Cambio de aceite</ion-checkbox>
-            <ion-button color="tertiary">Editar</ion-button> <ion-button color="tertiary">Ver</ion-button>
-          </ion-item>
-          <ion-item>
-            <ion-checkbox color="tertiary" checked="true" justify="start" labelPlacement="end">Cambio filtro de aire</ion-checkbox>
-            <ion-button color="tertiary">Editar</ion-button> <ion-button color="tertiary">Ver</ion-button>
-          </ion-item>
+          </ion-card-content>
+        </ion-card>
         <br>
-        </ion-list>
-      </div>
-    <br>
-
-<div class="align-right">
-  <ion-button color="tertiary" class="ion-padding-start ion-padding-end" routerLink="/crearmantencion">Crear mantención</ion-button>
-</div>
-  </div>
-</ion-col>
+        <h2 class="ion-padding">Mantenciones</h2>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
 
 <ion-footer>
