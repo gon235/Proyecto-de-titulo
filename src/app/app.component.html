@@ -1,6 +1,6 @@
 <ion-app>
 
-  <ion-menu side="start" menuId="hamburguesa" contentId="main">
+  <ion-menu *ngIf="showMenu" side="start" menuId="hamburguesa" contentId="main">
     <ion-header>
       <ion-toolbar color="tertiary">
         <ion-title>Menú</ion-title>
@@ -13,14 +13,11 @@
       <br>
       <h3 class="ion-padding-start ion-padding-end">Bienvenido</h3>
       <ion-list>
-        <ion-menu-toggle *ngFor="let componente of componentes">
-          <ion-item [routerLink]="[componente.redirecTo]" 
-                  detail="true">
-            <ion-icon slot="start" [name]="componente.icon" color="tertiary"></ion-icon>
-            {{componente.name}}
-          </ion-item>
-        </ion-menu-toggle>
+
       </ion-list>
+      <ion-item style="margin-top: 100px;" icon="log-out" (click)="signOut()">
+        <ion-label>Cerrar sesión</ion-label>
+      </ion-item>
     </ion-content>
   </ion-menu>
 

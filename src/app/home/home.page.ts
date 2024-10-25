@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MenuController } from '@ionic/angular';
 import { ServicedatosService, DatosMantencion } from '../services/servicedatos.service';
+import { FirebaseService } from '../services/firebase.service';
+import { UtilsService } from '../services/utils.service';
 
 @Component({
   selector: 'app-home',
@@ -10,11 +12,18 @@ import { ServicedatosService, DatosMantencion } from '../services/servicedatos.s
 export class HomePage implements OnInit {
 
   mantenciones: DatosMantencion[] = [];
+  firebaseSvc = inject(FirebaseService);
+  utilsSvc = inject(UtilsService);
 
   constructor(private menuController: MenuController, private servicedatosService: ServicedatosService) {}
 
   ngOnInit() {
     this.loadMantenciones();
+  }
+
+  //======Cerrar sesión======
+  signOut() {
+    this.firebaseSvc.signOut();
   }
 
   mostrarMenu() {

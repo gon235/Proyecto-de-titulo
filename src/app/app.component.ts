@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { FirebaseService } from './services/firebase.service';
+import { Router, NavigationEnd } from '@angular/router';
 
 interface Componente {  
   icon: string;
@@ -13,7 +15,21 @@ interface Componente {
 })
 export class AppComponent {
 
-  constructor() {}
+  firebaseSvc = inject(FirebaseService);
+  showMenu = true;
+
+  constructor(private router: Router) {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.showMenu = !['auth', 'forgot-password', 'sign-up'].some(route => event.url.includes(route));
+      }
+    });
+  }
+
+    //======Cerrar sesión======
+    signOut() {
+      this.firebaseSvc.signOut();
+    }
 
   componentes: Componente[] = [
     {
