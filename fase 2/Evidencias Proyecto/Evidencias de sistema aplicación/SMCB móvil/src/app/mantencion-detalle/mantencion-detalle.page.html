@@ -1,0 +1,90 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" color="tertiary"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle de Mantención</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card *ngIf="mantencion">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-input *ngIf="isEditing" [(ngModel)]="mantencion.nombremantencion"></ion-input>
+        <ng-container *ngIf="!isEditing">{{ mantencion.nombremantencion }}</ng-container>
+      </ion-card-title>
+      <ion-card-subtitle>{{ formatDate(mantencion.fechahora) }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <p><strong>Estado: </strong> 
+          <ion-select *ngIf="isEditing" [(ngModel)]="mantencion.estado">
+            <ion-select-option value="Pendiente">Pendiente</ion-select-option>
+            <ion-select-option value="Completa">Completa</ion-select-option>
+          </ion-select>
+          <ng-container *ngIf="!isEditing">{{ mantencion.estado }}</ng-container>
+        </p>
+      </ion-list>
+      <ion-list>
+        <p><strong>Vehículo:</strong> {{ mantencion.nombrevehiculo }}</p>
+      </ion-list>
+      <ion-list>
+        <p *ngIf="vehiculo"><strong>Marca:</strong> {{ vehiculo.marca }}</p>
+      </ion-list>
+      <ion-list>
+        <p *ngIf="vehiculo"><strong>Modelo:</strong> {{ vehiculo.modelo }}</p>
+      </ion-list>
+      <ion-list>
+        <p><strong>Nivel de urgencia: </strong> 
+          <ion-select *ngIf="isEditing" [(ngModel)]="mantencion.nivelurgencia">
+            <ion-select-option value="Nivel bajo">Bajo</ion-select-option>
+            <ion-select-option value="Nivel medio">Medio</ion-select-option>
+            <ion-select-option value="Nivel alto">Alto</ion-select-option>
+          </ion-select>
+          <ng-container *ngIf="!isEditing">{{ mantencion.nivelurgencia }}</ng-container>
+        </p>
+      </ion-list>
+      <ion-list>
+        <p><strong>Detalle: </strong> 
+          <ion-textarea *ngIf="isEditing" [(ngModel)]="mantencion.detalle"></ion-textarea>
+          <ng-container *ngIf="!isEditing">{{ mantencion.detalle }}</ng-container>
+        </p>
+      </ion-list>
+      <br>
+      <div class="ion-text-end">
+        <ion-button *ngIf="!isEditing" class="ion-padding-start" color="tertiary" (click)="toggleEdit()">Editar</ion-button>
+        <ion-button *ngIf="isEditing" class="ion-padding-start" color="success" (click)="saveChanges()">Guardar</ion-button>
+        <ion-button *ngIf="isEditing" class="ion-padding-start" color="medium" (click)="cancelEdit()">Cancelar</ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-tabs>
+      <ion-tab-bar slot="bottom">
+        <ion-tab-button page="Home" href="/home">
+          <ion-icon aria-hidden="true" name="home" color="tertiary"></ion-icon>
+          <ion-label>Inicio</ion-label>
+        </ion-tab-button>
+    
+        <ion-tab-button page="personal" href="/personal">
+          <ion-icon aria-hidden="true" name="person" color="tertiary"></ion-icon>
+          <ion-label>Personal</ion-label>
+        </ion-tab-button>
+    
+        <ion-tab-button page="vehiculos" href="/vehiculos">
+          <ion-icon aria-hidden="true" name="car" color="tertiary"></ion-icon>
+          <ion-label>Vehículos</ion-label>
+        </ion-tab-button>
+        
+        <ion-tab-button page="Notificaciones" href="/notificaciones">
+          <ion-icon aria-hidden="true" name="notifications" color="tertiary"></ion-icon>
+          <ion-label>Notificaciones</ion-label>
+        </ion-tab-button>
+      </ion-tab-bar>
+    </ion-tabs>
+  </ion-toolbar>
+</ion-footer>

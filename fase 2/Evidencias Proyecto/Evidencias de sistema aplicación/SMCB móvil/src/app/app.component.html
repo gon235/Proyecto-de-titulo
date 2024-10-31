@@ -1,0 +1,28 @@
+<ion-app>
+
+  <ion-menu *ngIf="showMenu" side="start" menuId="hamburguesa" contentId="main">
+    <ion-header>
+      <ion-toolbar color="tertiary">
+        <ion-title>Menú</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <br>
+      <ion-img src="assets/img/smcb.png" class="ion-padding-start ion-padding-end"></ion-img>
+      <br>
+      <br>
+      <h3 class="ion-padding-start ion-padding-end">Bienvenido</h3>
+      <ion-list>
+        <!-- Add menu items here -->
+      </ion-list>
+      <ion-item style="margin-top: 100px;" (click)="signOut()">
+        <ion-icon name="log-out" slot="start"></ion-icon>
+        <ion-label>Cerrar sesión</ion-label>
+      </ion-item>
+    </ion-content>
+  </ion-menu>
+
+
+  <ion-router-outlet id="main"></ion-router-outlet>
+</ion-app>
+

@@ -1,0 +1,98 @@
+import { Component, OnInit } from '@angular/core';
+import { DatabaseService } from '../services/database.service';
+import { StorageService } from '../services/storage.service';
+import { ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
+
+interface Vehiculo {
+  nombrevehiculo: string;
+  marca: string;
+  modelo: string;
+  anio: number;
+  patente: string;
+  imagen: string;
+}
+
+@Component({
+  selector: 'app-crearvehiculo',
+  templateUrl: './crearvehiculo.page.html',
+  styleUrls: ['./crearvehiculo.page.scss'],
+})
+export class CrearvehiculoPage implements OnInit {
+  newDatoV: Vehiculo = {
+    nombrevehiculo: '',
+    marca: '',
+    modelo: '',
+    anio: 0,
+    patente: '',
+    imagen: ''
+  };
+
+  selectedFile: File | null = null;
+
+  constructor(
+    private databaseService: DatabaseService,
+    private storageService: StorageService,
+    private toastController: ToastController,
+    private router: Router
+  ) { }
+
+  ngOnInit() {
+  }
+
+  validarLargoAno(event: any) {
+    const input = event.target as HTMLInputElement;
+    if (input.value.length > 4) {
+      input.value = input.value.slice(0, 4);
+    }
+  }
+
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
+  async addDatosVehiculo() {
+    if (this.selectedFile) {
+      const path = `vehiculos/${new Date().getTime()}_${this.selectedFile.name}`;
+      try {
+        const uploadTask = await this.storageService.uploadFile(path, this.selectedFile);
+        const downloadURL = await uploadTask.ref.getDownloadURL();
+        this.newDatoV.imagen = downloadURL;
+      } catch (error) {
+        console.error('Error al subir la imagen:', error);
+        await this.presentToast('Error al subir la imagen');
+        return;
+      }
+    }
+
+    try {
+      await this.databaseService.addDocument('vehiculos', this.newDatoV);
+      this.resetForm();
+      await this.presentToast('Vehículo creado exitosamente');
+      this.router.navigate(['/vehiculos']);
+    } catch (error) {
+      console.error('Error al crear el vehículo:', error);
+      await this.presentToast('Error al crear el vehículo');
+    }
+  }
+
+  resetForm() {
+    this.newDatoV = {
+      nombrevehiculo: '',
+      marca: '',
+      modelo: '',
+      anio: 0,
+      patente: '',
+      imagen: ''
+    };
+    this.selectedFile = null;
+  }
+
+  async presentToast(message: string) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000
+    });
+    toast.present();
+  }
+}
