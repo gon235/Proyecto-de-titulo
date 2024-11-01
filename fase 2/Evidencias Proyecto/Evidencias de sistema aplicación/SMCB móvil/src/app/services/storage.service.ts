@@ -27,4 +27,25 @@ export class StorageService {
   deleteFile(path: string) {
     return this.storage.ref(path).delete();
   }
+
+    // En storage.service.ts
+    async deleteUserFolder(userId: string) {
+      const path = `personal/${userId}`;
+      try {
+        // Obtener una referencia a la carpeta
+        const ref = this.storage.ref(path);
+        
+        // Listar todos los archivos en la carpeta
+        const files = await ref.listAll().forEach(async listResult => {
+          // Eliminar cada archivo en la carpeta
+          const deletePromises = listResult.items.map(item => item.delete());
+          await Promise.all(deletePromises);
+        });
+        
+        console.log('Carpeta de usuario eliminada correctamente');
+      } catch (error) {
+        console.error('Error al eliminar la carpeta del usuario:', error);
+        throw error;
+      }
+    }
 }

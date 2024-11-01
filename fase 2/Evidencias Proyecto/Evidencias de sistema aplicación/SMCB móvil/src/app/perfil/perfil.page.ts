@@ -154,17 +154,23 @@ export class PerfilPage implements OnInit {
   async confirmDeletePersonal() {
     if (this.personal && this.personal.id) {
       try {
+        // Eliminar toda la carpeta de imágenes del usuario
+        await this.storageService.deleteUserFolder(this.personal.id);
+        console.log('Carpeta de imágenes eliminada correctamente');
+  
+        // Eliminar el documento de Firestore
         await this.databaseService.deleteDocument('personal', this.personal.id);
         console.log('Personal profile deleted successfully');
+  
         const alert = await this.alertController.create({
           header: 'Éxito',
-          message: 'El perfil ha sido eliminado correctamente.',
+          message: 'El perfil y todos sus datos asociados han sido eliminados correctamente.',
           buttons: ['OK']
         });
         await alert.present();
         this.router.navigate(['/personal']);
       } catch (error) {
-        console.error('Error deleting personal profile:', error);
+        console.error('Error al eliminar el perfil:', error);
         const alert = await this.alertController.create({
           header: 'Error',
           message: 'Hubo un problema al eliminar el perfil.',

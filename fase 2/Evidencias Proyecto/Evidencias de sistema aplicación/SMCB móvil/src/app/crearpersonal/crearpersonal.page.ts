@@ -39,32 +39,33 @@ export class CrearpersonalPage implements OnInit {
   }
 
   async addDatosPersonal() {
-    if (this.selectedFile) {
-      const path = `personal/${new Date().getTime()}_${this.selectedFile.name}`;
-      try {
-        const uploadTask = await this.storageService.uploadFile(path, this.selectedFile);
-        const downloadURL = await uploadTask.ref.getDownloadURL();
-        this.newDatoP.imagen = downloadURL;
-      } catch (error) {
-        console.error('Error al subir la imagen:', error);
-        await this.presentToast('Error al subir la imagen');
-        return;
-      }
-    }
-
     try {
-      // Crear el usuario en Firebase Authentication
-      const authResult = await this.authService.register(this.newDatoP.email, this.newDatoP.password);
+      // Usar el nuevo método de registro que no afecta la sesión actual
+      const authResult = await this.authService.registerWithoutSignIn(this.newDatoP.email, this.newDatoP.password);
+      const uid = authResult.user.uid;
       
       // Añadir el uid al objeto newDatoP
-      this.newDatoP.uid = authResult.user.uid;
-
-      // Eliminar la contraseña del objeto antes de guardarlo en la base de datos
+      this.newDatoP.uid = uid;
+  
+      // Si hay una imagen seleccionada, subirla a Storage usando el uid
+      if (this.selectedFile) {
+        const path = `personal/${uid}/profile.jpg`;
+        try {
+          const uploadTask = await this.storageService.uploadFile(path, this.selectedFile);
+          this.newDatoP.imagen = path;
+        } catch (error) {
+          console.error('Error al subir la imagen:', error);
+          await this.presentToast('Error al subir la imagen');
+          return;
+        }
+      }
+  
+      // Eliminar la contraseña del objeto antes de guardarlo
       const datosParaGuardar = {...this.newDatoP};
       delete datosParaGuardar.password;
-
-      // Añadir los datos a la base de datos
-      await this.databaseService.addDocument('personal', datosParaGuardar);
+  
+      // Guardar los datos en Firestore usando el uid como ID del documento
+      await this.databaseService.addDocumentWithId('personal', uid, datosParaGuardar);
       
       this.resetForm();
       await this.presentToast('Personal creado exitosamente');

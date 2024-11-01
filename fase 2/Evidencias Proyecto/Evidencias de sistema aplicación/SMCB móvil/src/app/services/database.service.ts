@@ -28,6 +28,10 @@ export class DatabaseService {
     );
   }
 
+  addDocumentWithId(collectionName: string, docId: string, data: any) {
+    return this.firestore.collection(collectionName).doc(docId).set(data);
+  }
+
   addDocument(collectionName: string, data: any) {
     return this.firestore.collection(collectionName).add(data);
   }
