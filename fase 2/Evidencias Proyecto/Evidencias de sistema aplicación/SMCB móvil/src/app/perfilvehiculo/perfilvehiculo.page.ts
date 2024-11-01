@@ -171,20 +171,23 @@ export class PerfilvehiculoPage implements OnInit {
   async confirmDeleteVehicle() {
     if (this.vehicle && this.vehicle.id) {
       try {
+        // Eliminar la carpeta de imágenes del vehículo
+        await this.storageService.deleteVehicleFolder(this.vehicle.id);
+        console.log('Carpeta de imágenes del vehículo eliminada correctamente');
+
+        // Eliminar el documento de Firestore
         await this.databaseService.deleteDocument('vehiculos', this.vehicle.id);
-        if (this.vehicle.imagen) {
-          await this.storageService.deleteFile(this.vehicle.imagen);
-        }
         console.log('Vehicle deleted successfully');
+
         const alert = await this.alertController.create({
           header: 'Éxito',
-          message: 'El vehículo ha sido eliminado correctamente.',
+          message: 'El vehículo y todos sus datos asociados han sido eliminados correctamente.',
           buttons: ['OK']
         });
         await alert.present();
         this.router.navigate(['/vehiculos']);
       } catch (error) {
-        console.error('Error deleting vehicle:', error);
+        console.error('Error al eliminar el vehículo:', error);
         const alert = await this.alertController.create({
           header: 'Error',
           message: 'Hubo un problema al eliminar el vehículo.',

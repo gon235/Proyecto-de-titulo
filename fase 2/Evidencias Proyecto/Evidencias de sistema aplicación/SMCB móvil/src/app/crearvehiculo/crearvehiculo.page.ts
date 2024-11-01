@@ -52,21 +52,27 @@ export class CrearvehiculoPage implements OnInit {
   }
 
   async addDatosVehiculo() {
-    if (this.selectedFile) {
-      const path = `vehiculos/${new Date().getTime()}_${this.selectedFile.name}`;
-      try {
-        const uploadTask = await this.storageService.uploadFile(path, this.selectedFile);
-        const downloadURL = await uploadTask.ref.getDownloadURL();
-        this.newDatoV.imagen = downloadURL;
-      } catch (error) {
-        console.error('Error al subir la imagen:', error);
-        await this.presentToast('Error al subir la imagen');
-        return;
-      }
-    }
-
     try {
-      await this.databaseService.addDocument('vehiculos', this.newDatoV);
+      // Primero creamos el documento en Firestore para obtener el ID
+      const docRef = await this.databaseService.addDocument('vehiculos', this.newDatoV);
+      const vehiculoId = docRef.id;
+  
+      // Si hay una imagen seleccionada, la subimos usando el ID del vehículo
+      if (this.selectedFile) {
+        const path = `vehiculos/${vehiculoId}/profile.jpg`;
+        try {
+          const uploadTask = await this.storageService.uploadFile(path, this.selectedFile);
+          // Actualizamos el documento con la ruta de la imagen
+          await this.databaseService.updateDocument('vehiculos', vehiculoId, {
+            imagen: path
+          });
+        } catch (error) {
+          console.error('Error al subir la imagen:', error);
+          await this.presentToast('Error al subir la imagen');
+          return;
+        }
+      }
+  
       this.resetForm();
       await this.presentToast('Vehículo creado exitosamente');
       this.router.navigate(['/vehiculos']);

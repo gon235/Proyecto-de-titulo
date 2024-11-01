@@ -21,6 +21,7 @@ export class HomePage implements OnInit {
   userPhotoUrl: string = 'assets/default-avatar.svg';
   userName: string = '';
   userData: any;
+  currentUserId: string = '';
 
   constructor(
     private databaseService: DatabaseService,
@@ -41,6 +42,7 @@ export class HomePage implements OnInit {
       console.log('Usuario autenticado:', user);
       
       if (user && user.uid) {
+        this.currentUserId = user.uid;
         console.log('UID del usuario:', user.uid);
         
         // Obtener el documento del usuario desde Firestore
