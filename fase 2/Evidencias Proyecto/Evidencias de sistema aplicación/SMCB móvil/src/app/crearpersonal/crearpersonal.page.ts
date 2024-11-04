@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DatabaseService } from '../services/database.service';
 import { StorageService } from '../services/storage.service';
 import { AuthService } from '../services/auth.service';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { ToastController } from '@ionic/angular';
 
 @Component({
@@ -28,7 +29,8 @@ export class CrearpersonalPage implements OnInit {
     private databaseService: DatabaseService,
     private storageService: StorageService,
     private authService: AuthService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private firestore: AngularFirestore
   ) { }
 
   ngOnInit() {
@@ -40,6 +42,16 @@ export class CrearpersonalPage implements OnInit {
 
   async addDatosPersonal() {
     try {
+      // Check if the email is already registered
+      const snapshot = await this.firestore.collection('personal')
+        .ref.where('email', '==', this.newDatoP.email)
+        .get();
+
+      if (!snapshot.empty) {
+        await this.presentToast('El email ya está registrado');
+        return;
+      }
+
       // Usar el nuevo método de registro que no afecta la sesión actual
       const authResult = await this.authService.registerWithoutSignIn(this.newDatoP.email, this.newDatoP.password);
       const uid = authResult.user.uid;
@@ -92,7 +104,7 @@ export class CrearpersonalPage implements OnInit {
   async presentToast(message: string) {
     const toast = await this.toastController.create({
       message: message,
-      duration: 2000
+      duration: 3000
     });
     toast.present();
   }

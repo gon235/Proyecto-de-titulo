@@ -18,6 +18,19 @@ export class DatabaseService {
     );
   }
 
+  async getVehicleByPatente(patente: string): Promise<any> {
+    const snapshot = await this.firestore.collection('vehiculos').ref
+      .where('patente', '==', patente.toUpperCase())
+      .limit(1)
+      .get();
+
+    if (!snapshot.empty) {
+      return snapshot.docs[0].data();
+    } else {
+      return null;
+    }
+  }
+
   getDocument(collectionName: string, docId: string) {
     return this.firestore.collection(collectionName).doc(docId).snapshotChanges().pipe(
       map(doc => {

@@ -8,7 +8,7 @@ interface Vehiculo {
   nombrevehiculo: string;
   marca: string;
   modelo: string;
-  anio: number;
+  anio: number | null;
   patente: string;
   imagen: string;
 }
@@ -23,7 +23,7 @@ export class CrearvehiculoPage implements OnInit {
     nombrevehiculo: '',
     marca: '',
     modelo: '',
-    anio: 0,
+    anio: null,
     patente: '',
     imagen: ''
   };
@@ -42,8 +42,15 @@ export class CrearvehiculoPage implements OnInit {
 
   validarLargoAno(event: any) {
     const input = event.target as HTMLInputElement;
+    const currentYear = new Date().getFullYear();
+    const maxYear = currentYear + 1;
+  
     if (input.value.length > 4) {
       input.value = input.value.slice(0, 4);
+    }
+  
+    if (parseInt(input.value) > maxYear) {
+      input.value = maxYear.toString();
     }
   }
 
@@ -53,6 +60,13 @@ export class CrearvehiculoPage implements OnInit {
 
   async addDatosVehiculo() {
     try {
+      // Primero verificamos si la patente ya está registrada
+      const existingVehicle = await this.databaseService.getVehicleByPatente(this.newDatoV.patente);
+      if (existingVehicle) {
+        await this.presentToast('El vehículo no se ha podido crear, la patente ya está registrada');
+        return;
+      }
+  
       // Primero creamos el documento en Firestore para obtener el ID
       const docRef = await this.databaseService.addDocument('vehiculos', this.newDatoV);
       const vehiculoId = docRef.id;
@@ -97,7 +111,7 @@ export class CrearvehiculoPage implements OnInit {
   async presentToast(message: string) {
     const toast = await this.toastController.create({
       message: message,
-      duration: 2000
+      duration: 4000
     });
     toast.present();
   }

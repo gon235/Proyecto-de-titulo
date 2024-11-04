@@ -19,6 +19,7 @@ interface Mantencion {
   detalle: string;
   marca: string;
   modelo: string;
+  estado: string;
 }
 
 @Component({
@@ -27,6 +28,7 @@ interface Mantencion {
   styleUrls: ['./crearmantencion.page.scss'],
 })
 export class CrearmantencionPage implements OnInit {
+  today = new Date();
   datosV: Vehicle[] = [];
   newDatoM: Mantencion = {
     nombrevehiculo: '',
@@ -35,7 +37,8 @@ export class CrearmantencionPage implements OnInit {
     fechahora: new Date().toISOString(),
     detalle: '',
     marca: '',
-    modelo: ''
+    modelo: '',
+    estado:'pendiente'
   };
 
   constructor(
@@ -103,7 +106,8 @@ export class CrearmantencionPage implements OnInit {
       fechahora: new Date().toISOString(),
       detalle: '',
       marca: '',
-      modelo: ''
+      modelo: '',
+      estado:'pendiente'
     };
   }
 

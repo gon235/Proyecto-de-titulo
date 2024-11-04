@@ -37,6 +37,7 @@
       <ion-datetime name="fechahora" color="tertiary" 
                     displayFormat="DD/MM/YYYY HH:mm" 
                     pickerFormat="DD MMM YYYY HH:mm"
+                    min="{{ today | date:'yyyy-MM-dd' }}"
                     [(ngModel)]="newDatoM.fechahora">
         <span slot="time-label">Hora</span>
       </ion-datetime>
