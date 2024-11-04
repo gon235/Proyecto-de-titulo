@@ -13,6 +13,7 @@ interface Vehicle {
   anio: number;
   patente: string;
   imagen: string;
+  estado: string;
 }
 
 interface Maintenance {
@@ -117,6 +118,7 @@ export class PerfilvehiculoPage implements OnInit {
           await this.storageService.uploadFile(imagePath, this.vehicleImage);
           this.vehicle.imagen = imagePath;
         }
+        this.vehicle.patente = this.vehicle.patente.toUpperCase();
         await this.databaseService.updateDocument('vehiculos', this.vehicle.id, this.vehicle);
         this.isEditing = false;
         this.originalVehicle = { ...this.vehicle };

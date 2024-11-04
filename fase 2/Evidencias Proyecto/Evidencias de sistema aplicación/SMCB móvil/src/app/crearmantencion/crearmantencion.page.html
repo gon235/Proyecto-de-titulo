@@ -10,11 +10,12 @@
 </ion-header>
 
 <ion-content class="ion-padding" [fullscreen]="true" scroll-y="true">
+  <ion-card>
 <ion-col>
   <div class="ion-padding-start ion-padding-end">
 
     <ion-item>
-      <ion-select name="selvehiculo" label="Seleccionar vehículo" label-placement="floating" (ionChange)="onVehicleSelect($event)">
+      <ion-select name="selvehiculo" label="Seleccionar vehículo (*)" labelPlacement="stacked" label-placement="floating" (ionChange)="onVehicleSelect($event)" required>
         <ion-select-option *ngFor="let dato of datosV" [value]="dato.id">
           {{ dato.nombrevehiculo }} - Patente {{dato.patente}}
         </ion-select-option>
@@ -22,11 +23,11 @@
     </ion-item>
     <br>
     <ion-item>
-      <ion-input name="nombremantencion" type="text" label="Nombre mantenimiento" labelPlacement="stacked" [clearInput]="true" [(ngModel)]="newDatoM.nombremantencion"></ion-input>
+      <ion-input name="nombremantencion" type="text" label="Nombre mantenimiento (*)" labelPlacement="stacked" [clearInput]="true" [(ngModel)]="newDatoM.nombremantencion" required></ion-input>
     </ion-item>
     <br>
     <ion-item>
-      <ion-select name="nivelurgencia" label="Nivel de urgencia" label-placement="floating" [(ngModel)]="newDatoM.nivelurgencia">
+      <ion-select name="nivelurgencia" label="Nivel de urgencia (*)" labelPlacement="stacked" label-placement="floating" [(ngModel)]="newDatoM.nivelurgencia" required>
         <ion-select-option value="Nivel bajo">Bajo</ion-select-option>
         <ion-select-option value="Nivel medio">Medio</ion-select-option>
         <ion-select-option value="Nivel alto">Alto</ion-select-option>
@@ -43,18 +44,21 @@
       </ion-datetime>
     </ion-item>
     <br>
+    <ion-label class="ion-padding">(*) Campos obligatorios</ion-label>
+    <br><br><br>
     <ion-item>
-      <ion-textarea name="detalle" class="responsive-textarea" label="Detalle" labelPlacement="floating" placeholder="" style="height: 200px;" [(ngModel)]="newDatoM.detalle"></ion-textarea>
+      <ion-textarea name="detalle" class="responsive-textarea" label="Detalle" fill="outline" labelPlacement="floating" placeholder="" style="height: 200px;" [(ngModel)]="newDatoM.detalle"></ion-textarea>
     </ion-item>
     <br>
 
 <div class="align-right">
-  <ion-button id="open-loading" type="submit" (click)="addDatosMantencion()" color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
+  <ion-button id="open-loading" expand="block" type="submit" (click)="addDatosMantencion()" color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
   <ion-loading trigger="open-loading" message="Guardando" duration="1000" spinner="circles"></ion-loading>
 </div>
 
   </div>
 </ion-col>
+</ion-card>
 </ion-content>
 
 <ion-footer>

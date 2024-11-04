@@ -11,6 +11,7 @@ interface Vehiculo {
   anio: number | null;
   patente: string;
   imagen: string;
+  estado: string;
 }
 
 @Component({
@@ -25,7 +26,8 @@ export class CrearvehiculoPage implements OnInit {
     modelo: '',
     anio: null,
     patente: '',
-    imagen: ''
+    imagen: '',
+    estado: ''
   };
 
   selectedFile: File | null = null;
@@ -59,6 +61,20 @@ export class CrearvehiculoPage implements OnInit {
   }
 
   async addDatosVehiculo() {
+    // Validar que todos los campos estén completos
+    if (!this.newDatoV.nombrevehiculo || 
+      !this.newDatoV.marca || 
+      !this.newDatoV.modelo || 
+      !this.newDatoV.anio || 
+      !this.newDatoV.patente || 
+      !this.newDatoV.estado) {
+    await this.presentToast('Por favor complete todos los campos obligatorios');
+    return;
+    }
+
+    // Convertimos la patente ingresada a mayúsculas
+  this.newDatoV.patente = this.newDatoV.patente.toUpperCase();
+
     try {
       // Primero verificamos si la patente ya está registrada
       const existingVehicle = await this.databaseService.getVehicleByPatente(this.newDatoV.patente);
@@ -103,7 +119,8 @@ export class CrearvehiculoPage implements OnInit {
       modelo: '',
       anio: 0,
       patente: '',
-      imagen: ''
+      imagen: '',
+      estado: ''
     };
     this.selectedFile = null;
   }

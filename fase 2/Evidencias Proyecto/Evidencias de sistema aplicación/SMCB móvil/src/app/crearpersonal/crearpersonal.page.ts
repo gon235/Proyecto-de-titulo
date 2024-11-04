@@ -11,6 +11,7 @@ import { ToastController } from '@ionic/angular';
   styleUrls: ['./crearpersonal.page.scss'],
 })
 export class CrearpersonalPage implements OnInit {
+  showPassword = false;
   newDatoP: any = {
     nombres: '',
     apellidos: '',
@@ -40,7 +41,22 @@ export class CrearpersonalPage implements OnInit {
     this.selectedFile = event.target.files[0];
   }
 
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
+
   async addDatosPersonal() {
+        // Validar que todos los campos estén completos
+        if (!this.newDatoP.nombres || 
+          !this.newDatoP.apellidos || 
+          !this.newDatoP.numeroTelefono || 
+          !this.newDatoP.email || 
+          !this.newDatoP.password || 
+          !this.newDatoP.rango || 
+          !this.newDatoP.rol) {
+        await this.presentToast('Por favor complete todos los campos obligatorios');
+        return;
+      }
     try {
       // Check if the email is already registered
       const snapshot = await this.firestore.collection('personal')
@@ -95,6 +111,7 @@ export class CrearpersonalPage implements OnInit {
       email: '',
       password: '',
       rango: '',
+      rol: '',
       imagen: '',
       uid: ''
     };
@@ -104,7 +121,7 @@ export class CrearpersonalPage implements OnInit {
   async presentToast(message: string) {
     const toast = await this.toastController.create({
       message: message,
-      duration: 3000
+      duration: 4000
     });
     toast.present();
   }

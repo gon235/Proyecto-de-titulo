@@ -71,6 +71,13 @@ export class CrearmantencionPage implements OnInit {
   }
 
   async addDatosMantencion() {
+        // Validar que todos los campos estén completos
+        if (!this.newDatoM.nombrevehiculo || 
+          !this.newDatoM.nombremantencion || 
+          !this.newDatoM.nivelurgencia) {
+        await this.presentToast('Por favor complete todos los campos obligatorios');
+        return;
+      }
     if (this.validateForm()) {
       try {
         await this.databaseService.addDocument('mantenciones', this.newDatoM);
@@ -114,7 +121,7 @@ export class CrearmantencionPage implements OnInit {
   async presentToast(message: string) {
     const toast = await this.toastController.create({
       message: message,
-      duration: 2000
+      duration: 4000
     });
     toast.present();
   }

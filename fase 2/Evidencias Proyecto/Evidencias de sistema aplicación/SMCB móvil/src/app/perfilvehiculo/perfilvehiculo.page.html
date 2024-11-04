@@ -30,6 +30,7 @@
             </div>
             <p *ngIf="!imageUrl">No hay imagen disponible</p>
             <br>
+            <p><strong>Estado:</strong> {{ vehicle.estado }}</p>
             <p><strong>Año:</strong> {{ vehicle.anio }}</p>
             <p><strong>Patente:</strong> {{ vehicle.patente }}</p>
             <br>
@@ -44,12 +45,30 @@
           </ion-card-header>
           <ion-card-content>
             <ion-item>
+              <ion-label position="floating">Estado</ion-label>
+              <ion-select [(ngModel)]="vehicle.estado">
+                <ion-select-option value="Operativo">Operativo</ion-select-option>
+                <ion-select-option value="En mantenimiento">En mantenimiento</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
               <ion-label position="floating">Nombre del Vehículo</ion-label>
               <ion-input [(ngModel)]="vehicle.nombrevehiculo"></ion-input>
             </ion-item>
             <ion-item>
-              <ion-label position="floating">Marca</ion-label>
-              <ion-input [(ngModel)]="vehicle.marca"></ion-input>
+              <ion-select name="marca" labelPlacement="stacked" [(ngModel)]="vehicle.marca" required>
+                <div slot="label">Marca (*)</div>
+                <ion-select-option value="Chevrolet">Chevrolet</ion-select-option>
+                <ion-select-option value="Ford">Hyundai</ion-select-option>
+                <ion-select-option value="Hyundai">Hyundai</ion-select-option>
+                <ion-select-option value="Iveco">Iveco</ion-select-option>
+                <ion-select-option value="Mercedes Benz">Mercedes Benz</ion-select-option>
+                <ion-select-option value="Nissan">Nissan</ion-select-option>
+                <ion-select-option value="Renault">Renault</ion-select-option>
+                <ion-select-option value="Scania">Scania</ion-select-option>
+                <ion-select-option value="Toyota">Toyota</ion-select-option>
+                <ion-select-option value="Volvo">Volvo</ion-select-option>
+              </ion-select>
             </ion-item>
             <ion-item>
               <ion-label position="floating">Modelo</ion-label>
@@ -84,7 +103,7 @@
               </ion-label>
             </ion-item>
           </ion-list>
-          <p *ngIf="maintenances.length === 0">No se han encontrado registros de mantención.</p>
+          <p class="ion-padding" *ngIf="maintenances.length === 0">No se han encontrado registros de mantención.</p>
         </ion-card>
 
       </ion-col>

@@ -9,41 +9,73 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" scroll-y="true">
+<ion-content class="ion-padding" [fullscreen]="true" scroll-y="true">
+  <ion-card>
 <ion-col class="ion-padding">
   <div class="ion-padding-start ion-padding-end">
     <ion-item>
-      <ion-input name="nombrevehiculo" label="Nombre vehículo" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="newDatoV.nombrevehiculo"></ion-input>
+      <ion-input name="nombrevehiculo" label="Nombre vehículo (*)" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="newDatoV.nombrevehiculo" required>
+
+      </ion-input>
     </ion-item>
-    <br>
+    
     <ion-item>
-      <ion-input name="marca" label="Marca" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="newDatoV.marca"></ion-input>
+      <ion-select name="marca" labelPlacement="stacked" [(ngModel)]="newDatoV.marca" required>
+        <div slot="label">Marca (*)</div>
+        <ion-select-option value="Chevrolet">Chevrolet</ion-select-option>
+        <ion-select-option value="Ford">Hyundai</ion-select-option>
+        <ion-select-option value="Hyundai">Hyundai</ion-select-option>
+        <ion-select-option value="Iveco">Iveco</ion-select-option>
+        <ion-select-option value="Mercedes Benz">Mercedes Benz</ion-select-option>
+        <ion-select-option value="Nissan">Nissan</ion-select-option>
+        <ion-select-option value="Renault">Renault</ion-select-option>
+        <ion-select-option value="Scania">Scania</ion-select-option>
+        <ion-select-option value="Toyota">Toyota</ion-select-option>
+        <ion-select-option value="Volvo">Volvo</ion-select-option>
+      </ion-select>
     </ion-item>
-    <br>
+    
     <ion-item>
-      <ion-input name="modelo" label="Modelo" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="newDatoV.modelo"></ion-input>
+      <ion-input name="modelo" labelPlacement="stacked" label="Modelo (*)" placeholder="" [clearInput]="true" [(ngModel)]="newDatoV.modelo" required>
+        <div slot="label"></div>
+      </ion-input>
     </ion-item>
-    <br>
+    
     <ion-item>
-      <ion-input name="anio" label="Año" type="number" labelPlacement="stacked" placeholder="" [counter]="true" maxlength="4" [clearInput]="true" (ionInput)="validarLargoAno($event)" [(ngModel)]="newDatoV.anio"></ion-input>
+      <ion-input name="anio" labelPlacement="stacked" type="number" label="Año (*)" placeholder="" [counter]="true" maxlength="4" [clearInput]="true" (ionInput)="validarLargoAno($event)" [(ngModel)]="newDatoV.anio" required>
+        <div slot="label">Año <ion-text color="danger">(*)</ion-text></div>
+      </ion-input>
     </ion-item>
-    <br>
+    
     <ion-item>
-      <ion-input name="patente" label="Patente" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="newDatoV.patente"></ion-input>
+      <ion-input name="patente" label="Patente (*)" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="newDatoV.patente" required>
+        <div slot="label">Patente <ion-text color="danger">(*)</ion-text></div>
+      </ion-input>
+    </ion-item>
+    
+    <ion-item>
+      <ion-select name="estado" labelPlacement="stacked" [(ngModel)]="newDatoV.estado" required>
+        <div slot="label">Estado del vehículo (*)</div>
+        <ion-select-option value="Operativo">Operativo</ion-select-option>
+        <ion-select-option value="En mantenimiento">En mantenimiento</ion-select-option>
+      </ion-select>
     </ion-item>
     <br>
-    <ion-label>Subir Imagen </ion-label><ion-icon name="cloud-upload-outline"></ion-icon>
+    <ion-label class="ion-padding">(*) Campos obligatorios</ion-label>
+    <br><br><br>
+    <ion-label class="ion-padding">Subir Imagen </ion-label><ion-icon name="cloud-upload-outline"></ion-icon>
     <ion-item>
       <input name="imagen" type="file" accept="image/*" (change)="onFileSelected($event)" />
     </ion-item>
     <br>
 
     <div class="align-right">
-      <ion-button id="open-loading" type="submit" (click)="addDatosVehiculo()" color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
+      <ion-button id="open-loading" expand="block" type="submit" (click)="addDatosVehiculo()" color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
       <ion-loading trigger="open-loading" message="Guardando" duration="1000" spinner="circles"></ion-loading>
     </div>
   </div>
 </ion-col>
+</ion-card>
 </ion-content>
 
 <ion-footer>

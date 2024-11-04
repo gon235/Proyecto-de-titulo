@@ -10,38 +10,41 @@
 </ion-header>
 
 <ion-content class="ion-padding" [fullscreen]="true" scroll-y="true">
+  <ion-card>
 <ion-col>
   <div class="ion-padding-start ion-padding-end">
 
     <ion-item>
-      <ion-input name="nombres" type="text" label="Nombres" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="newDatoP.nombres"></ion-input>
+      <ion-input name="nombres" type="text" label="Nombres (*)" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="newDatoP.nombres" required></ion-input>
     </ion-item>
     <br>
     <ion-item>
-      <ion-input name="apellidos" type="text" label="Apellidos" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="newDatoP.apellidos"></ion-input>
+      <ion-input name="apellidos" type="text" label="Apellidos (*)" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="newDatoP.apellidos" required></ion-input>
     </ion-item>
     <br>
     <ion-item>
-      <ion-input name="numeroTelefono" label="Número de teléfono" type="tel" labelPlacement="stacked" [counter]="true" maxlength="11" placeholder="569" [clearInput]="true" [(ngModel)]="newDatoP.numeroTelefono"></ion-input>
+      <ion-input name="numeroTelefono" label="Número de teléfono (*)" type="tel" labelPlacement="stacked" [counter]="true" maxlength="11" placeholder="569" [clearInput]="true" [(ngModel)]="newDatoP.numeroTelefono" required></ion-input>
     </ion-item>
     <br>
     <ion-item>
       <ion-input name="email" 
-                  label="Email" type="email" labelPlacement="stacked" 
+                  label="Email (*)" type="email" labelPlacement="stacked" 
                   errorText="Formato de correo incorrecto" 
                   [(ngModel)]="newDatoP.email" 
+                  required
                   pattern="^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$" 
-                  placeholder="correo@dominio.com" [clearInput]="true">
+                  placeholder="correo@email.com" [clearInput]="true">
       </ion-input>
     </ion-item>
     <br>
     <ion-item>
-      <ion-input name="password" label="Contraseña" type="password" labelPlacement="stacked" value="" [clearInput]="true" name="password" [(ngModel)]="newDatoP.password"></ion-input>
+      <ion-input name="password" label="Contraseña (*)" type="password" labelPlacement="stacked" [(ngModel)]="newDatoP.password" required [type]="showPassword ? 'text' : 'password'"></ion-input>
+      <ion-icon slot="end" [name]="showPassword ? 'eye-off-outline' : 'eye-outline'" (click)="togglePassword()"></ion-icon>
     </ion-item>
     <br>
 
     <ion-item>
-      <ion-select name="rango" label="Rango" label-placement="floating" [(ngModel)]="newDatoP.rango">
+      <ion-select name="rango" label="Rango (*)" labelPlacement="stacked" label-placement="floating" [(ngModel)]="newDatoP.rango" required>
         <ion-select-option value="Capitán">Capitán</ion-select-option>
         <ion-select-option value="Comandante">Comandante</ion-select-option>
         <ion-select-option value="Teniente">Teniente</ion-select-option>
@@ -49,27 +52,29 @@
       </ion-select>
     </ion-item>
     <ion-item>
-      <ion-select name="rol" label="Rol" label-placement="floating" [(ngModel)]="newDatoP.rol">
+      <ion-select name="rol" label="Rol (*)" labelPlacement="stacked" label-placement="floating" [(ngModel)]="newDatoP.rol" required>
         <ion-select-option value="Supervisor">Supervisor</ion-select-option>
         <ion-select-option value="Mecánico">Mecánico</ion-select-option>
         <ion-select-option value="Bombero">Bombero</ion-select-option>
       </ion-select>
     </ion-item>
     <br>
-
-    <ion-label>Subir Imagen </ion-label><ion-icon name="cloud-upload-outline" ></ion-icon>
+    <ion-label class="ion-padding">(*) Campos obligatorios</ion-label>
+    <br><br><br>
+    <ion-label class="ion-padding">Subir Imagen </ion-label><ion-icon name="cloud-upload-outline" ></ion-icon>
     <ion-item>
       <input name="imagen" type="file" accept="image/*" (change)="onFileSelected($event)" />
     </ion-item>
     <br>
 
     <div class="align-right">
-      <ion-button id="open-loading" type="submit" (click)="addDatosPersonal()" color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
+      <ion-button id="open-loading" expand="block" type="submit" (click)="addDatosPersonal()" color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
       <ion-loading trigger="open-loading" message="Guardando" duration="1500" spinner="circles"></ion-loading>
     </div>
 
   </div>
 </ion-col>
+</ion-card>
 </ion-content>
 
 <ion-footer>
