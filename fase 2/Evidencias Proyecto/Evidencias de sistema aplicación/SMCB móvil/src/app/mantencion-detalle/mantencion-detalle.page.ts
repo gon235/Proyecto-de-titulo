@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DatabaseService } from '../services/database.service';
 import { Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-mantencion-detalle',
@@ -17,7 +18,8 @@ export class MantencionDetallePage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private databaseService: DatabaseService,
-    private router: Router
+    private router: Router,
+    private alertController: AlertController
   ) { }
 
   ngOnInit() {
@@ -77,7 +79,10 @@ export class MantencionDetallePage implements OnInit {
   }
 
   toggleEdit() {
-    if (this.isEditing) {
+    if (!this.isEditing) {
+      // Guardar una copia de los datos originales antes de entrar en modo edición
+      this.originalMantencionData = { ...this.mantencion };
+    } else {
       this.saveChanges();
     }
     this.isEditing = !this.isEditing;
@@ -85,7 +90,7 @@ export class MantencionDetallePage implements OnInit {
 
   cancelEdit() {
     this.isEditing = false;
-    if (this.mantencion) {
+    if (this.mantencion && this.originalMantencionData) {
       // Restaurar los valores originales de la mantención
       this.mantencion.nombremantencion = this.originalMantencionData.nombremantencion;
       this.mantencion.nivelurgencia = this.originalMantencionData.nivelurgencia;
@@ -107,4 +112,49 @@ export class MantencionDetallePage implements OnInit {
         });
     }
   }
+
+  async deleteMantencion() {
+    const alert = await this.alertController.create({
+      header: 'Confirmar eliminación',
+      message: '¿Estás seguro de que quieres eliminar esta mantención? Esta acción no se puede deshacer.',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary',
+        }, {
+          text: 'Eliminar',
+          handler: () => {
+            this.confirmDeleteMantencion();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async confirmDeleteMantencion() {
+    if (this.mantencion && this.mantencion.id) {
+      try {
+        await this.databaseService.deleteDocument('mantenciones', this.mantencion.id);
+        const alert = await this.alertController.create({
+          header: 'Éxito',
+          message: 'La mantención ha sido eliminada correctamente.',
+          buttons: ['OK']
+        });
+        await alert.present();
+        this.router.navigate(['/home']);
+      } catch (error) {
+        console.error('Error al eliminar la mantención:', error);
+        const alert = await this.alertController.create({
+          header: 'Error',
+          message: 'Hubo un problema al eliminar la mantención.',
+          buttons: ['OK']
+        });
+        await alert.present();
+      }
+    }
+  }
+
 }

@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DatabaseService } from '../services/database.service';
 import { StorageService } from '../services/storage.service';
 import { AlertController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
 
 interface Personal {
   id: string;
@@ -32,7 +33,8 @@ export class PerfilPage implements OnInit {
     private router: Router,
     private databaseService: DatabaseService,
     private storageService: StorageService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private loadingCtrl: LoadingController
   ) { }
 
   ngOnInit() {
@@ -101,6 +103,13 @@ export class PerfilPage implements OnInit {
   }
 
   async savePersonal() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Guardando',
+      duration: 900,
+      spinner: 'circles'
+    });
+  
+    await loading.present();
     if (this.personal && this.personal.id) {
       try {
         if (this.profileImage) {

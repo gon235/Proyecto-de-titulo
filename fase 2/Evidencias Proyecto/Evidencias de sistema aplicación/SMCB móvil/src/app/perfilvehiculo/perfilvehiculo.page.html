@@ -30,18 +30,27 @@
             </div>
             <p *ngIf="!imageUrl">No hay imagen disponible</p>
             <br>
-            <p><strong>Estado:</strong> {{ vehicle.estado }}</p>
-            <p><strong>Año:</strong> {{ vehicle.anio }}</p>
-            <p><strong>Patente:</strong> {{ vehicle.patente }}</p>
+            <ion-item>
+              <ion-label position="floating">Estado</ion-label>
+              <ion-input [(ngModel)]="vehicle.estado" [disabled]="!isEditing"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Año</ion-label>
+              <ion-input [(ngModel)]="vehicle.anio" [disabled]="!isEditing"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Patente</ion-label>
+              <ion-input [(ngModel)]="vehicle.patente" [disabled]="!isEditing"></ion-input>
+            </ion-item>
             <br>
-            <ion-button class="ion-padding-start" color="tertiary" (click)="editVehicle()">Editar</ion-button>
-            <ion-button class="ion-padding-start" color="danger" (click)="deleteVehicle()">Eliminar vehículo</ion-button>
+            <ion-button class="ion-padding-start ion-padding-end" expand="block" color="tertiary" (click)="editVehicle()">Editar</ion-button>
+            <ion-button class="ion-padding-start ion-padding-end" expand="block" color="danger" (click)="deleteVehicle()">Eliminar vehículo</ion-button>
           </ion-card-content>
         </ion-card>
 
         <ion-card *ngIf="isEditing && vehicle">
           <ion-card-header>
-            <ion-card-title>Editar Vehículo</ion-card-title>
+            <ion-card-title>Editar vehículo</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <ion-item>
@@ -52,7 +61,7 @@
               </ion-select>
             </ion-item>
             <ion-item>
-              <ion-label position="floating">Nombre del Vehículo</ion-label>
+              <ion-label position="floating">Nombre del vehículo</ion-label>
               <ion-input [(ngModel)]="vehicle.nombrevehiculo"></ion-input>
             </ion-item>
             <ion-item>
@@ -86,9 +95,9 @@
               <ion-label position="floating">Imagen del vehículo</ion-label>
               <ion-input type="file" (change)="onFileSelected($event)"></ion-input>
             </ion-item>
-            <ion-button id="open-loading" expand="block" (click)="saveVehicle()">Guardar Cambios</ion-button>
+            <ion-button id="open-loading" class="ion-padding-start ion-padding-end" expand="block" color="success" (click)="saveVehicle()">Guardar Cambios</ion-button>
             <ion-loading trigger="open-loading" message="Guardando" duration="900" spinner="circles"></ion-loading>
-            <ion-button expand="block" (click)="cancelEdit()" color="medium">Cancelar</ion-button>
+            <ion-button class="ion-padding-start ion-padding-end" expand="block" (click)="cancelEdit()" color="medium">Cancelar</ion-button>
           </ion-card-content>
         </ion-card>
 

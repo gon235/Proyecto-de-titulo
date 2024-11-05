@@ -13,7 +13,11 @@
       <br>
       <h3 class="ion-padding-start ion-padding-end">Bienvenido</h3>
       <ion-list>
-        <!-- Add menu items here -->
+        <ion-item>
+          <ion-icon name="moon-outline" slot="start"></ion-icon>
+          <ion-label>Modo oscuro</ion-label>
+          <ion-toggle [(ngModel)]="darkMode" (ionChange)="toggleDarkMode()"></ion-toggle>
+        </ion-item>
       </ion-list>
       <ion-item style="margin-top: 100px;" (click)="signOut()">
         <ion-icon name="log-out" slot="start"></ion-icon>
