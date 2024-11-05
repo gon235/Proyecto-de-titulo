@@ -20,12 +20,13 @@
           <ion-button expand="block" color="tertiary" routerLink="/crearpersonal">Crear personal</ion-button>
         </div>
         </ion-card>
+
           <ion-card>
             <div class="ion-padding">
-              <div class="filter-container">
-                <ion-text color="tertiary">
-                  <b>Filtrar por:</b>
-                </ion-text>
+            <div class="filter-container">
+              <ion-text color="tertiary">
+                <b>Filtrar:</b>
+              </ion-text>
             <ion-select placeholder="Filtrar por Rol" [(ngModel)]="selectedRol" (ionChange)="filterPersonales()">
               <ion-select-option value="">Todos los roles</ion-select-option>
               <ion-select-option value="Supervisor">Supervisor</ion-select-option>
@@ -50,7 +51,7 @@
               <ion-icon slot="start" name="person-circle-outline"></ion-icon>
               <ion-label>
                 <h2>{{ personal.nombres }} {{ personal.apellidos }}</h2>
-                <p>{{ personal.email }} | {{ personal.rol }}</p>
+                <p>{{ personal.email }} <br> {{ personal.rol }}</p>
               </ion-label>
             </ion-item>
           </ion-list>

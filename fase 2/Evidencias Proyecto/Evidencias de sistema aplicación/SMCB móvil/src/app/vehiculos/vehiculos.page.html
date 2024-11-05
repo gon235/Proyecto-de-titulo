@@ -12,26 +12,43 @@
     <ion-row>
       <ion-col class="ion-padding">
         <ion-searchbar color="light" 
-                       placeholder="Buscar" 
-                       (ionInput)="searchVehicles($event)">
+                       placeholder="Buscar"
+                       [(ngModel)]="searchQuery"
+                       (ionInput)="filterVehicles()">
         </ion-searchbar>
         <ion-card>
-        <div class="ion-padding">
-          <ion-button expand="block" color="tertiary" routerLink="/crearvehiculo">Crear vehículo</ion-button>
-        </div>
-      </ion-card>
-      <ion-card>
-        <div class="list-container" style="overflow-y: auto;">
-          <ion-list [inset]="true">
-            <ion-item *ngFor="let vehicle of filteredVehicles" [routerLink]="['/perfilvehiculo', vehicle.id]">
-              <ion-icon slot="start" name="car-outline"></ion-icon>
-              <ion-label>
-                <h2>{{ vehicle.nombrevehiculo }}</h2>
-                <p>Patente: {{ vehicle.patente }}</p>
-              </ion-label>
-            </ion-item>
-          </ion-list>
-        </div>
+          <div class="ion-padding">
+            <ion-button expand="block" color="tertiary" routerLink="/crearvehiculo">Crear vehículo</ion-button>
+          </div>
+        </ion-card>
+
+        <ion-card>
+          <div class="ion-padding">
+            <div class="filter-container">
+              <ion-text color="tertiary">
+                <b>Filtrar:</b>
+              </ion-text>
+              <ion-select placeholder="Filtrar por Estado" [(ngModel)]="selectedStatus" (ionChange)="filterVehicles()">
+                <ion-select-option value="">Todos los estados</ion-select-option>
+                <ion-select-option value="Operativo">Operativo</ion-select-option>
+                <ion-select-option value="En mantenimiento">En mantenimiento</ion-select-option>
+              </ion-select>
+            </div>
+          </div>
+        </ion-card>
+
+        <ion-card>
+          <div class="list-container" style="overflow-y: auto;">
+            <ion-list [inset]="true">
+              <ion-item *ngFor="let vehicle of filteredVehicles$ | async" [routerLink]="['/perfilvehiculo', vehicle.id]">
+                <ion-icon slot="start" name="car-outline"></ion-icon>
+                <ion-label>
+                  <h2>{{ vehicle.nombrevehiculo }}</h2>
+                  <p>Patente: {{ vehicle.patente }} <br> Estado: {{ vehicle.estado }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </div>
         </ion-card>
       </ion-col>
     </ion-row>
