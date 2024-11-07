@@ -30,7 +30,7 @@
 <ion-content class="ion-padding" [fullscreen]="true">
   <br>
 
-  <ion-col class="ion-padding">
+  <ion-col class="ion-padding" *ngIf="userData?.rol !== 'Bombero'">
     <div class="ion-padding-start ion-padding-end">
       <ion-button color="tertiary" expand="block" size="large" routerLink="/crearmantencion">
         <ion-icon slot="start" name="add-circle"></ion-icon>
@@ -39,7 +39,7 @@
     </div>
   </ion-col>
   
-  <ion-col class="ion-padding">
+  <ion-col class="ion-padding" *ngIf="userData?.rol !== 'Bombero'">
     <div class="ion-padding-start ion-padding-end">
       <ion-button color="tertiary" expand="block" size="large" routerLink="/crearpersonal">
         <ion-icon slot="start" name="add-circle"></ion-icon>
@@ -47,8 +47,8 @@
       </ion-button>
     </div>
   </ion-col>
-
-  <ion-col class="ion-padding">
+  
+  <ion-col class="ion-padding" *ngIf="userData?.rol !== 'Bombero'">
     <div class="ion-padding-start ion-padding-end">
       <ion-button color="tertiary" expand="block" size="large" routerLink="/crearvehiculo">
         <ion-icon slot="start" name="add-circle"></ion-icon>
@@ -56,9 +56,10 @@
       </ion-button>
     </div>
   </ion-col>
+
   <ion-card>
     <ion-text>
-      <h4 class="ion-padding-start ion-padding-end">Mantenciones pendientes</h4>
+      <h4 class="ion-padding-start ion-padding-end">Mantenciones pendientes próximas</h4>
     </ion-text>
     <ion-list>
       <ion-item *ngFor="let mantencion of mantenciones" [routerLink]="['/mantencion-detalle', mantencion.id]">
@@ -80,20 +81,20 @@
           <ion-icon aria-hidden="true" name="home" color="tertiary"></ion-icon>
           <ion-label>Inicio</ion-label>
         </ion-tab-button>
-    
+
         <ion-tab-button page="personal" href="/personal">
           <ion-icon aria-hidden="true" name="person" color="tertiary"></ion-icon>
           <ion-label>Personal</ion-label>
         </ion-tab-button>
-    
+
         <ion-tab-button page="vehiculos" href="/vehiculos">
           <ion-icon aria-hidden="true" name="car" color="tertiary"></ion-icon>
           <ion-label>Vehículos</ion-label>
         </ion-tab-button>
-        
-        <ion-tab-button page="Notificaciones" href="/notificaciones">
-          <ion-icon aria-hidden="true" name="notifications" color="tertiary"></ion-icon>
-          <ion-label>Notificaciones</ion-label>
+
+        <ion-tab-button page="Mantenciones" href="/mantenciones">
+          <ion-icon aria-hidden="true" name="build" color="tertiary"></ion-icon>
+          <ion-label>Mantenciones</ion-label>
         </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>

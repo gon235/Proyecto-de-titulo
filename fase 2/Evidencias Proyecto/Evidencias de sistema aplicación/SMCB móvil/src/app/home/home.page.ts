@@ -20,7 +20,7 @@ export class HomePage implements OnInit {
   mantenciones: Mantencion[] = [];
   userPhotoUrl: string = 'assets/default-avatar.svg';
   userName: string = '';
-  userData: any;
+  userData: any; // Asegúrate de que esta variable captura los datos del usuario
   currentUserId: string = '';
 
   constructor(
@@ -37,10 +37,10 @@ export class HomePage implements OnInit {
 
   loadUserPhoto() {
     console.log('Iniciando carga de foto de perfil');
-    
+
     this.authService.user$.subscribe(user => {
       console.log('Usuario autenticado:', user);
-      
+
       if (user && user.uid) {
         this.currentUserId = user.uid;
         console.log('UID del usuario:', user.uid);
@@ -51,12 +51,13 @@ export class HomePage implements OnInit {
             console.log('Datos del personal obtenidos:', personal);
             
             if (personal) {
-              // Establecer el nombre del usuario
+              // Establecer el nombre y rol del usuario
               this.userName = `${personal.nombres}`;
-              
+              this.userData = personal; // Aquí estamos capturando los datos del usuario
+
               if (personal.imagen) {
                 console.log('Ruta de imagen encontrada:', personal.imagen);
-                
+
                 // Obtener la URL de la imagen desde Storage
                 this.storageService.getFileUrl(personal.imagen).subscribe(
                   (url: string) => {

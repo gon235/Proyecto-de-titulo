@@ -4,6 +4,7 @@ import { DatabaseService } from '../services/database.service';
 import { StorageService } from '../services/storage.service';
 import { AlertController } from '@ionic/angular';
 import { map } from 'rxjs/operators';
+import { AuthService } from '../services/auth.service';
 
 interface Vehicle {
   id: string;
@@ -38,17 +39,28 @@ export class PerfilvehiculoPage implements OnInit {
   originalVehicle: Vehicle | null = null;
   maintenances: Maintenance[] = [];
   vehicleImage: File | null = null;
+  canEdit: boolean = false;
+  currentUserId: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private databaseService: DatabaseService,
     private storageService: StorageService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
-    this.loadVehicleData();
+    this.authService.user$.subscribe(user => {
+      if (user) {
+        this.currentUserId = user.uid;
+        this.databaseService.getDocument('personal', user.uid).subscribe((userData: any) => {
+          this.canEdit = userData?.rol !== 'Bombero';
+          this.loadVehicleData();
+        });
+      }
+    });
   }
 
   loadVehicleData() {
@@ -100,10 +112,23 @@ export class PerfilvehiculoPage implements OnInit {
   }
 
   editVehicle() {
+    if (!this.canEdit) {
+      this.showUnauthorizedAlert();
+      return;
+    }
     this.isEditing = true;
     if (this.vehicle) {
       this.originalVehicle = { ...this.vehicle } as Vehicle;
     }
+  }
+
+  async showUnauthorizedAlert() {
+    const alert = await this.alertController.create({
+      header: 'Acceso Denegado',
+      message: 'No tienes permisos para editar vehículos.',
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
   onFileSelected(event: any) {
@@ -111,6 +136,11 @@ export class PerfilvehiculoPage implements OnInit {
   }
 
   async saveVehicle() {
+    if (!this.canEdit) {
+      this.showUnauthorizedAlert();
+      return;
+    }
+
     if (this.vehicle && this.vehicle.id) {
       try {
         if (this.vehicleImage) {
@@ -150,6 +180,11 @@ export class PerfilvehiculoPage implements OnInit {
   }
 
   async deleteVehicle() {
+    if (!this.canEdit) {
+      this.showUnauthorizedAlert();
+      return;
+    }
+
     const alert = await this.alertController.create({
       header: 'Confirmar eliminación',
       message: '¿Estás seguro de que quieres eliminar este vehículo? Esta acción no se puede deshacer.',
@@ -173,11 +208,9 @@ export class PerfilvehiculoPage implements OnInit {
   async confirmDeleteVehicle() {
     if (this.vehicle && this.vehicle.id) {
       try {
-        // Eliminar la carpeta de imágenes del vehículo
         await this.storageService.deleteVehicleFolder(this.vehicle.id);
         console.log('Carpeta de imágenes del vehículo eliminada correctamente');
 
-        // Eliminar el documento de Firestore
         await this.databaseService.deleteDocument('vehiculos', this.vehicle.id);
         console.log('Vehicle deleted successfully');
 

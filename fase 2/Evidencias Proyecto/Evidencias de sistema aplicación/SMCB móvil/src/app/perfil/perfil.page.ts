@@ -4,6 +4,7 @@ import { DatabaseService } from '../services/database.service';
 import { StorageService } from '../services/storage.service';
 import { AlertController } from '@ionic/angular';
 import { LoadingController } from '@ionic/angular';
+import { AuthService } from '../services/auth.service';
 
 interface Personal {
   id: string;
@@ -27,6 +28,9 @@ export class PerfilPage implements OnInit {
   isEditing: boolean = false;
   originalPersonal: Personal | null = null;
   profileImage: File | null = null;
+  currentUserId: string | null = null;
+  canEdit: boolean = false;
+  isSupervisor: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -34,11 +38,15 @@ export class PerfilPage implements OnInit {
     private databaseService: DatabaseService,
     private storageService: StorageService,
     private alertController: AlertController,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
-    this.loadPersonalData();
+    this.authService.user$.subscribe(user => {
+      this.currentUserId = user ? user.uid : null;
+      this.loadPersonalData();
+    });
   }
 
   loadPersonalData() {
@@ -50,9 +58,22 @@ export class PerfilPage implements OnInit {
             console.log('Personal data:', personal);
             this.personal = personal;
             if (!this.personal.rol) {
-              this.personal.rol = 'bombero';
+              this.personal.rol = 'Bombero';
             }
             this.originalPersonal = {...personal};
+  
+            // Check if user can edit this profile
+            if (this.currentUserId) {
+              this.databaseService.getDocument('personal', this.currentUserId).subscribe((currentUser: any) => {
+                this.canEdit = 
+                  this.currentUserId === this.personal?.id || 
+                  (currentUser?.rol && currentUser.rol !== 'Bombero');
+                
+                // Check if user is supervisor
+                this.isSupervisor = currentUser?.rol === 'Supervisor';
+              });
+            }
+  
             if (this.personal.imagen) {
               this.loadImage(this.personal.imagen);
             } else {
@@ -64,11 +85,8 @@ export class PerfilPage implements OnInit {
         },
         error => console.error('Error loading personal data:', error)
       );
-    } else {
-      console.error('No ID provided');
     }
   }
-
   loadImage(imagePath: string) {
     if (!imagePath) {
       console.error('No image path provided');
@@ -92,7 +110,20 @@ export class PerfilPage implements OnInit {
   }
 
   editPersonal() {
+    if (!this.canEdit) {
+      this.showUnauthorizedAlert();
+      return;
+    }
     this.isEditing = true;
+  }
+
+  async showUnauthorizedAlert() {
+    const alert = await this.alertController.create({
+      header: 'Acceso Denegado',
+      message: 'No tienes permisos para editar este perfil.',
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
   cancelEdit() {
@@ -163,11 +194,9 @@ export class PerfilPage implements OnInit {
   async confirmDeletePersonal() {
     if (this.personal && this.personal.id) {
       try {
-        // Eliminar toda la carpeta de imágenes del usuario
         await this.storageService.deleteUserFolder(this.personal.id);
         console.log('Carpeta de imágenes eliminada correctamente');
   
-        // Eliminar el documento de Firestore
         await this.databaseService.deleteDocument('personal', this.personal.id);
         console.log('Personal profile deleted successfully');
   
