@@ -39,7 +39,7 @@ export class MantencionesPage implements OnInit {
   actualizarContadores() {
     const fechaActual = new Date();
     const primerDiaMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), 1);
-    const ultimoDiaMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0);
+    const ultimoDiaMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0, 23, 59, 59, 999);
 
     this.contadorHistorialTotal = this.mantenciones.length;
 
@@ -57,7 +57,7 @@ export class MantencionesPage implements OnInit {
     this.filtroActual = tipo;
     const fechaActual = new Date();
     const primerDiaMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), 1);
-    const ultimoDiaMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0);
+    const ultimoDiaMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0, 23, 59, 59, 999);
 
     switch (tipo) {
       case 'todasHistorial':

@@ -56,4 +56,41 @@ export class DatabaseService {
   deleteDocument(collectionName: string, docId: string) {
     return this.firestore.collection(collectionName).doc(docId).delete();
   }
+
+  getMantencionesByUser(userId: string) {
+    return this.firestore.collection('mantenciones', ref => 
+      ref.where('assignedTo', '==', userId)
+    ).snapshotChanges().pipe(
+      map(actions => actions.map(a => {
+        const data = a.payload.doc.data() as any;
+        const id = a.payload.doc.id;
+        return { id, ...data };
+      }))
+    );
+  }
+
+  getAllMantenciones() {
+    return this.firestore.collection('mantenciones').snapshotChanges().pipe(
+      map(actions => actions.map(a => {
+        const data = a.payload.doc.data() as any;
+        const id = a.payload.doc.id;
+        return { id, ...data };
+      }))
+    );
+  }
+
+  getMantencionesByMecanico(mecanicoId: string) {
+    return this.firestore.collection('mantenciones', ref => 
+      ref.where('assignedTo', '==', mecanicoId)
+         .where('estado', '==', 'Pendiente')
+         .where('aceptada', '==', true)
+    ).snapshotChanges().pipe(
+      map(actions => actions.map(a => {
+        const data = a.payload.doc.data() as any;
+        const id = a.payload.doc.id;
+        return { id, ...data };
+      }))
+    );
+  }
+
 }

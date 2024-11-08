@@ -31,6 +31,7 @@ export class PerfilPage implements OnInit {
   currentUserId: string | null = null;
   canEdit: boolean = false;
   isSupervisor: boolean = false;
+  mantencionesList: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -39,54 +40,104 @@ export class PerfilPage implements OnInit {
     private storageService: StorageService,
     private alertController: AlertController,
     private loadingCtrl: LoadingController,
-    private authService: AuthService
+    private authService: AuthService,
+
   ) { }
 
   ngOnInit() {
     this.authService.user$.subscribe(user => {
       this.currentUserId = user ? user.uid : null;
       this.loadPersonalData();
+      if (this.currentUserId) {
+        this.loadMantenciones();
+      }
     });
   }
 
   loadPersonalData() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
+      console.log('ID del perfil a cargar:', id); // Debug
+  
       this.databaseService.getDocument('personal', id).subscribe(
         (personal: Personal | undefined) => {
           if (personal) {
-            console.log('Personal data:', personal);
+            console.log('Personal data cargada:', personal); // Debug
             this.personal = personal;
+            
+            // Asegurar que exista un rol por defecto
             if (!this.personal.rol) {
               this.personal.rol = 'Bombero';
             }
+            
+            // Guardar copia original de los datos
             this.originalPersonal = {...personal};
   
-            // Check if user can edit this profile
+            // Verificar permisos de edición
             if (this.currentUserId) {
-              this.databaseService.getDocument('personal', this.currentUserId).subscribe((currentUser: any) => {
-                this.canEdit = 
-                  this.currentUserId === this.personal?.id || 
-                  (currentUser?.rol && currentUser.rol !== 'Bombero');
-                
-                // Check if user is supervisor
-                this.isSupervisor = currentUser?.rol === 'Supervisor';
-              });
+              this.databaseService.getDocument('personal', this.currentUserId).subscribe(
+                (currentUser: any) => {
+                  console.log('Datos del usuario actual:', currentUser); // Debug
+                  
+                  this.canEdit = 
+                    this.currentUserId === this.personal?.id || 
+                    (currentUser?.rol && currentUser.rol !== 'Bombero');
+                  
+                  this.isSupervisor = currentUser?.rol === 'Supervisor';
+                  
+                  console.log('Permisos:', {
+                    canEdit: this.canEdit,
+                    isSupervisor: this.isSupervisor
+                  }); // Debug
+                }
+              );
             }
   
+            // Cargar imagen de perfil si existe
             if (this.personal.imagen) {
               this.loadImage(this.personal.imagen);
             } else {
-              console.log('No image path in personal data');
+              console.log('No hay imagen de perfil');
             }
+  
+            // Cargar mantenciones si es un mecánico
+            if (this.personal.rol === 'Mecánico') {
+              this.databaseService.getCollection('mantenciones')
+                .subscribe(mantenciones => {
+                  console.log('Todas las mantenciones:', mantenciones); // Debug
+                  
+                  this.mantencionesList = mantenciones.filter(m => 
+                    m.assignedTo === id && 
+                    m.estado === 'Pendiente' &&
+                    m.aceptada === true
+                  );
+                  
+                  // Ordenar por fecha
+                  this.mantencionesList.sort((a, b) => 
+                    new Date(b.fechahora).getTime() - new Date(a.fechahora).getTime()
+                  );
+                  
+                  console.log('Mantenciones filtradas:', this.mantencionesList); // Debug
+                });
+            } else {
+              this.mantencionesList = [];
+              console.log('No es mecánico, no se cargan mantenciones');
+            }
+  
           } else {
-            console.error('Personal not found');
+            console.error('No se encontró el personal');
           }
         },
-        error => console.error('Error loading personal data:', error)
+        error => {
+          console.error('Error cargando datos del personal:', error);
+        }
       );
+    } else {
+      console.error('No se proporcionó ID para cargar el perfil');
     }
   }
+
+
   loadImage(imagePath: string) {
     if (!imagePath) {
       console.error('No image path provided');
@@ -103,6 +154,30 @@ export class PerfilPage implements OnInit {
         this.imageUrl = null;
       }
     );
+  }
+
+  loadMantenciones() {
+    const profileId = this.route.snapshot.paramMap.get('id');
+    
+    if (profileId && this.personal?.rol === 'Mecánico') {
+      this.databaseService.getMantencionesByMecanico(profileId)
+        .subscribe(mantenciones => {
+          this.mantencionesList = mantenciones;
+          console.log('Mantenciones cargadas:', this.mantencionesList);
+        });
+    }
+  }
+
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  goToMantencionDetalle(mantencionId: string) {
+    this.router.navigate(['/mantencion-detalle', mantencionId]);
   }
 
   onFileSelected(event: any) {

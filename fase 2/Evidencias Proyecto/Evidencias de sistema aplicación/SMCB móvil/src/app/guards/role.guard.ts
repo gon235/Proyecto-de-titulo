@@ -29,7 +29,7 @@ export class RoleGuard implements CanActivate {
         
         return this.databaseService.getDocument('personal', user.uid).pipe(
           map((userData: any) => {
-            if (userData && userData.rol !== 'Bombero') {
+            if (userData && userData.rol !== 'Bombero' && userData.rol !== 'Mecánico') {
               return true;
             } else {
               this.router.navigate(['/home']);
