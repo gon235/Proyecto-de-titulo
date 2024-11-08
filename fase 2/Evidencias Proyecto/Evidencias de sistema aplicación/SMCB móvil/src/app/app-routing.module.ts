@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
+import { RoleGuard } from './guards/role.guard';
 
 
 const routes: Routes = [
@@ -17,7 +18,7 @@ const routes: Routes = [
   {
     path: 'crearpersonal',
     loadChildren: () => import('./crearpersonal/crearpersonal.module').then( m => m.CrearpersonalPageModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, RoleGuard]
   },
   {
     path: 'personal',
@@ -42,7 +43,7 @@ const routes: Routes = [
   {
     path: 'crearvehiculo',
     loadChildren: () => import('./crearvehiculo/crearvehiculo.module').then( m => m.CrearvehiculoPageModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, RoleGuard]
   },
   {
     path: 'perfilvehiculo/:id',
@@ -52,7 +53,7 @@ const routes: Routes = [
   {
     path: 'crearmantencion',
     loadChildren: () => import('./crearmantencion/crearmantencion.module').then( m => m.CrearmantencionPageModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, RoleGuard]
   },
   {
     path: 'login',
@@ -66,6 +67,10 @@ const routes: Routes = [
     path: 'mantencion-detalle/:id',
     loadChildren: () => import('./mantencion-detalle/mantencion-detalle.module').then( m => m.MantencionDetallePageModule),
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'mantenciones',
+    loadChildren: () => import('./mantenciones/mantenciones.module').then( m => m.MantencionesPageModule)
   },
 ];
 
