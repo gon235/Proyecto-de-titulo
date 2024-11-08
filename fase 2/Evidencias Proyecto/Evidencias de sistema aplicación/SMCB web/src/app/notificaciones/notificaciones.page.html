@@ -1,0 +1,49 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" color="tertiary"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Notificaciones
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Tab 1</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <br>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-tabs>
+      <ion-tab-bar slot="bottom">
+        <ion-tab-button page="Home" href="/home">
+          <ion-icon aria-hidden="true" name="home" color="tertiary"></ion-icon>
+          <ion-label>Inicio</ion-label>
+        </ion-tab-button>
+    
+        <ion-tab-button page="personal" href="/personal">
+          <ion-icon aria-hidden="true" name="person" color="tertiary"></ion-icon>
+          <ion-label>Personal</ion-label>
+        </ion-tab-button>
+    
+        <ion-tab-button page="vehiculos" href="/vehiculos">
+          <ion-icon aria-hidden="true" name="car" color="tertiary"></ion-icon>
+          <ion-label>Vehículos</ion-label>
+        </ion-tab-button>
+        
+        <ion-tab-button page="Notificaciones" href="/notificaciones">
+          <ion-icon aria-hidden="true" name="notifications" color="tertiary"></ion-icon>
+          <ion-label>Notificaciones</ion-label>
+        </ion-tab-button>
+      </ion-tab-bar>
+    </ion-tabs>
+  </ion-toolbar>
+</ion-footer>
