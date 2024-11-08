@@ -3,10 +3,6 @@ import { ActivatedRoute } from '@angular/router';
 import { DatabaseService } from '../services/database.service';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { AuthService } from '../services/auth.service';
-import { StorageService } from '../services/storage.service';
-import { switchMap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-mantencion-detalle',
@@ -18,37 +14,15 @@ export class MantencionDetallePage implements OnInit {
   isEditing: boolean = false;
   vehiculo: any;
   originalMantencionData: any;
-  canEdit: boolean = false;
-  currentUser: any;
-  canAccept: boolean = false;
-  canComment: boolean = false;
-  newComment: string = '';
-  selectedFile: File | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private databaseService: DatabaseService,
     private router: Router,
-    private alertController: AlertController,
-    private authService: AuthService,
-    private storageService: StorageService
+    private alertController: AlertController
   ) { }
 
   ngOnInit() {
-    this.authService.user$.pipe(
-      switchMap(user => {
-        if (user) {
-          return this.databaseService.getDocument('personal', user.uid);
-        }
-        return new Observable<null>(subscriber => subscriber.next(null));
-      })
-    ).subscribe(userData => {
-      this.currentUser = userData;
-      this.canEdit = userData && userData.rol !== 'Bombero';
-      this.canAccept = userData && (userData.rol === 'Mecánico' || userData.rol === 'Supervisor');
-      this.canComment = userData && (userData.rol === 'Mecánico' || userData.rol === 'Supervisor');
-    });
-
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.databaseService.getDocument('mantenciones', id).subscribe(
@@ -105,12 +79,8 @@ export class MantencionDetallePage implements OnInit {
   }
 
   toggleEdit() {
-    if (!this.canEdit) {
-      this.showNoPermissionAlert();
-      return;
-    }
-
     if (!this.isEditing) {
+      // Guardar una copia de los datos originales antes de entrar en modo edición
       this.originalMantencionData = { ...this.mantencion };
     } else {
       this.saveChanges();
@@ -121,6 +91,7 @@ export class MantencionDetallePage implements OnInit {
   cancelEdit() {
     this.isEditing = false;
     if (this.mantencion && this.originalMantencionData) {
+      // Restaurar los valores originales de la mantención
       this.mantencion.nombremantencion = this.originalMantencionData.nombremantencion;
       this.mantencion.nivelurgencia = this.originalMantencionData.nivelurgencia;
       this.mantencion.detalle = this.originalMantencionData.detalle;
@@ -129,17 +100,12 @@ export class MantencionDetallePage implements OnInit {
   }
 
   saveChanges() {
-    if (!this.canEdit) {
-      this.showNoPermissionAlert();
-      return;
-    }
-
     if (this.mantencion && this.mantencion.id) {
       this.databaseService.updateDocument('mantenciones', this.mantencion.id, this.mantencion)
         .then(() => {
           console.log('Cambios guardados exitosamente');
           this.isEditing = false;
-          this.router.navigate(['/mantencion-detalle', this.mantencion.id]);
+          this.router.navigate(['/mantencion-detalle', this.mantencion.id]); // Navegar de vuelta al detalle de la mantención
         })
         .catch((error) => {
           console.error('Error al guardar los cambios:', error);
@@ -148,11 +114,6 @@ export class MantencionDetallePage implements OnInit {
   }
 
   async deleteMantencion() {
-    if (!this.canEdit) {
-      this.showNoPermissionAlert();
-      return;
-    }
-
     const alert = await this.alertController.create({
       header: 'Confirmar eliminación',
       message: '¿Estás seguro de que quieres eliminar esta mantención? Esta acción no se puede deshacer.',
@@ -196,108 +157,4 @@ export class MantencionDetallePage implements OnInit {
     }
   }
 
-  async showNoPermissionAlert() {
-    const alert = await this.alertController.create({
-      header: 'Acceso Denegado',
-      message: 'No tienes permisos para editar mantenciones',
-      buttons: ['OK']
-    });
-    await alert.present();
-  }
-
-  async acceptMantencion() {
-    if (!this.currentUser || !this.mantencion || this.mantencion.estado === 'Completa') return;
-
-    const alert = await this.alertController.create({
-      header: 'Confirmar aceptación',
-      message: '¿Estás seguro que deseas aceptar esta mantención?',
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Aceptar',
-          handler: async () => {
-            try {
-              // Inicializar el arreglo de aceptaciones si no existe
-              if (!this.mantencion.acceptances) {
-                this.mantencion.acceptances = [];
-              }
-
-              const acceptanceRecord = {
-                userId: this.currentUser.id,
-                userName: `${this.currentUser.nombres} ${this.currentUser.apellidos}`,
-                rol: this.currentUser.rol,
-                date: new Date().toISOString()
-              };
-
-              this.mantencion.acceptances.push(acceptanceRecord);
-              this.mantencion.assignedTo = this.currentUser.id;
-              this.mantencion.assignedToName = `${this.currentUser.nombres} ${this.currentUser.apellidos}`;
-              this.mantencion.lastAssignmentDate = new Date().toISOString();
-
-              await this.databaseService.updateDocument('mantenciones', this.mantencion.id, this.mantencion);
-              
-              const successAlert = await this.alertController.create({
-                header: 'Éxito',
-                message: 'Mantención asignada correctamente',
-                buttons: ['OK']
-              });
-              await successAlert.present();
-              
-              // Recargar los datos
-              this.loadMantencionData();
-            } catch (error) {
-              console.error('Error al aceptar la mantención:', error);
-              const errorAlert = await this.alertController.create({
-                header: 'Error',
-                message: 'No se pudo aceptar la mantención',
-                buttons: ['OK']
-              });
-              await errorAlert.present();
-            }
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-
-  onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
-  }
-
-  async addComment() {
-    if (!this.currentUser || !this.newComment.trim() || !this.canComment) return;
-
-    const comment: any = {
-      userId: this.currentUser.id,
-      userName: `${this.currentUser.nombres} ${this.currentUser.apellidos}`,
-      text: this.newComment,
-      date: new Date().toISOString()
-    };
-
-    if (this.selectedFile) {
-      const path = `mantenciones/${this.mantencion.id}/comments/${Date.now()}_${this.selectedFile.name}`;
-      await this.storageService.uploadFile(path, this.selectedFile);
-      const imageUrl = await this.storageService.getFileUrl(path).toPromise();
-      comment.imageUrl = imageUrl;
-    }
-
-    if (!this.mantencion.comments) {
-      this.mantencion.comments = [];
-    }
-
-    this.mantencion.comments.push(comment);
-    await this.databaseService.updateDocument('mantenciones', this.mantencion.id, this.mantencion);
-    
-    this.newComment = '';
-    this.selectedFile = null;
-  }
-
-  viewFullImage(imageUrl: string) {
-    window.open(imageUrl, '_blank');
-  }
 }

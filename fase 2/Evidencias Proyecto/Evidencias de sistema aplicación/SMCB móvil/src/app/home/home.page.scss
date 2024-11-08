@@ -1,3 +1,5 @@
+/*
+
 #container {
   text-align: center;
 
@@ -37,53 +39,134 @@ ion-avatar {
     object-fit: cover;
   }
 }
+*/
 
-// Estilos para el modo oscuro
-:host-context(body.dark) {
-  ion-card-title {
-      color: white;
+.dashboard-container {
+  display: flex;
+  height: 100%;
+  background: #f3f4f6;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.sidebar {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .menu-button {
+    --border-radius: 9999px;
+  }
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.chart-card {
+  margin: 0;
+  
+  .chart-container {
+    height: 300px;
+    width: 100%;
+  }
+}
+
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  
+  .calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.1);
+    border-radius: 4px;
+  }
+}
+
+ion-card {
+  margin: 0;
+}
+
+// Ajustes para modo oscuro
+@media (prefers-color-scheme: dark) {
+  .dashboard-container {
+    background: rgba(0,0,0,0.1);;
+  }
+}
+
+// Ajustes responsivos
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
   }
 
-  ion-title {
-      color: white;
+  .sidebar {
+    width: 100%;
   }
 
-  ion-label {
-      color: white;
-  }
-
-  ion-input {
-      color: white;
+  .bottom-grid {
+    grid-template-columns: 1fr;
   }
 }
 
-// Estilos globales para el alert del select en modo oscuro
-::ng-deep body.dark {
-.alert-wrapper {
-    background: #1e1e1e;
-}
+.vehicles-card {
+  ion-card-content {
+    padding: 0;
+  }
 
-.alert-radio-label {
-    color: white !important;
-}
+  .list-container {
+    max-height: 300px;
+    overflow-y: auto;
+    
+    ion-list {
+      margin: 0;
+    }
+  }
+  :host-context(body.dark) {
+    ion-card-title {
+        color: white;
+    }
 
-.alert-radio-group {
-    background: #1e1e1e;
-}
+    ion-title {
+        color: white;
+    }
 
-.alert-title {
-    color: white;
-}
+    ion-label {
+        color: white;
+    }
 
-.alert-sub-title {
-    color: white;
-}
+    ion-input {
+        color: white;
+    }
 
-.alert-radio-inner {
-    background-color: white !important;
-}
+    ng-container {
+        color: rgb(0, 0, 0);
+    }
 
-.alert-button {
-    color: var(--ion-color-primary) !important;
+    dashboard-container {
+        color: rgb(0, 0, 0);
+    }
+
+    ion-content {
+      color: rgb(0, 0, 0);
+    }
+    
+    Web-specific {
+      color: rgb(0, 0, 0);
+    }
 }
 }

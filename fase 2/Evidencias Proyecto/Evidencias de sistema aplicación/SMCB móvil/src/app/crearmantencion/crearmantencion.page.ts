@@ -38,7 +38,7 @@ export class CrearmantencionPage implements OnInit {
     detalle: '',
     marca: '',
     modelo: '',
-    estado:'Pendiente'
+    estado:'pendiente'
   };
 
   constructor(

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthService } from './services/auth.service';
 import { Router, NavigationEnd, Event } from '@angular/router';
-import { MenuController } from '@ionic/angular';
+import { MenuController, Platform } from '@ionic/angular'; // Platform for web app detection
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -12,12 +12,17 @@ import { filter } from 'rxjs/operators';
 export class AppComponent {
   showMenu: boolean = true;
   darkMode: boolean = false;
+  public isWeb: boolean = false; // public Var to detect web app user
 
   constructor(
     private authService: AuthService, 
     private router: Router,
-    private menuController: MenuController
+    private menuController: MenuController,
+    private platform: Platform // platform constructor for web app detection
   ) {
+    // Detect if app is running on web
+    this.isWeb = this.platform.is('desktop') || this.platform.is('pwa') || this.platform.is('tablet'); // Added detection logic
+
     // Verificar el modo oscuro guardado
     const prefersDark = localStorage.getItem('darkMode');
     if (prefersDark !== null) {

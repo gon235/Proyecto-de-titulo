@@ -32,33 +32,19 @@
             <br>
             <ion-item>
               <ion-label position="floating">Estado</ion-label>
-              <ion-input [(ngModel)]="vehicle.estado" [disabled]="true"></ion-input>
+              <ion-input [(ngModel)]="vehicle.estado" [disabled]="!isEditing"></ion-input>
             </ion-item>
             <ion-item>
               <ion-label position="floating">Año</ion-label>
-              <ion-input [(ngModel)]="vehicle.anio" [disabled]="true"></ion-input>
+              <ion-input [(ngModel)]="vehicle.anio" [disabled]="!isEditing"></ion-input>
             </ion-item>
             <ion-item>
               <ion-label position="floating">Patente</ion-label>
-              <ion-input [(ngModel)]="vehicle.patente" [disabled]="true"></ion-input>
+              <ion-input [(ngModel)]="vehicle.patente" [disabled]="!isEditing"></ion-input>
             </ion-item>
             <br>
-            <ion-button 
-              *ngIf="!isEditing && canEdit" 
-              class="ion-padding-start ion-padding-end" 
-              expand="block" 
-              color="tertiary" 
-              (click)="editVehicle()">
-              Editar
-            </ion-button>
-            <ion-button 
-              *ngIf="canEdit" 
-              class="ion-padding-start ion-padding-end" 
-              expand="block" 
-              color="danger" 
-              (click)="deleteVehicle()">
-              Eliminar vehículo
-            </ion-button>
+            <ion-button class="ion-padding-start ion-padding-end" expand="block" color="tertiary" (click)="editVehicle()">Editar</ion-button>
+            <ion-button class="ion-padding-start ion-padding-end" expand="block" color="danger" (click)="deleteVehicle()">Eliminar vehículo</ion-button>
           </ion-card-content>
         </ion-card>
 
@@ -109,20 +95,9 @@
               <ion-label position="floating">Imagen del vehículo</ion-label>
               <ion-input type="file" (change)="onFileSelected($event)"></ion-input>
             </ion-item>
-            <ion-button 
-              class="ion-padding-start ion-padding-end" 
-              expand="block" 
-              color="success" 
-              (click)="saveVehicle()">
-              Guardar Cambios
-            </ion-button>
-            <ion-button 
-              class="ion-padding-start ion-padding-end" 
-              expand="block" 
-              color="medium" 
-              (click)="cancelEdit()">
-              Cancelar
-            </ion-button>
+            <ion-button id="open-loading" class="ion-padding-start ion-padding-end" expand="block" color="success" (click)="saveVehicle()">Guardar Cambios</ion-button>
+            <ion-loading trigger="open-loading" message="Guardando" duration="900" spinner="circles"></ion-loading>
+            <ion-button class="ion-padding-start ion-padding-end" expand="block" (click)="cancelEdit()" color="medium">Cancelar</ion-button>
           </ion-card-content>
         </ion-card>
 
@@ -139,6 +114,7 @@
           </ion-list>
           <p class="ion-padding" *ngIf="maintenances.length === 0">No se han encontrado registros de mantención.</p>
         </ion-card>
+
       </ion-col>
     </ion-row>
   </ion-grid>
@@ -149,23 +125,23 @@
     <ion-tabs>
       <ion-tab-bar slot="bottom">
         <ion-tab-button page="Home" href="/home">
-          <ion-icon name="home" color="tertiary"></ion-icon>
+          <ion-icon aria-hidden="true" name="home" color="tertiary"></ion-icon>
           <ion-label>Inicio</ion-label>
         </ion-tab-button>
-
+    
         <ion-tab-button page="personal" href="/personal">
-          <ion-icon name="person" color="tertiary"></ion-icon>
+          <ion-icon aria-hidden="true" name="person" color="tertiary"></ion-icon>
           <ion-label>Personal</ion-label>
         </ion-tab-button>
-
+    
         <ion-tab-button page="vehiculos" href="/vehiculos">
-          <ion-icon name="car" color="tertiary"></ion-icon>
+          <ion-icon aria-hidden="true" name="car" color="tertiary"></ion-icon>
           <ion-label>Vehículos</ion-label>
         </ion-tab-button>
-
-        <ion-tab-button page="Mantenciones" href="/mantenciones">
-          <ion-icon name="build" color="tertiary"></ion-icon>
-          <ion-label>Mantenciones</ion-label>
+        
+        <ion-tab-button page="Notificaciones" href="/notificaciones">
+          <ion-icon aria-hidden="true" name="notifications" color="tertiary"></ion-icon>
+          <ion-label>Notificaciones</ion-label>
         </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>

@@ -22,7 +22,6 @@ export class VehiculosPage implements OnInit {
   searchQuery: string = '';
   selectedStatus: string = '';
   private searchSubject = new BehaviorSubject<string>('');
-  userRole: string = '';
 
   constructor(
     private databaseService: DatabaseService,
@@ -30,17 +29,6 @@ export class VehiculosPage implements OnInit {
   ) {
     this.vehicles$ = this.databaseService.getCollection('vehiculos') as Observable<Vehicle[]>;
     this.filteredVehicles$ = this.vehicles$;
-    this.getCurrentUserRole();
-  }
-
-  async getCurrentUserRole() {
-    this.authService.user$.subscribe(user => {
-      if (user) {
-        this.databaseService.getDocument('personal', user.uid).subscribe((userData: any) => {
-          this.userRole = userData?.rol || '';
-        });
-      }
-    });
   }
 
   ngOnInit() {

@@ -15,50 +15,48 @@
                        [(ngModel)]="searchQuery"
                        (ionInput)="filterPersonales()">
         </ion-searchbar>
-        
-        <!-- <ion-card *ngIf="userRole !== 'Bombero'"> -->
-          <ion-card *ngIf="!['Bombero', 'Mecánico'].includes(userRole)">
-          <div class="ion-padding">
-            <ion-button expand="block" color="tertiary" routerLink="/crearpersonal">Crear personal</ion-button>
-          </div>
-        </ion-card>
-
         <ion-card>
           <div class="ion-padding">
+          <ion-button expand="block" color="tertiary" routerLink="/crearpersonal">Crear personal</ion-button>
+        </div>
+        </ion-card>
+
+          <ion-card>
+            <div class="ion-padding">
             <div class="filter-container">
               <ion-text color="tertiary">
                 <b>Filtrar:</b>
               </ion-text>
-              <ion-select placeholder="Filtrar por Rol" [(ngModel)]="selectedRol" (ionChange)="filterPersonales()">
-                <ion-select-option value="">Todos los roles</ion-select-option>
-                <ion-select-option value="Supervisor">Supervisor</ion-select-option>
-                <ion-select-option value="Mecánico">Mecánico</ion-select-option>
-                <ion-select-option value="Bombero">Bombero</ion-select-option>
-              </ion-select>
-              <ion-select placeholder="Filtrar por Rango" [(ngModel)]="selectedRango" (ionChange)="filterPersonales()">
-                <ion-select-option value="">Todos los rangos</ion-select-option>
-                <ion-select-option value="Capitán">Capitán</ion-select-option>
-                <ion-select-option value="Comandante">Comandante</ion-select-option>
-                <ion-select-option value="Teniente">Teniente</ion-select-option>
-                <ion-select-option value="Voluntario">Voluntario</ion-select-option>
-              </ion-select>
-            </div>
+            <ion-select placeholder="Filtrar por Rol" [(ngModel)]="selectedRol" (ionChange)="filterPersonales()">
+              <ion-select-option value="">Todos los roles</ion-select-option>
+              <ion-select-option value="Supervisor">Supervisor</ion-select-option>
+              <ion-select-option value="Mecánico">Mecánico</ion-select-option>
+              <ion-select-option value="Bombero">Bombero</ion-select-option>
+            </ion-select>
+            <ion-select placeholder="Filtrar por Rango" [(ngModel)]="selectedRango" (ionChange)="filterPersonales()">
+              <ion-select-option value="">Todos los rangos</ion-select-option>
+              <ion-select-option value="Capitán">Capitán</ion-select-option>
+              <ion-select-option value="Comandante">Comandante</ion-select-option>
+              <ion-select-option value="Teniente">Teniente</ion-select-option>
+              <ion-select-option value="Voluntario">Voluntario</ion-select-option>
+            </ion-select>
           </div>
-        </ion-card>
+          </div>
+          </ion-card>
         
         <ion-card>
-          <div class="list-container">
-            <ion-list [inset]="true">
-              <ion-item *ngFor="let personal of filteredPersonales$ | async" [routerLink]="['/perfil', personal.id]" detail>
-                <ion-icon slot="start" name="person-circle-outline"></ion-icon>
-                <ion-label>
-                  <h2>{{ personal.nombres }} {{ personal.apellidos }}</h2>
-                  <p>{{ personal.email }} <br> {{ personal.rol }}</p>
-                </ion-label>
-              </ion-item>
-            </ion-list>
-          </div>
-        </ion-card>
+        <div class="list-container" >
+          <ion-list [inset]="true">
+            <ion-item *ngFor="let personal of filteredPersonales$ | async" [routerLink]="['/perfil', personal.id]">
+              <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+              <ion-label>
+                <h2>{{ personal.nombres }} {{ personal.apellidos }}</h2>
+                <p>{{ personal.email }} <br> {{ personal.rol }}</p>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-card>
       </ion-col>
     </ion-row>
   </ion-grid>
@@ -69,23 +67,23 @@
     <ion-tabs>
       <ion-tab-bar slot="bottom">
         <ion-tab-button page="Home" href="/home">
-          <ion-icon name="home" color="tertiary"></ion-icon>
+          <ion-icon aria-hidden="true" name="home" color="tertiary"></ion-icon>
           <ion-label>Inicio</ion-label>
         </ion-tab-button>
-
+    
         <ion-tab-button page="personal" href="/personal">
-          <ion-icon name="person" color="tertiary"></ion-icon>
+          <ion-icon aria-hidden="true" name="person" color="tertiary"></ion-icon>
           <ion-label>Personal</ion-label>
         </ion-tab-button>
-
+    
         <ion-tab-button page="vehiculos" href="/vehiculos">
-          <ion-icon name="car" color="tertiary"></ion-icon>
+          <ion-icon aria-hidden="true" name="car" color="tertiary"></ion-icon>
           <ion-label>Vehículos</ion-label>
         </ion-tab-button>
-
-        <ion-tab-button page="Mantenciones" href="/mantenciones">
-          <ion-icon name="build" color="tertiary"></ion-icon>
-          <ion-label>Mantenciones</ion-label>
+        
+        <ion-tab-button page="Notificaciones" href="/notificaciones">
+          <ion-icon aria-hidden="true" name="notifications" color="tertiary"></ion-icon>
+          <ion-label>Notificaciones</ion-label>
         </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>

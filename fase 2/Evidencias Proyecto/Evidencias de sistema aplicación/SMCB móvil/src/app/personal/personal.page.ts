@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { DatabaseService } from '../services/database.service';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-import { AuthService } from '../services/auth.service';
 
 interface Personal {
   id: string;
@@ -25,25 +24,10 @@ export class PersonalPage implements OnInit {
   selectedRol: string = '';
   selectedRango: string = '';
   private searchSubject = new BehaviorSubject<string>('');
-  userRole: string = '';
 
-  constructor(
-    private databaseService: DatabaseService,
-    private authService: AuthService
-  ) {
+  constructor(private databaseService: DatabaseService) {
     this.personales$ = this.databaseService.getCollection('personal') as Observable<Personal[]>;
     this.filteredPersonales$ = this.personales$;
-    this.getCurrentUserRole();
-  }
-
-  async getCurrentUserRole() {
-    this.authService.user$.subscribe(user => {
-      if (user) {
-        this.databaseService.getDocument('personal', user.uid).subscribe((userData: any) => {
-          this.userRole = userData?.rol || '';
-        });
-      }
-    });
   }
 
   ngOnInit() {

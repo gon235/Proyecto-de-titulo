@@ -16,8 +16,7 @@
                        [(ngModel)]="searchQuery"
                        (ionInput)="filterVehicles()">
         </ion-searchbar>
-        
-        <ion-card *ngIf="!['Bombero', 'Mecánico'].includes(userRole)">
+        <ion-card>
           <div class="ion-padding">
             <ion-button expand="block" color="tertiary" routerLink="/crearvehiculo">Crear vehículo</ion-button>
           </div>
@@ -41,7 +40,7 @@
         <ion-card>
           <div class="list-container" style="overflow-y: auto;">
             <ion-list [inset]="true">
-              <ion-item *ngFor="let vehicle of filteredVehicles$ | async" [routerLink]="['/perfilvehiculo', vehicle.id]" detail>
+              <ion-item *ngFor="let vehicle of filteredVehicles$ | async" [routerLink]="['/perfilvehiculo', vehicle.id]">
                 <ion-icon slot="start" name="car-outline"></ion-icon>
                 <ion-label>
                   <h2>{{ vehicle.nombrevehiculo }}</h2>
@@ -61,23 +60,20 @@
     <ion-tabs>
       <ion-tab-bar slot="bottom">
         <ion-tab-button page="Home" href="/home">
-          <ion-icon name="home" color="tertiary"></ion-icon>
+          <ion-icon aria-hidden="true" name="home" color="tertiary"></ion-icon>
           <ion-label>Inicio</ion-label>
         </ion-tab-button>
-
         <ion-tab-button page="personal" href="/personal">
-          <ion-icon name="person" color="tertiary"></ion-icon>
+          <ion-icon aria-hidden="true" name="person" color="tertiary"></ion-icon>
           <ion-label>Personal</ion-label>
         </ion-tab-button>
-
         <ion-tab-button page="vehiculos" href="/vehiculos">
-          <ion-icon name="car" color="tertiary"></ion-icon>
+          <ion-icon aria-hidden="true" name="car" color="tertiary"></ion-icon>
           <ion-label>Vehículos</ion-label>
         </ion-tab-button>
-
-        <ion-tab-button page="Mantenciones" href="/mantenciones">
-          <ion-icon name="build" color="tertiary"></ion-icon>
-          <ion-label>Mantenciones</ion-label>
+        <ion-tab-button page="Notificaciones" href="/notificaciones">
+          <ion-icon aria-hidden="true" name="notifications" color="tertiary"></ion-icon>
+          <ion-label>Notificaciones</ion-label>
         </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>
