@@ -29,6 +29,7 @@ interface Vehicle {
 export class HomePage implements OnInit {
   isWeb: boolean = false;   // Var for Web app detection
   mantenciones: Mantencion[] = [];
+  misMantenciones: Mantencion[] = []; // Agregar esta propiedad
   userPhotoUrl: string = 'assets/default-avatar.svg';
   userName: string = '';
   userData: any;
@@ -65,6 +66,7 @@ export class HomePage implements OnInit {
       map(vehicles => vehicles.filter(vehicle => vehicle.estado === 'En mantenimiento'))
     );
   
+    this.loadMisMantenciones(); // Agregar esta línea
   }
 
 /*
@@ -139,6 +141,23 @@ export class HomePage implements OnInit {
               .slice(0, 5);
           },
           error => console.error('Error loading mantenciones:', error)
+        );
+      }
+    });
+  }
+
+  loadMisMantenciones() {
+    this.authService.user$.subscribe(user => {
+      if (user) {
+        this.databaseService.getMantencionesByUser(user.uid).subscribe(
+          mantenciones => {
+            this.misMantenciones = mantenciones
+              .filter(m => m.estado !== 'Completa') // Filtrar mantenciones no completadas
+              .sort((a, b) => 
+                new Date(a.fechahora).getTime() - new Date(b.fechahora).getTime()
+              );
+          },
+          error => console.error('Error cargando mis mantenciones:', error)
         );
       }
     });

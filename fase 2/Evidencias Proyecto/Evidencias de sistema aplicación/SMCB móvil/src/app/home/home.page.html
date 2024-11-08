@@ -146,7 +146,7 @@
 <ion-content class="ion-padding" [fullscreen]="true">
   <br>
 
-  <ion-col class="ion-padding">
+    <ion-col class="ion-padding" *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
     <div class="ion-padding-start ion-padding-end">
       <ion-button color="tertiary" expand="block" size="large" routerLink="/crearmantencion">
         <ion-icon slot="start" name="add-circle"></ion-icon>
@@ -155,7 +155,7 @@
     </div>
   </ion-col>
   
-  <ion-col class="ion-padding">
+  <ion-col class="ion-padding" *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
     <div class="ion-padding-start ion-padding-end">
       <ion-button color="tertiary" expand="block" size="large" routerLink="/crearpersonal">
         <ion-icon slot="start" name="add-circle"></ion-icon>
@@ -163,8 +163,8 @@
       </ion-button>
     </div>
   </ion-col>
-
-  <ion-col class="ion-padding">
+  
+  <ion-col class="ion-padding" *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
     <div class="ion-padding-start ion-padding-end">
       <ion-button color="tertiary" expand="block" size="large" routerLink="/crearvehiculo">
         <ion-icon slot="start" name="add-circle"></ion-icon>
@@ -172,12 +172,35 @@
       </ion-button>
     </div>
   </ion-col>
-  <ion-card>
+
+  <ion-card *ngIf="userData?.rol === 'Mecánico'">
     <ion-text>
-      <h4 class="ion-padding-start ion-padding-end">Mantenciones pendientes</h4>
+      <h4 class="ion-padding">Mis mantenciones asignadas</h4>
     </ion-text>
     <ion-list>
-      <ion-item *ngFor="let mantencion of mantenciones" [routerLink]="['/mantencion-detalle', mantencion.id]">
+      <ion-item *ngFor="let mantencion of misMantenciones" [routerLink]="['/mantencion-detalle', mantencion.id]" detail>
+        <ion-icon slot="start" name="build"></ion-icon>
+        <ion-label>
+          <h2>{{ mantencion.nombremantencion }}</h2>
+          <p>Fecha: {{ formatDate(mantencion.fechahora) }}</p>
+          <p>Urgencia: {{ mantencion.nivelurgencia }}</p>
+        </ion-label>
+      </ion-item>
+      <ion-item *ngIf="misMantenciones.length === 0">
+        <ion-label>
+          <p>No tienes mantenciones pendientes asignadas</p>
+        </ion-label>
+      </ion-item>
+
+    </ion-list>
+  </ion-card>
+
+  <ion-card>
+    <ion-text>
+      <h4 class="ion-padding-start ion-padding-end">Próximas mantenciones pendientes</h4>
+    </ion-text>
+    <ion-list>
+      <ion-item *ngFor="let mantencion of mantenciones" [routerLink]="['/mantencion-detalle', mantencion.id]" detail>
         <ion-icon slot="start" name="time"></ion-icon>
         <ion-label>
           <h2>{{ mantencion.nombremantencion }}</h2>
@@ -193,23 +216,23 @@
     <ion-tabs>
       <ion-tab-bar slot="bottom">
         <ion-tab-button page="Home" href="/home">
-          <ion-icon aria-hidden="true" name="home" color="tertiary"></ion-icon>
+          <ion-icon name="home" color="tertiary"></ion-icon>
           <ion-label>Inicio</ion-label>
         </ion-tab-button>
     
         <ion-tab-button page="personal" href="/personal">
-          <ion-icon aria-hidden="true" name="person" color="tertiary"></ion-icon>
+          <ion-icon name="person" color="tertiary"></ion-icon>
           <ion-label>Personal</ion-label>
         </ion-tab-button>
     
         <ion-tab-button page="vehiculos" href="/vehiculos">
-          <ion-icon aria-hidden="true" name="car" color="tertiary"></ion-icon>
+          <ion-icon name="car" color="tertiary"></ion-icon>
           <ion-label>Vehículos</ion-label>
         </ion-tab-button>
-        
-        <ion-tab-button page="Notificaciones" href="/notificaciones">
-          <ion-icon aria-hidden="true" name="notifications" color="tertiary"></ion-icon>
-          <ion-label>Notificaciones</ion-label>
+
+        <ion-tab-button page="Mantenciones" href="/mantenciones">
+          <ion-icon name="build" color="tertiary"></ion-icon>
+          <ion-label>Mantenciones</ion-label>
         </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>

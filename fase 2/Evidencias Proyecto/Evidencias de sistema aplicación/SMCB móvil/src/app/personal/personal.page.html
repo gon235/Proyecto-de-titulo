@@ -15,6 +15,14 @@
                        [(ngModel)]="searchQuery"
                        (ionInput)="filterPersonales()">
         </ion-searchbar>
+        
+        <!-- <ion-card *ngIf="userRole !== 'Bombero'"> -->
+          <ion-card *ngIf="!['Bombero', 'Mecánico'].includes(userRole)">
+          <div class="ion-padding">
+            <ion-button expand="block" color="tertiary" routerLink="/crearpersonal">Crear personal</ion-button>
+          </div>
+        </ion-card>
+
         <ion-card>
           <div class="ion-padding">
           <ion-button expand="block" color="tertiary" routerLink="/crearpersonal">Crear personal</ion-button>
@@ -67,23 +75,30 @@
     <ion-tabs>
       <ion-tab-bar slot="bottom">
         <ion-tab-button page="Home" href="/home">
-          <ion-icon aria-hidden="true" name="home" color="tertiary"></ion-icon>
+          <ion-icon name="home" color="tertiary"></ion-icon>
           <ion-label>Inicio</ion-label>
         </ion-tab-button>
     
         <ion-tab-button page="personal" href="/personal">
-          <ion-icon aria-hidden="true" name="person" color="tertiary"></ion-icon>
+          <ion-icon name="person" color="tertiary"></ion-icon>
           <ion-label>Personal</ion-label>
         </ion-tab-button>
     
         <ion-tab-button page="vehiculos" href="/vehiculos">
-          <ion-icon aria-hidden="true" name="car" color="tertiary"></ion-icon>
+          <ion-icon name="car" color="tertiary"></ion-icon>
           <ion-label>Vehículos</ion-label>
         </ion-tab-button>
+<<<<<<< HEAD
         
         <ion-tab-button page="Notificaciones" href="/notificaciones">
           <ion-icon aria-hidden="true" name="notifications" color="tertiary"></ion-icon>
           <ion-label>Notificaciones</ion-label>
+=======
+
+        <ion-tab-button page="Mantenciones" href="/mantenciones">
+          <ion-icon name="build" color="tertiary"></ion-icon>
+          <ion-label>Mantenciones</ion-label>
+>>>>>>> efc38ba7 (Se agrega la capacidad de asignar una mantención a un mecánico, en el dashboard del mecánico ahora le muestra las mantenciones asignadas, se agrega un historial de mecánicos y un historial de notas/observaciones en la mantención)
         </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>
