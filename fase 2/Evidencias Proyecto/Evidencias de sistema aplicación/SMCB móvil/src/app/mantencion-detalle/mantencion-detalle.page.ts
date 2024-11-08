@@ -105,8 +105,12 @@ export class MantencionDetallePage implements OnInit {
   }
 
   toggleEdit() {
+    if (!this.canEdit) {
+      this.showNoPermissionAlert();
+      return;
+    }
+
     if (!this.isEditing) {
-      // Guardar una copia de los datos originales antes de entrar en modo edición
       this.originalMantencionData = { ...this.mantencion };
     } else {
       this.saveChanges();
@@ -117,7 +121,6 @@ export class MantencionDetallePage implements OnInit {
   cancelEdit() {
     this.isEditing = false;
     if (this.mantencion && this.originalMantencionData) {
-      // Restaurar los valores originales de la mantención
       this.mantencion.nombremantencion = this.originalMantencionData.nombremantencion;
       this.mantencion.nivelurgencia = this.originalMantencionData.nivelurgencia;
       this.mantencion.detalle = this.originalMantencionData.detalle;
@@ -126,12 +129,17 @@ export class MantencionDetallePage implements OnInit {
   }
 
   saveChanges() {
+    if (!this.canEdit) {
+      this.showNoPermissionAlert();
+      return;
+    }
+
     if (this.mantencion && this.mantencion.id) {
       this.databaseService.updateDocument('mantenciones', this.mantencion.id, this.mantencion)
         .then(() => {
           console.log('Cambios guardados exitosamente');
           this.isEditing = false;
-          this.router.navigate(['/mantencion-detalle', this.mantencion.id]); // Navegar de vuelta al detalle de la mantención
+          this.router.navigate(['/mantencion-detalle', this.mantencion.id]);
         })
         .catch((error) => {
           console.error('Error al guardar los cambios:', error);
@@ -140,6 +148,11 @@ export class MantencionDetallePage implements OnInit {
   }
 
   async deleteMantencion() {
+    if (!this.canEdit) {
+      this.showNoPermissionAlert();
+      return;
+    }
+
     const alert = await this.alertController.create({
       header: 'Confirmar eliminación',
       message: '¿Estás seguro de que quieres eliminar esta mantención? Esta acción no se puede deshacer.',

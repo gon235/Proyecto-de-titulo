@@ -1,20 +1,16 @@
-<ng-container *ngIf="isWeb; else mobileContent">
-  <!-- Web-specific HTML content -->
+<ng-container>
   <ion-header [translucent]="true">
-    <ion-toolbar>
-  
+    <ion-toolbar color="tertiary">
       <ion-buttons slot="start">
         <ion-button (click)="mostrarMenu()">
           <ion-icon slot="icon-only" name="menu-outline"></ion-icon>        
         </ion-button>
       </ion-buttons>
   
-      <ion-title>
-        Inicio
-      </ion-title>
+      <ion-title>Dashboard</ion-title>
   
       <ion-buttons slot="end">
-        <div [routerLink]="['/perfil', currentUserId]" style="display: flex; align-items: center; cursor: pointer;">
+        <div [routerLink]="['/perfil', currentUserId]" class="user-profile-container">
           <ion-text class="ion-padding-end">
             <ion-title>{{ userName }}</ion-title>
           </ion-text>
@@ -29,40 +25,38 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content class="Web-specific">
+  <ion-content>
     <div class="dashboard-container">
       <!-- Left Sidebar -->
       <div class="sidebar">
-        <ion-img src="assets/img/smcb.png" class="ion-padding-start ion-padding-end"></ion-img>
-        <ion-content style="height: 100vh; background: rgb(236, 6, 6);">
-          <div style="margin: auto; text-align: center; background: rgba(227, 7, 7, 0.979);">
-        <!-- <ion-item style="margin-top: 100px;"> </ion-item> -->
-
-
-            <ion-button expand="block" color="tertiary" class="menu-button" href="/vehiculos">
-              Vehículos
-            </ion-button>
-                          <!-- linkear a componentes graficos -->
-            <ion-button expand="block" color="tertiary" class="menu-button" href="/mantenciones"> 
-              Mantenciones
-            </ion-button>
-            <ion-button style="margin-bottom: 200px;" expand="block" color="tertiary" class="menu-button" href="/personal">
-              Personal
-            </ion-button>
-          </div>
-        </ion-content>
+        <div class="logo-container">
+          <ion-img src="assets/img/smcb.png"></ion-img>
+        </div>
+        <div class="menu-container">
+          <ion-button expand="block" color="tertiary" class="menu-button" href="/vehiculos">
+            <ion-icon name="car-outline" slot="start"></ion-icon>
+            Vehículos
+          </ion-button>
+          <ion-button expand="block" color="tertiary" class="menu-button" href="/mantenciones">
+            <ion-icon name="build-outline" slot="start"></ion-icon>
+            Mantenciones
+          </ion-button>
+          <ion-button expand="block" color="tertiary" class="menu-button" href="/personal">
+            <ion-icon name="people-outline" slot="start"></ion-icon>
+            Personal
+          </ion-button>
+        </div>
       </div>
   
       <!-- Main Content -->
       <div class="main-content">
         <!-- Top Chart Section -->
         <ion-card class="chart-card">
-          <ion-card-header>
-            <ion-card-title>Grafico mantenciones ultimos 30 dias</ion-card-title>
+          <ion-card-header color="tertiary">
+            <ion-card-title>Mantenciones últimos 30 días</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <div class="chart-container">
-              <!-- Aquí irá tu componente de gráfico -->
               <canvas id="maintenanceChart"></canvas>
             </div>
           </ion-card-content>
@@ -72,12 +66,11 @@
         <div class="bottom-grid">
           <!-- Calendar Section -->
           <ion-card class="calendar-card">
-            <ion-card-header>
-              <ion-card-title>Calendario Proximas mantenciones</ion-card-title>
+            <ion-card-header color="tertiary">
+              <ion-card-title>Próximas mantenciones</ion-card-title>
             </ion-card-header>
             <ion-card-content>
               <div class="calendar-grid">
-                <!-- Los días del calendario irán aquí -->
                 <div class="calendar-day" *ngFor="let day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]">
                   {{day}}
                 </div>
@@ -87,12 +80,13 @@
   
           <!-- Vehicle List Section -->
           <ion-card class="vehicles-card">
-            <ion-card-header>
-              <ion-card-title>lista de Vehiculos No disponibles</ion-card-title>
+            <ion-card-header color="tertiary">
+              <ion-card-title>Vehículos No disponibles</ion-card-title>
             </ion-card-header>
             <ion-card-content>
               <ion-list>
                 <ion-item *ngFor="let vehicle of filteredVehicles$ | async" [routerLink]="['/perfilvehiculo', vehicle.id]">
+                  <ion-icon name="car-sport-outline" slot="start" color="tertiary"></ion-icon>
                   <ion-label>
                     <h2>{{ vehicle.nombrevehiculo }}</h2>
                     <p>Patente: {{ vehicle.patente }} <br> Estado: {{ vehicle.estado }}</p>
@@ -105,137 +99,4 @@
       </div>
     </div>
   </ion-content>
-  <footer>
-    <p>Web Footer Content</p>
-  </footer>
 </ng-container>
-
-  <!-- Mobile-specific HTML ========================================================================================= content -->
-
-<ng-template #mobileContent>
-
-<ion-header [translucent]="true">
-  <ion-toolbar>
-
-    <ion-buttons slot="start">
-      <ion-button (click)="mostrarMenu()">
-        <ion-icon slot="icon-only" name="menu-outline"></ion-icon>        
-      </ion-button>
-    </ion-buttons>
-
-    <ion-title>
-      Inicio
-    </ion-title>
-
-    <ion-buttons slot="end">
-      <div [routerLink]="['/perfil', currentUserId]" style="display: flex; align-items: center; cursor: pointer;">
-        <ion-text class="ion-padding-end">
-          <strong>{{ userName }}</strong>
-        </ion-text>
-        <ion-avatar>
-          <img [src]="userPhotoUrl" 
-               (error)="userPhotoUrl = 'assets/default-avatar.svg'"
-               alt="Perfil"
-               onerror="this.src='assets/default-avatar.svg'">
-        </ion-avatar>
-      </div>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content class="ion-padding" [fullscreen]="true">
-  <br>
-
-    <ion-col class="ion-padding" *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
-    <div class="ion-padding-start ion-padding-end">
-      <ion-button color="tertiary" expand="block" size="large" routerLink="/crearmantencion">
-        <ion-icon slot="start" name="add-circle"></ion-icon>
-        Crear mantención
-      </ion-button>
-    </div>
-  </ion-col>
-  
-  <ion-col class="ion-padding" *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
-    <div class="ion-padding-start ion-padding-end">
-      <ion-button color="tertiary" expand="block" size="large" routerLink="/crearpersonal">
-        <ion-icon slot="start" name="add-circle"></ion-icon>
-        Crear personal
-      </ion-button>
-    </div>
-  </ion-col>
-  
-  <ion-col class="ion-padding" *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
-    <div class="ion-padding-start ion-padding-end">
-      <ion-button color="tertiary" expand="block" size="large" routerLink="/crearvehiculo">
-        <ion-icon slot="start" name="add-circle"></ion-icon>
-        Crear vehículo
-      </ion-button>
-    </div>
-  </ion-col>
-
-  <ion-card *ngIf="userData?.rol === 'Mecánico'">
-    <ion-text>
-      <h4 class="ion-padding">Mis mantenciones asignadas</h4>
-    </ion-text>
-    <ion-list>
-      <ion-item *ngFor="let mantencion of misMantenciones" [routerLink]="['/mantencion-detalle', mantencion.id]" detail>
-        <ion-icon slot="start" name="build"></ion-icon>
-        <ion-label>
-          <h2>{{ mantencion.nombremantencion }}</h2>
-          <p>Fecha: {{ formatDate(mantencion.fechahora) }}</p>
-          <p>Urgencia: {{ mantencion.nivelurgencia }}</p>
-        </ion-label>
-      </ion-item>
-      <ion-item *ngIf="misMantenciones.length === 0">
-        <ion-label>
-          <p>No tienes mantenciones pendientes asignadas</p>
-        </ion-label>
-      </ion-item>
-
-    </ion-list>
-  </ion-card>
-
-  <ion-card>
-    <ion-text>
-      <h4 class="ion-padding-start ion-padding-end">Próximas mantenciones pendientes</h4>
-    </ion-text>
-    <ion-list>
-      <ion-item *ngFor="let mantencion of mantenciones" [routerLink]="['/mantencion-detalle', mantencion.id]" detail>
-        <ion-icon slot="start" name="time"></ion-icon>
-        <ion-label>
-          <h2>{{ mantencion.nombremantencion }}</h2>
-          <p>{{ formatDate(mantencion.fechahora) }}</p>
-        </ion-label>
-      </ion-item>
-    </ion-list>
-  </ion-card>
-</ion-content>
-
-<ion-footer>
-  <ion-toolbar>
-    <ion-tabs>
-      <ion-tab-bar slot="bottom">
-        <ion-tab-button page="Home" href="/home">
-          <ion-icon name="home" color="tertiary"></ion-icon>
-          <ion-label>Inicio</ion-label>
-        </ion-tab-button>
-    
-        <ion-tab-button page="personal" href="/personal">
-          <ion-icon name="person" color="tertiary"></ion-icon>
-          <ion-label>Personal</ion-label>
-        </ion-tab-button>
-    
-        <ion-tab-button page="vehiculos" href="/vehiculos">
-          <ion-icon name="car" color="tertiary"></ion-icon>
-          <ion-label>Vehículos</ion-label>
-        </ion-tab-button>
-
-        <ion-tab-button page="Mantenciones" href="/mantenciones">
-          <ion-icon name="build" color="tertiary"></ion-icon>
-          <ion-label>Mantenciones</ion-label>
-        </ion-tab-button>
-      </ion-tab-bar>
-    </ion-tabs>
-  </ion-toolbar>
-</ion-footer>
-</ng-template>

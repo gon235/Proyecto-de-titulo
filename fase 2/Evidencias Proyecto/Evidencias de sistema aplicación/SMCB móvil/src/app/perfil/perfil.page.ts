@@ -4,6 +4,7 @@ import { DatabaseService } from '../services/database.service';
 import { StorageService } from '../services/storage.service';
 import { AlertController } from '@ionic/angular';
 import { LoadingController } from '@ionic/angular';
+import { AuthService } from '../services/auth.service';
 
 interface Personal {
   id: string;
@@ -27,13 +28,10 @@ export class PerfilPage implements OnInit {
   isEditing: boolean = false;
   originalPersonal: Personal | null = null;
   profileImage: File | null = null;
-<<<<<<< HEAD
-=======
   currentUserId: string | null = null;
   canEdit: boolean = false;
   isSupervisor: boolean = false;
   mantencionesList: any[] = [];
->>>>>>> efc38ba7 (Se agrega la capacidad de asignar una mantención a un mecánico, en el dashboard del mecánico ahora le muestra las mantenciones asignadas, se agrega un historial de mecánicos y un historial de notas/observaciones en la mantención)
 
   constructor(
     private route: ActivatedRoute,
@@ -41,13 +39,6 @@ export class PerfilPage implements OnInit {
     private databaseService: DatabaseService,
     private storageService: StorageService,
     private alertController: AlertController,
-<<<<<<< HEAD
-    private loadingCtrl: LoadingController
-  ) { }
-
-  ngOnInit() {
-    this.loadPersonalData();
-=======
     private loadingCtrl: LoadingController,
     private authService: AuthService,
 
@@ -61,7 +52,6 @@ export class PerfilPage implements OnInit {
         this.loadMantenciones();
       }
     });
->>>>>>> efc38ba7 (Se agrega la capacidad de asignar una mantención a un mecánico, en el dashboard del mecánico ahora le muestra las mantenciones asignadas, se agrega un historial de mecánicos y un historial de notas/observaciones en la mantención)
   }
 
   loadPersonalData() {
@@ -77,13 +67,11 @@ export class PerfilPage implements OnInit {
             
             // Asegurar que exista un rol por defecto
             if (!this.personal.rol) {
-              this.personal.rol = 'bombero';
+              this.personal.rol = 'Bombero';
             }
             
             // Guardar copia original de los datos
             this.originalPersonal = {...personal};
-<<<<<<< HEAD
-=======
   
             // Verificar permisos de edición
             if (this.currentUserId) {
@@ -106,7 +94,6 @@ export class PerfilPage implements OnInit {
             }
   
             // Cargar imagen de perfil si existe
->>>>>>> efc38ba7 (Se agrega la capacidad de asignar una mantención a un mecánico, en el dashboard del mecánico ahora le muestra las mantenciones asignadas, se agrega un historial de mecánicos y un historial de notas/observaciones en la mantención)
             if (this.personal.imagen) {
               this.loadImage(this.personal.imagen);
             } else {
@@ -146,18 +133,11 @@ export class PerfilPage implements OnInit {
         }
       );
     } else {
-<<<<<<< HEAD
-      console.error('No ID provided');
-    }
-  }
-
-=======
       console.error('No se proporcionó ID para cargar el perfil');
     }
   }
 
 
->>>>>>> efc38ba7 (Se agrega la capacidad de asignar una mantención a un mecánico, en el dashboard del mecánico ahora le muestra las mantenciones asignadas, se agrega un historial de mecánicos y un historial de notas/observaciones en la mantención)
   loadImage(imagePath: string) {
     if (!imagePath) {
       console.error('No image path provided');
@@ -205,7 +185,20 @@ export class PerfilPage implements OnInit {
   }
 
   editPersonal() {
+    if (!this.canEdit) {
+      this.showUnauthorizedAlert();
+      return;
+    }
     this.isEditing = true;
+  }
+
+  async showUnauthorizedAlert() {
+    const alert = await this.alertController.create({
+      header: 'Acceso Denegado',
+      message: 'No tienes permisos para editar este perfil.',
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
   cancelEdit() {
@@ -276,11 +269,9 @@ export class PerfilPage implements OnInit {
   async confirmDeletePersonal() {
     if (this.personal && this.personal.id) {
       try {
-        // Eliminar toda la carpeta de imágenes del usuario
         await this.storageService.deleteUserFolder(this.personal.id);
         console.log('Carpeta de imágenes eliminada correctamente');
   
-        // Eliminar el documento de Firestore
         await this.databaseService.deleteDocument('personal', this.personal.id);
         console.log('Personal profile deleted successfully');
   
