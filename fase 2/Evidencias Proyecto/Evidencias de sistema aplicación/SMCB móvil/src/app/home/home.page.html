@@ -12,7 +12,7 @@
       <ion-buttons slot="end">
         <div [routerLink]="['/perfil', currentUserId]" class="user-profile-container">
           <ion-text class="ion-padding-end">
-            <ion-title>{{ userName }}</ion-title>
+            <ion-title>Bienbenido {{ userName }}</ion-title>
           </ion-text>
           <ion-avatar>
             <img [src]="userPhotoUrl" 
@@ -70,11 +70,9 @@
               <ion-card-title>Próximas mantenciones</ion-card-title>
             </ion-card-header>
             <ion-card-content>
-              <div class="calendar-grid">
-                <div class="calendar-day" *ngFor="let day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]">
-                  {{day}}
-                </div>
-              </div>
+              <app-maintenance-calendar 
+  [mantenciones]="calendarMantenciones"
+></app-maintenance-calendar>
             </ion-card-content>
           </ion-card>
   

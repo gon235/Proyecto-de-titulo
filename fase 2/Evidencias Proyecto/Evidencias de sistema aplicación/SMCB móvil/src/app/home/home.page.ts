@@ -12,6 +12,8 @@ interface Mantencion {
   nombremantencion: string;
   fechahora: string;
   nivelurgencia: string;
+  estado: string;
+  nombrevehiculo: string;
 }
 
 interface Vehicle {
@@ -34,6 +36,9 @@ export class HomePage implements OnInit {
   userName: string = '';
   userData: any;
   currentUserId: string = '';
+  mantencionesPendientes: any[] = [];
+
+  calendarMantenciones: Mantencion[] = [];
 
   vehicles$: Observable<Vehicle[]>;
   filteredVehicles$: Observable<Vehicle[]>;
@@ -66,7 +71,8 @@ export class HomePage implements OnInit {
       map(vehicles => vehicles.filter(vehicle => vehicle.estado === 'En mantenimiento'))
     );
   
-    this.loadMisMantenciones(); // Agregar esta línea
+    this.loadMisMantenciones();
+    this.loadCalendarMantenciones(); // Agregar esta línea
   }
 
 /*
@@ -78,6 +84,36 @@ export class HomePage implements OnInit {
     );
   }
 */
+loadCalendarMantenciones() {
+  this.databaseService.getCollection('mantenciones').subscribe(
+    (mantenciones: Mantencion[]) => {
+      this.calendarMantenciones = mantenciones.map(mantencion => ({
+        ...mantencion,
+        fechahora: new Date(mantencion.fechahora).toISOString() // Asegurarse de que la fecha esté en formato correcto
+      }));
+    },
+    error => console.error('Error loading calendar mantenciones:', error)
+  );
+}
+
+loadMantencionesPendientes() {
+  const fechaActual = new Date();
+  const primerDiaMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), 1);
+  const ultimoDiaMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0);
+
+  this.databaseService.getCollection('mantenciones').subscribe(
+    (mantenciones: any[]) => {
+      this.mantencionesPendientes = mantenciones.filter(mantencion => {
+        const fechaMantencion = new Date(mantencion.fechahora);
+        return fechaMantencion >= primerDiaMes && 
+               fechaMantencion <= ultimoDiaMes && 
+               mantencion.estado === 'Pendiente';
+      }).sort((a, b) => new Date(a.fechahora).getTime() - new Date(b.fechahora).getTime());
+    },
+    error => console.error('Error al cargar mantenciones pendientes:', error)
+  );
+}
+
   loadUserPhoto() {
     console.log('Iniciando carga de foto de perfil');
     
