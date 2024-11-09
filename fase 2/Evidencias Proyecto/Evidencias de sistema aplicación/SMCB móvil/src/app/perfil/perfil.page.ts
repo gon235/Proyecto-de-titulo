@@ -81,7 +81,7 @@ export class PerfilPage implements OnInit {
                   
                   this.canEdit = 
                     this.currentUserId === this.personal?.id || 
-                    (currentUser?.rol && currentUser.rol !== 'Bombero');
+                    (currentUser?.rol === 'Supervisor');
                   
                   this.isSupervisor = currentUser?.rol === 'Supervisor';
                   

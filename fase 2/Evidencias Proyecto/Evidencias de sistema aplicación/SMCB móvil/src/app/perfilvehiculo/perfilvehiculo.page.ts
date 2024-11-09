@@ -56,7 +56,8 @@ export class PerfilvehiculoPage implements OnInit {
       if (user) {
         this.currentUserId = user.uid;
         this.databaseService.getDocument('personal', user.uid).subscribe((userData: any) => {
-          this.canEdit = userData?.rol !== 'Bombero';
+          // Only allow Supervisor role to edit
+          this.canEdit = userData?.rol === 'Supervisor';
           this.loadVehicleData();
         });
       }
@@ -125,7 +126,7 @@ export class PerfilvehiculoPage implements OnInit {
   async showUnauthorizedAlert() {
     const alert = await this.alertController.create({
       header: 'Acceso Denegado',
-      message: 'No tienes permisos para editar vehículos.',
+      message: 'Solo los supervisores pueden editar los perfiles de vehículos.',
       buttons: ['OK']
     });
     await alert.present();
