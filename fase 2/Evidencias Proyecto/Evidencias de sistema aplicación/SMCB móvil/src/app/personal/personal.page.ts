@@ -3,6 +3,7 @@ import { DatabaseService } from '../services/database.service';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
+import { StorageService } from '../services/storage.service';
 
 interface Personal {
   id: string;
@@ -26,10 +27,15 @@ export class PersonalPage implements OnInit {
   selectedRango: string = '';
   private searchSubject = new BehaviorSubject<string>('');
   userRole: string = '';
+  userPhotoUrl: string = 'assets/default-avatar.svg';
+  userName: string = '';
+  userData: any;
+  currentUserId: string = '';
 
   constructor(
     private databaseService: DatabaseService,
-    private authService: AuthService
+    private authService: AuthService,
+    private storageService: StorageService // Añadir esta línea
   ) {
     this.personales$ = this.databaseService.getCollection('personal') as Observable<Personal[]>;
     this.filteredPersonales$ = this.personales$;
@@ -51,6 +57,36 @@ export class PersonalPage implements OnInit {
       map(personales => personales.sort((a, b) => a.nombres.localeCompare(b.nombres)))
     );
     this.setupSearch();
+    this.loadUserPhoto();
+  }
+
+  loadUserPhoto() {
+    this.authService.user$.subscribe(user => {
+      if (user && user.uid) {
+        this.currentUserId = user.uid;
+        this.databaseService.getDocument('personal', user.uid).subscribe(
+          (personal: any) => {
+            if (personal) {
+              this.userName = `${personal.nombres}`;
+              this.userData = personal;
+  
+              if (personal.imagen) {
+                this.storageService.getFileUrl(personal.imagen).subscribe(
+                  (url: string) => {
+                    this.userPhotoUrl = url;
+                  },
+                  (error) => {
+                    this.userPhotoUrl = 'assets/default-avatar.svg';
+                  }
+                );
+              } else {
+                this.userPhotoUrl = 'assets/default-avatar.svg';
+              }
+            }
+          }
+        );
+      }
+    });
   }
 
   setupSearch() {

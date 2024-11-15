@@ -24,6 +24,10 @@ export class MantencionDetallePage implements OnInit {
   canComment: boolean = false;
   newComment: string = '';
   selectedFile: File | null = null;
+  // Nuevas propiedades para el perfil
+  userPhotoUrl: string = 'assets/default-avatar.svg';
+  userName: string = '';
+  currentUserId: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -35,6 +39,7 @@ export class MantencionDetallePage implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.loadUserPhoto();
     this.authService.user$.pipe(
       switchMap(user => {
         if (user) {
@@ -64,6 +69,34 @@ export class MantencionDetallePage implements OnInit {
         }
       );
     }
+  }
+
+  loadUserPhoto() {
+    this.authService.user$.subscribe(user => {
+      if (user && user.uid) {
+        this.currentUserId = user.uid;
+        this.databaseService.getDocument('personal', user.uid).subscribe(
+          (personal: any) => {
+            if (personal) {
+              this.userName = `${personal.nombres}`;
+              
+              if (personal.imagen) {
+                this.storageService.getFileUrl(personal.imagen).subscribe(
+                  (url: string) => {
+                    this.userPhotoUrl = url;
+                  },
+                  (error) => {
+                    this.userPhotoUrl = 'assets/default-avatar.svg';
+                  }
+                );
+              } else {
+                this.userPhotoUrl = 'assets/default-avatar.svg';
+              }
+            }
+          }
+        );
+      }
+    });
   }
 
   loadMantencionData() {
@@ -220,7 +253,6 @@ export class MantencionDetallePage implements OnInit {
           text: 'Aceptar',
           handler: async () => {
             try {
-              // Inicializar el arreglo de aceptaciones si no existe
               if (!this.mantencion.acceptances) {
                 this.mantencion.acceptances = [];
               }
@@ -246,7 +278,6 @@ export class MantencionDetallePage implements OnInit {
               });
               await successAlert.present();
               
-              // Recargar los datos
               this.loadMantencionData();
             } catch (error) {
               console.error('Error al aceptar la mantención:', error);

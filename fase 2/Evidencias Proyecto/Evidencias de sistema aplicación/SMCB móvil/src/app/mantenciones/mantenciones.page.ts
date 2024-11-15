@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DatabaseService } from '../services/database.service';
+import { AuthService } from '../services/auth.service';
+import { StorageService } from '../services/storage.service';
 
 @Component({
   selector: 'app-mantenciones',
@@ -9,18 +11,58 @@ import { DatabaseService } from '../services/database.service';
 export class MantencionesPage implements OnInit {
   mantenciones: any[] = [];
   mantencionesFiltradas: any[] = [];
-  mantencionesFiltradasOriginal: any[] = []; // Para mantener el filtro original
+  mantencionesFiltradasOriginal: any[] = [];
   contadorHistorialTotal: number = 0;
   contadorTotal: number = 0;
   contadorPendientes: number = 0;
   contadorCompletas: number = 0;
   filtroActual: string = 'todas';
   searchTerm: string = '';
+  
+  // Propiedades para el usuario
+  userPhotoUrl: string = 'assets/default-avatar.svg';
+  userName: string = '';
+  userData: any;
+  currentUserId: string = '';
 
-  constructor(private databaseService: DatabaseService) { }
+  constructor(
+    private databaseService: DatabaseService,
+    private authService: AuthService,
+    private storageService: StorageService
+  ) { }
 
   ngOnInit() {
     this.loadMantenciones();
+    this.loadUserPhoto();
+  }
+
+  loadUserPhoto() {
+    this.authService.user$.subscribe(user => {
+      if (user && user.uid) {
+        this.currentUserId = user.uid;
+        this.databaseService.getDocument('personal', user.uid).subscribe(
+          (personal: any) => {
+            if (personal) {
+              this.userName = `${personal.nombres}`;
+              this.userData = personal;
+
+              if (personal.imagen) {
+                this.storageService.getFileUrl(personal.imagen).subscribe(
+                  (url: string) => {
+                    this.userPhotoUrl = url;
+                  },
+                  (error) => {
+                    this.userPhotoUrl = 'assets/default-avatar.svg';
+                  }
+                );
+              } else {
+                this.userPhotoUrl = 'assets/default-avatar.svg';
+              }
+            }
+          }
+        );
+      }
+    });
   }
 
   loadMantenciones() {
@@ -39,109 +81,80 @@ export class MantencionesPage implements OnInit {
   actualizarContadores() {
     const fechaActual = new Date();
     const primerDiaMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), 1);
-    const ultimoDiaMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0, 23, 59, 59, 999);
+    const ultimoDiaMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0);
 
-    this.contadorHistorialTotal = this.mantenciones.length;
-
-    const mantencionesDelMes = this.mantenciones.filter(mantencion => {
-      const fechaMantencion = new Date(mantencion.fechahora);
+    // Contadores para el mes actual
+    this.contadorTotal = this.mantenciones.filter(m => {
+      const fechaMantencion = new Date(m.fechahora);
       return fechaMantencion >= primerDiaMes && fechaMantencion <= ultimoDiaMes;
-    });
+    }).length;
 
-    this.contadorTotal = mantencionesDelMes.length;
-    this.contadorPendientes = mantencionesDelMes.filter(m => m.estado === 'Pendiente').length;
-    this.contadorCompletas = mantencionesDelMes.filter(m => m.estado === 'Completa').length;
+    this.contadorPendientes = this.mantenciones.filter(m => 
+      m.estado !== 'Completa' && 
+      new Date(m.fechahora) >= primerDiaMes && 
+      new Date(m.fechahora) <= ultimoDiaMes
+    ).length;
+
+    this.contadorCompletas = this.mantenciones.filter(m => 
+      m.estado === 'Completa' && 
+      new Date(m.fechahora) >= primerDiaMes && 
+      new Date(m.fechahora) <= ultimoDiaMes
+    ).length;
+
+    // Contador histórico total
+    this.contadorHistorialTotal = this.mantenciones.length;
   }
 
-  filtrarMantenciones(tipo: string) {
-    this.filtroActual = tipo;
+  filtrarMantenciones(filtro: string) {
+    this.filtroActual = filtro;
     const fechaActual = new Date();
     const primerDiaMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), 1);
-    const ultimoDiaMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0, 23, 59, 59, 999);
+    const ultimoDiaMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0);
 
-    switch (tipo) {
+    switch (filtro) {
       case 'todasHistorial':
         this.mantencionesFiltradas = [...this.mantenciones];
         break;
       case 'todas':
-        this.mantencionesFiltradas = this.mantenciones.filter(mantencion => {
-          const fechaMantencion = new Date(mantencion.fechahora);
+        this.mantencionesFiltradas = this.mantenciones.filter(m => {
+          const fechaMantencion = new Date(m.fechahora);
           return fechaMantencion >= primerDiaMes && fechaMantencion <= ultimoDiaMes;
         });
         break;
       case 'pendientes':
-        this.mantencionesFiltradas = this.mantenciones.filter(mantencion => {
-          const fechaMantencion = new Date(mantencion.fechahora);
-          return fechaMantencion >= primerDiaMes && 
-                 fechaMantencion <= ultimoDiaMes && 
-                 mantencion.estado === 'Pendiente';
-        });
+        this.mantencionesFiltradas = this.mantenciones.filter(m => 
+          m.estado !== 'Completa' && 
+          new Date(m.fechahora) >= primerDiaMes && 
+          new Date(m.fechahora) <= ultimoDiaMes
+        );
         break;
       case 'completas':
-        this.mantencionesFiltradas = this.mantenciones.filter(mantencion => {
-          const fechaMantencion = new Date(mantencion.fechahora);
-          return fechaMantencion >= primerDiaMes && 
-                 fechaMantencion <= ultimoDiaMes && 
-                 mantencion.estado === 'Completa';
-        });
+        this.mantencionesFiltradas = this.mantenciones.filter(m => 
+          m.estado === 'Completa' && 
+          new Date(m.fechahora) >= primerDiaMes && 
+          new Date(m.fechahora) <= ultimoDiaMes
+        );
         break;
     }
-    // Guardamos una copia del filtro actual
+    
     this.mantencionesFiltradasOriginal = [...this.mantencionesFiltradas];
-    // Aplicamos la búsqueda si existe un término
     if (this.searchTerm) {
       this.buscarMantenciones();
     }
   }
 
   buscarMantenciones() {
-    if (!this.searchTerm.trim()) {
-      // Si no hay término de búsqueda, restauramos la lista original filtrada
+    if (!this.searchTerm) {
       this.mantencionesFiltradas = [...this.mantencionesFiltradasOriginal];
       return;
     }
 
-    const searchTermLower = this.searchTerm.toLowerCase().trim();
-    
-    this.mantencionesFiltradas = this.mantencionesFiltradasOriginal.filter(mantencion => {
-      // Normalizar los términos de búsqueda para el nivel de urgencia
-      const searchIncludes = (field: string) => field?.toLowerCase().includes(searchTermLower);
-      const nivelUrgenciaMatches = this.normalizarBusquedaUrgencia(mantencion.nivelurgencia, searchTermLower);
-
-      return searchIncludes(mantencion.nombremantencion) ||
-             searchIncludes(mantencion.nombrevehiculo) ||
-             searchIncludes(mantencion.estado) ||
-             searchIncludes(mantencion.detalle) ||
-             nivelUrgenciaMatches;
-    });
-  }
-
-  // Nueva función para normalizar la búsqueda de nivel de urgencia
-  normalizarBusquedaUrgencia(nivelUrgencia: string, searchTerm: string): boolean {
-    if (!nivelUrgencia) return false;
-    
-    const urgenciaLower = nivelUrgencia.toLowerCase();
-    
-    // Términos de búsqueda alternativos para cada nivel
-    const terminos = {
-      'nivel alto': ['alto', 'alta', 'urgente', 'nivel alto'],
-      'nivel medio': ['medio', 'media', 'normal', 'nivel medio'],
-      'nivel bajo': ['bajo', 'baja', 'leve', 'nivel bajo']
-    };
-
-    // Buscar coincidencias directas
-    if (urgenciaLower.includes(searchTerm)) {
-      return true;
-    }
-
-    // Buscar coincidencias en términos alternativos
-    for (const [nivel, aliases] of Object.entries(terminos)) {
-      if (urgenciaLower === nivel && aliases.some(alias => alias.includes(searchTerm))) {
-        return true;
-      }
-    }
-
-    return false;
+    const searchTermLower = this.searchTerm.toLowerCase();
+    this.mantencionesFiltradas = this.mantencionesFiltradasOriginal.filter(mantencion =>
+      mantencion.nombremantencion.toLowerCase().includes(searchTermLower) ||
+      mantencion.nombrevehiculo.toLowerCase().includes(searchTermLower) ||
+      mantencion.estado.toLowerCase().includes(searchTermLower)
+    );
   }
 
   limpiarBusqueda() {

@@ -18,10 +18,10 @@ interface Mantencion {
 })
 export class HomePage implements OnInit {
   mantenciones: Mantencion[] = [];
-  misMantenciones: Mantencion[] = []; // Agregar esta propiedad
+  misMantenciones: Mantencion[] = [];
   userPhotoUrl: string = 'assets/default-avatar.svg';
   userName: string = '';
-  userData: any; // Asegúrate de que esta variable captura los datos del usuario
+  userData: any;
   currentUserId: string = '';
 
   constructor(
@@ -37,6 +37,7 @@ export class HomePage implements OnInit {
     this.loadMisMantenciones(); // Agregar esta línea
   }
 
+  // Carga la foto de perfil del usuario
   loadUserPhoto() {
     console.log('Iniciando carga de foto de perfil');
 
@@ -90,6 +91,7 @@ export class HomePage implements OnInit {
     });
   }
 
+  // Carga las próximas 5 mantenciones generales
   loadMantenciones() {
     this.authService.user$.subscribe(user => {
       if (user) {
@@ -106,6 +108,7 @@ export class HomePage implements OnInit {
     });
   }
 
+  // Carga las mantenciones no completadas del usuario autenticado
   loadMisMantenciones() {
     this.authService.user$.subscribe(user => {
       if (user) {
@@ -127,6 +130,7 @@ export class HomePage implements OnInit {
     this.menuController.open();
   }
 
+  // Formatea la fecha y hora de la mantención
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, '0');
