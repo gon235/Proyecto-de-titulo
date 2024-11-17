@@ -25,6 +25,8 @@ export class HomePage implements OnInit {
   userData: any;
   currentUserId: string = '';
   darkMode: boolean = false;
+  calendarDays: any[] = [];
+  currentMonth: string = '';
 
 
   constructor(
@@ -48,7 +50,8 @@ export class HomePage implements OnInit {
   ngOnInit() {
     this.loadMantenciones();
     this.loadUserPhoto();
-    this.loadMisMantenciones(); // Agregar esta línea
+    this.loadMisMantenciones();
+    this.generateCalendar();
   }
 
   // Carga la foto de perfil del usuario
@@ -181,6 +184,70 @@ async signOut() {
   }
 }
 
+generateCalendar() {
+  const today = new Date();
+  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+  const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  
+  this.currentMonth = today.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+  
+  this.calendarDays = [];
+  
+  this.authService.user$.subscribe(user => {
+    if (user) {
+      this.databaseService.getCollection('mantenciones').subscribe(
+        (mantenciones: Mantencion[]) => {
+          const monthMantenciones = mantenciones.filter(m => {
+            const mDate = new Date(m.fechahora);
+            return mDate.getMonth() === today.getMonth() && 
+                   mDate.getFullYear() === today.getFullYear();
+          });
 
+          // Calcular días previos (ajustado para comenzar en lunes)
+          let prevMonthDays = firstDay.getDay() - 1;
+          if (prevMonthDays === -1) prevMonthDays = 6; // Si es domingo, mostrar 6 días previos
+          
+          const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+          for (let i = prevMonthDays - 1; i >= 0; i--) {
+            this.calendarDays.push({
+              day: prevMonth.getDate() - i,
+              isCurrentMonth: false,
+              isToday: false,
+              events: []
+            });
+          }
+          
+          // Días del mes actual con sus mantenciones
+          for (let i = 1; i <= lastDay.getDate(); i++) {
+            const currentDate = new Date(today.getFullYear(), today.getMonth(), i);
+            const dayMantenciones = monthMantenciones.filter(m => {
+              const mDate = new Date(m.fechahora);
+              return mDate.getDate() === i;
+            });
+
+            this.calendarDays.push({
+              day: i,
+              isCurrentMonth: true,
+              isToday: i === today.getDate(),
+              events: dayMantenciones
+            });
+          }
+          
+          // Días del siguiente mes para completar la última semana
+          const remainingDays = 42 - this.calendarDays.length;
+          for (let i = 1; i <= remainingDays; i++) {
+            this.calendarDays.push({
+              day: i,
+              isCurrentMonth: false,
+              isToday: false,
+              events: []
+            });
+          }
+        },
+        error => console.error('Error cargando mantenciones del calendario:', error)
+      );
+    }
+  });
+}
 
 }

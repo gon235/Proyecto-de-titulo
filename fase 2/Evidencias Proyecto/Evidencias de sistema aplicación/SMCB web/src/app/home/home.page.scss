@@ -193,13 +193,43 @@ ion-split-pane {
     }
   }
 
+  ion-card {
+    ion-card-header {
+      ion-card-title {
+        color: white;
+      }
+    }
+  }
+
   ion-split-pane {
     --border: 1px solid var(--ion-color-dark);
+  }
+
+  .calendar-container {
+    .calendar-grid {
+      .calendar-day {
+        background: var(--ion-color-medium-shade);
+        
+        span {
+          color: var(--ion-color-light);
+          
+          &.current-month {
+            color: white;
+          }
+        }
+        
+        &.today {
+          background: var(--ion-color-tertiary); 
+        }
+      }
+    }
   }
 
   .sidebar-footer {
     border-top-color: rgba(255,255,255,0.1);
   }
+
+  
 }
 
 // Estilos responsivos
@@ -211,5 +241,116 @@ ion-split-pane {
       max-width: 160px;
       padding: 20px 12px;
     }
+  }
+}
+
+// Estilo para el calendario
+.calendar-container {
+  max-width: 900px; // Ancho máximo del calendario
+  margin: 0 auto; // Centrar el calendario
+  padding: 8px;
+  
+  .calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 8px;
+    
+    div {
+      padding: 6px;
+      font-size: 12px;
+      color: var(--ion-color-medium);
+    }
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    
+    .calendar-day {
+      position: relative;
+      min-height: 80px;
+      padding: 4px;
+      border-radius: 8px;
+      background: var(--ion-color-light);
+
+      .badge-container {
+        position: absolute;
+        bottom: 2px;
+        left: 2px;
+        right: 2px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        max-height: 40px;
+        overflow-y: auto;
+        
+        .event-badge {
+          cursor: pointer;
+          font-size: 9px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          padding: 2px 4px;
+          margin: 0;
+
+          &:hover {
+            opacity: 0.7;
+          }
+        }
+      }
+      
+      .event-list {
+        position: absolute;
+        bottom: 2px;
+        left: 2px;
+        right: 2px;
+        max-height: 50px;
+        overflow-y: auto;
+        font-size: 10px;
+        
+        .event-item {
+          margin: 2px 0;
+          padding: 2px 4px;
+          border-radius: 3px;
+          color: white;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    
+      
+      span {
+        &.current-month {
+          color: var(--ion-color-dark);
+        }
+      }
+      
+      &.today {
+        background: var(--ion-color-tertiary);
+        color: white;
+        
+        span {
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+// Tamaño máximo para tabletas
+@media (min-width: 768px) {
+  .calendar-container {
+    max-width: 600px;
+  }
+}
+
+// Tamaño máximo para pantallas extra grandes
+@media (min-width: 1200px) {
+  .calendar-container {
+    max-width: 800px; 
   }
 }
