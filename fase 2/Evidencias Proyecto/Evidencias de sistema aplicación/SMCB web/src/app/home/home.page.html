@@ -118,29 +118,53 @@
         </ion-row>
 
         <ion-row>
-          <!-- Mantenciones Pendientes -->
-          <ion-col size="12" size-md="6">
+          <!-- Vehículos operativos -->
+          <ion-col size="12" size-md="3">
             <ion-card>
               <ion-card-header>
-                <ion-card-title>Próximas Mantenciones</ion-card-title>
+                <ion-card-title>Vehículos operativos</ion-card-title>
               </ion-card-header>
               <ion-card-content>
-                <ion-list>
-                  <ion-item *ngFor="let mantencion of mantenciones">
-                    <ion-label>
-                      <h2>{{mantencion.nombremantencion}}</h2>
-                      <p>Fecha: {{formatDate(mantencion.fechahora)}}</p>
-                    </ion-label>
-                    <ion-badge slot="end" [color]="getBadgeColor(mantencion.nivelurgencia)">
-                      {{mantencion.nivelurgencia}}
-                    </ion-badge>
-                  </ion-item>
+                <ion-list style="height: 554px; overflow-y: auto;">
+                  <ng-container *ngFor="let vehiculo of vehiculos | async">
+                    <ion-item *ngIf="vehiculo.estado === 'Operativo'"
+                              [routerLink]="['/perfilvehiculo', vehiculo.id]"
+                              detail="true">
+                      <ion-label>
+                        <h2>{{vehiculo.nombrevehiculo}}</h2>
+                        <p>Patente: {{vehiculo.patente}}</p>
+                      </ion-label>
+                    </ion-item>
+                  </ng-container>
                 </ion-list>
               </ion-card-content>
             </ion-card>
           </ion-col>
 
-          <!-- Mis Mantenciones -->
+          <!-- Vehículos en mantención -->
+          <ion-col size="12" size-md="3">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Vehículos en mantención</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-list style="height: 554px; overflow-y: auto;">
+                  <ng-container *ngFor="let vehiculo of vehiculos | async">
+                    <ion-item *ngIf="vehiculo.estado === 'En mantenimiento'"
+                              [routerLink]="['/perfilvehiculo', vehiculo.id]"
+                              detail="true">
+                      <ion-label>
+                        <h2>{{vehiculo.nombrevehiculo}}</h2>
+                        <p>Patente: {{vehiculo.patente}}</p>
+                      </ion-label>
+                    </ion-item>
+                  </ng-container>
+                </ion-list>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+
+          <!-- Calendario de mantenciones del mes -->
           <ion-col size="12" size-md="6">
             <ion-card>
               <ion-card-header>
@@ -167,7 +191,8 @@
                           *ngFor="let event of day.events"
                           [color]="getBadgeColor(event.nivelurgencia)"
                           class="event-badge"
-                          [title]="event.nombremantencion">
+                          [title]="event.nombremantencion"
+                          (click)="goToMantencionDetalle(event.id)">
                           {{event.nombremantencion}}
                         </ion-badge>
                       </div>
