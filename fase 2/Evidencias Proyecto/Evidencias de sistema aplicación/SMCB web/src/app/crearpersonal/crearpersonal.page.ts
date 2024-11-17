@@ -4,6 +4,7 @@ import { StorageService } from '../services/storage.service';
 import { AuthService } from '../services/auth.service';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-crearpersonal',
@@ -25,16 +26,34 @@ export class CrearpersonalPage implements OnInit {
   };
 
   selectedFile: File | null = null;
+  darkMode: boolean = false;
+  userData: any;
+  userPhotoUrl: string = 'assets/default-avatar.svg';
+  userName: string = '';
+  currentUserId: string = '';
 
   constructor(
     private databaseService: DatabaseService,
     private storageService: StorageService,
     private authService: AuthService,
+    private router: Router,
     private toastController: ToastController,
     private firestore: AngularFirestore
-  ) { }
+  ) {
+    const prefersDark = localStorage.getItem('darkMode');
+    if (prefersDark !== null) {
+      this.darkMode = prefersDark === 'true';
+      document.body.classList.toggle('dark', this.darkMode);
+    } else {
+      const prefersDarkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+      this.darkMode = prefersDarkMedia.matches;
+      document.body.classList.toggle('dark', this.darkMode);
+    }
+  }
 
   ngOnInit() {
+    this.loadUserData();
+    this.loadUserPhoto();
   }
 
   onFileSelected(event: any) {
@@ -46,19 +65,17 @@ export class CrearpersonalPage implements OnInit {
   }
 
   async addDatosPersonal() {
-        // Validar que todos los campos estén completos
-        if (!this.newDatoP.nombres || 
-          !this.newDatoP.apellidos || 
-          !this.newDatoP.numeroTelefono || 
-          !this.newDatoP.email || 
-          !this.newDatoP.password || 
-          !this.newDatoP.rango || 
-          !this.newDatoP.rol) {
-        await this.presentToast('Por favor complete todos los campos obligatorios');
-        return;
-      }
+    if (!this.newDatoP.nombres || 
+        !this.newDatoP.apellidos || 
+        !this.newDatoP.numeroTelefono || 
+        !this.newDatoP.email || 
+        !this.newDatoP.password || 
+        !this.newDatoP.rango || 
+        !this.newDatoP.rol) {
+      await this.presentToast('Por favor complete todos los campos obligatorios');
+      return;
+    }
     try {
-      // Check if the email is already registered
       const snapshot = await this.firestore.collection('personal')
         .ref.where('email', '==', this.newDatoP.email)
         .get();
@@ -68,14 +85,11 @@ export class CrearpersonalPage implements OnInit {
         return;
       }
 
-      // Usar el nuevo método de registro que no afecta la sesión actual
       const authResult = await this.authService.registerWithoutSignIn(this.newDatoP.email, this.newDatoP.password);
       const uid = authResult.user.uid;
       
-      // Añadir el uid al objeto newDatoP
       this.newDatoP.uid = uid;
   
-      // Si hay una imagen seleccionada, subirla a Storage usando el uid
       if (this.selectedFile) {
         const path = `personal/${uid}/profile.jpg`;
         try {
@@ -88,11 +102,9 @@ export class CrearpersonalPage implements OnInit {
         }
       }
   
-      // Eliminar la contraseña del objeto antes de guardarlo
       const datosParaGuardar = {...this.newDatoP};
       delete datosParaGuardar.password;
   
-      // Guardar los datos en Firestore usando el uid como ID del documento
       await this.databaseService.addDocumentWithId('personal', uid, datosParaGuardar);
       
       this.resetForm();
@@ -124,5 +136,72 @@ export class CrearpersonalPage implements OnInit {
       duration: 4000
     });
     toast.present();
+  }
+
+  toggleDarkMode(event: any) {
+    this.darkMode = event.detail.checked;
+    document.body.classList.toggle('dark', this.darkMode);
+    localStorage.setItem('darkMode', String(this.darkMode));
+  }
+
+  async signOut() {
+    try {
+      await this.authService.logout();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  }
+
+  loadUserData() {
+    this.authService.user$.subscribe(user => {
+      if (user) {
+        this.databaseService.getDocument('personal', user.uid).subscribe(
+          (personal: any) => {
+            if (personal) {
+              this.userData = personal;
+            }
+          },
+          (error) => {
+            console.error('Error al obtener datos del personal:', error);
+          }
+        );
+      }
+    });
+  }
+
+  loadUserPhoto() {
+    this.authService.user$.subscribe(user => {
+      if (user && user.uid) {
+        this.currentUserId = user.uid;
+        
+        this.databaseService.getDocument('personal', user.uid).subscribe(
+          (personal: any) => {
+            if (personal) {
+              this.userName = `${personal.nombres}`;
+              this.userData = personal;
+
+              if (personal.imagen) {
+                this.storageService.getFileUrl(personal.imagen).subscribe(
+                  (url: string) => {
+                    this.userPhotoUrl = url;
+                  },
+                  (error) => {
+                    console.error('Error al obtener URL de Storage:', error);
+                    this.userPhotoUrl = 'assets/default-avatar.svg';
+                  }
+                );
+              } else {
+                this.userPhotoUrl = 'assets/default-avatar.svg';
+              }
+            }
+          },
+          (error) => {
+            console.error('Error al obtener datos del personal:', error);
+            this.userPhotoUrl = 'assets/default-avatar.svg';
+          }
+        );
+      }
+    });
   }
 }

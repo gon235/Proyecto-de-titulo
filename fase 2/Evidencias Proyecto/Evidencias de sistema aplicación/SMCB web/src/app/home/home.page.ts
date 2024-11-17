@@ -24,6 +24,7 @@ export class HomePage implements OnInit {
   userName: string = '';
   userData: any;
   currentUserId: string = '';
+  darkMode: boolean = false;
 
 
   constructor(
@@ -164,8 +165,6 @@ export class HomePage implements OnInit {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   }
-
-  darkMode: boolean = false;
 
   toggleDarkMode(event: any) {
     this.darkMode = event.detail.checked;
