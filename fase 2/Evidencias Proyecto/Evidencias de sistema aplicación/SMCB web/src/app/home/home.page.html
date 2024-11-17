@@ -1,0 +1,155 @@
+<ion-split-pane contentId="main-content" when="md">
+  <!-- Sidebar -->
+  <ion-menu contentId="main-content">
+    <ion-header>
+
+    </ion-header>
+
+    <ion-content>
+      <ion-img  
+        [src]="darkMode ? 'assets/img/SMCB-dark-mode.svg' : 'assets/img/SMCB-normal.svg'" 
+        class="sidebar-logo">
+      </ion-img>
+      <ion-list lines="none">
+          <ion-menu-toggle auto-hide="false">
+          <!-- Dashboard -->
+          <ion-item routerLink="/home" routerDirection="root">
+            <ion-icon slot="start" name="home"></ion-icon>
+            <ion-label>Dashboard</ion-label>
+          </ion-item>
+
+          <!-- Crear Mantención -->
+          <ion-item routerLink="/crearmantencion" routerDirection="root" 
+                    *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
+            <ion-icon slot="start" name="add-circle"></ion-icon>
+            <ion-label>Crear Mantención</ion-label>
+          </ion-item>
+
+          <!-- Crear Vehículo -->
+          <ion-item routerLink="/crearvehiculo" routerDirection="root" 
+                    *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
+            <ion-icon slot="start" name="car"></ion-icon>
+            <ion-label>Crear Vehículo</ion-label>
+          </ion-item>
+
+          <!-- Crear Personal -->
+          <ion-item routerLink="/crearpersonal" routerDirection="root" 
+                    *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
+            <ion-icon slot="start" name="person-add"></ion-icon>
+            <ion-label>Crear Personal</ion-label>
+          </ion-item>
+        
+          <!-- Personal -->
+          <div class="sidebar-footer">
+          <ion-item routerLink="/personal" routerDirection="root">
+            <ion-icon slot="start" name="people"></ion-icon>
+            <ion-label>Personal</ion-label>
+          </ion-item>
+
+          <!-- Vehículos -->
+          <ion-item routerLink="/vehiculos" routerDirection="root">
+            <ion-icon slot="start" name="car-sport"></ion-icon>
+            <ion-label>Vehículos</ion-label>
+          </ion-item>
+
+          <!-- Mantenciones -->
+          <ion-item routerLink="/mantenciones" routerDirection="root">
+            <ion-icon slot="start" name="build"></ion-icon>
+            <ion-label>Mantenciones</ion-label>
+          </ion-item>
+        </div>
+        </ion-menu-toggle>
+
+        <!-- Footer options -->
+        <div class="sidebar-footer">
+        <br>
+          <ion-item>
+            <ion-icon slot="start" name="moon"></ion-icon>
+            <ion-label>Modo Oscuro</ion-label>
+            <ion-toggle [checked]="darkMode" (ionChange)="toggleDarkMode($event)"></ion-toggle>
+          </ion-item>
+
+          <ion-item (click)="signOut()" button>
+            <ion-icon slot="start" name="log-out"></ion-icon>
+            <ion-label>Cerrar Sesión</ion-label>
+          </ion-item>
+        </div>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <!-- Contenido Principal -->
+  <div class="ion-page" id="main-content">
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>Inicio</ion-title>
+        <ion-buttons slot="end">
+          <div [routerLink]="['/perfil', currentUserId]" style="display: flex; align-items: center; cursor: pointer;">
+            <ion-text class="ion-padding-end">
+              <strong>{{ userName }}</strong>
+            </ion-text>
+            <ion-avatar>
+              <img [src]="userPhotoUrl" 
+                   (error)="userPhotoUrl = 'assets/default-avatar.svg'"
+                   alt="Perfil">
+            </ion-avatar>
+          </div>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <ion-grid>
+        <ion-row>
+          <!-- Mantenciones Pendientes -->
+          <ion-col size="12" size-md="6">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Próximas Mantenciones</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-list>
+                  <ion-item *ngFor="let mantencion of mantenciones">
+                    <ion-label>
+                      <h2>{{mantencion.nombremantencion}}</h2>
+                      <p>Fecha: {{formatDate(mantencion.fechahora)}}</p>
+                    </ion-label>
+                    <ion-badge slot="end" [color]="getBadgeColor(mantencion.nivelurgencia)">
+                      {{mantencion.nivelurgencia}}
+                    </ion-badge>
+                  </ion-item>
+                </ion-list>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+
+          <!-- Mis Mantenciones -->
+          <ion-col size="12" size-md="6">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Mis Mantenciones</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-list>
+                  <ion-item *ngFor="let mantencion of misMantenciones">
+                    <ion-label>
+                      <h2>{{mantencion.nombremantencion}}</h2>
+                      <p>Fecha: {{formatDate(mantencion.fechahora)}}</p>
+                    </ion-label>
+                    <ion-badge slot="end" [color]="mantencion.nivelurgencia === 'Alta' ? 'danger' : 
+                                                  mantencion.nivelurgencia === 'Media' ? 'warning' : 'success'">
+                      {{mantencion.nivelurgencia}}
+                    </ion-badge>
+                  </ion-item>
+                </ion-list>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
+  </div>
+</ion-split-pane>

@@ -1,0 +1,173 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" color="tertiary"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Perfil del Vehículo
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ vehicle?.nombrevehiculo || 'Vehículo' }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-card *ngIf="!isEditing && vehicle">
+          <ion-card-header>
+            <ion-card-title>{{ vehicle.nombrevehiculo }}</ion-card-title>
+            <ion-card-subtitle>{{ vehicle.marca }} {{ vehicle.modelo }}</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="profile-image-container">
+              <ion-img [src]="imageUrl" [alt]="'Imagen del ' + vehicle.nombrevehiculo" *ngIf="imageUrl" class="profile-image"></ion-img>
+            </div>
+            <p *ngIf="!imageUrl">No hay imagen disponible</p>
+            <br>
+            <ion-item>
+              <ion-label position="floating">Estado</ion-label>
+              <ion-input [(ngModel)]="vehicle.estado" [disabled]="true"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Año</ion-label>
+              <ion-input [(ngModel)]="vehicle.anio" [disabled]="true"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Patente</ion-label>
+              <ion-input [(ngModel)]="vehicle.patente" [disabled]="true"></ion-input>
+            </ion-item>
+            <br>
+            <ion-button 
+              *ngIf="!isEditing && canEdit" 
+              class="ion-padding-start ion-padding-end" 
+              expand="block" 
+              color="tertiary" 
+              (click)="editVehicle()">
+              Editar
+            </ion-button>
+            <ion-button 
+              *ngIf="canEdit" 
+              class="ion-padding-start ion-padding-end" 
+              expand="block" 
+              color="danger" 
+              (click)="deleteVehicle()">
+              Eliminar vehículo
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card *ngIf="isEditing && vehicle">
+          <ion-card-header>
+            <ion-card-title>Editar vehículo</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              <ion-label position="floating">Estado</ion-label>
+              <ion-select [(ngModel)]="vehicle.estado">
+                <ion-select-option value="Operativo">Operativo</ion-select-option>
+                <ion-select-option value="En mantenimiento">En mantenimiento</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Nombre del vehículo</ion-label>
+              <ion-input [(ngModel)]="vehicle.nombrevehiculo"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-select name="marca" labelPlacement="stacked" [(ngModel)]="vehicle.marca" required>
+                <div slot="label">Marca (*)</div>
+                <ion-select-option value="Chevrolet">Chevrolet</ion-select-option>
+                <ion-select-option value="Ford">Hyundai</ion-select-option>
+                <ion-select-option value="Hyundai">Hyundai</ion-select-option>
+                <ion-select-option value="Iveco">Iveco</ion-select-option>
+                <ion-select-option value="Mercedes Benz">Mercedes Benz</ion-select-option>
+                <ion-select-option value="Nissan">Nissan</ion-select-option>
+                <ion-select-option value="Renault">Renault</ion-select-option>
+                <ion-select-option value="Scania">Scania</ion-select-option>
+                <ion-select-option value="Toyota">Toyota</ion-select-option>
+                <ion-select-option value="Volvo">Volvo</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Modelo</ion-label>
+              <ion-input [(ngModel)]="vehicle.modelo"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Año</ion-label>
+              <ion-input type="number" [(ngModel)]="vehicle.anio"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Patente</ion-label>
+              <ion-input [(ngModel)]="vehicle.patente"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Imagen del vehículo</ion-label>
+              <ion-input type="file" (change)="onFileSelected($event)"></ion-input>
+            </ion-item>
+            <ion-button 
+              class="ion-padding-start ion-padding-end" 
+              expand="block" 
+              color="success" 
+              (click)="saveVehicle()">
+              Guardar Cambios
+            </ion-button>
+            <ion-button 
+              class="ion-padding-start ion-padding-end" 
+              expand="block" 
+              color="medium" 
+              (click)="cancelEdit()">
+              Cancelar
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-list *ngIf="maintenances.length > 0">
+            <ion-list-header><h2>Mantenciones</h2></ion-list-header>
+            <ion-item *ngFor="let maintenance of maintenances" button [routerLink]="['/mantencion-detalle', maintenance.id]">
+              <ion-label>
+                <h2>{{ maintenance.nombremantencion }}</h2>
+                <p>{{ formatDate(maintenance.fechahora) }}</p>
+                <p>{{ maintenance.estado }}</p>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+          <p class="ion-padding" *ngIf="maintenances.length === 0">No se han encontrado registros de mantención.</p>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-tabs>
+      <ion-tab-bar slot="bottom">
+        <ion-tab-button page="Home" href="/home">
+          <ion-icon name="home" color="tertiary"></ion-icon>
+          <ion-label>Inicio</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button page="personal" href="/personal">
+          <ion-icon name="person" color="tertiary"></ion-icon>
+          <ion-label>Personal</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button page="vehiculos" href="/vehiculos">
+          <ion-icon name="car" color="tertiary"></ion-icon>
+          <ion-label>Vehículos</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button page="Mantenciones" href="/mantenciones">
+          <ion-icon name="build" color="tertiary"></ion-icon>
+          <ion-label>Mantenciones</ion-label>
+        </ion-tab-button>
+      </ion-tab-bar>
+    </ion-tabs>
+  </ion-toolbar>
+</ion-footer>

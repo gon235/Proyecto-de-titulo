@@ -1,0 +1,223 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" color="tertiary"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Detalle
+    </ion-title>
+    
+    <ion-buttons slot="end">
+      <div [routerLink]="['/perfil', currentUserId]" style="display: flex; align-items: center; cursor: pointer;">
+        <ion-text class="ion-padding-end">
+          <strong>{{ userName }}</strong>
+        </ion-text>
+        <ion-avatar>
+          <img [src]="userPhotoUrl" 
+               (error)="userPhotoUrl = 'assets/default-avatar.svg'"
+               alt="Perfil"
+               onerror="this.src='assets/default-avatar.svg'">
+        </ion-avatar>
+      </div>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ mantencion?.nombremantencion || 'Mantención' }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-card *ngIf="!isEditing && mantencion">
+          <ion-card-header>
+            <ion-card-title>{{ mantencion.nombremantencion }}</ion-card-title>
+            <ion-card-subtitle>{{ formatDate(mantencion.fechahora) }}</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              <ion-label>
+                <h2>Estado</h2>
+                <p>{{ mantencion.estado }}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>
+                <h2>Vehículo</h2>
+                <p>{{ mantencion.nombrevehiculo }}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item *ngIf="vehiculo">
+              <ion-label>
+                <h2>Marca</h2>
+                <p>{{ vehiculo.marca }}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item *ngIf="vehiculo">
+              <ion-label>
+                <h2>Modelo</h2>
+                <p>{{ vehiculo.modelo }}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>
+                <h2>Nivel de urgencia</h2>
+                <p>{{ mantencion.nivelurgencia }}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>
+                <h2>Detalle</h2>
+                <p>{{ mantencion.detalle }}</p>
+              </ion-label>
+            </ion-item>
+            <br>
+            <ion-button *ngIf="canEdit" class="ion-padding-start ion-padding-end" expand="block" color="tertiary" (click)="toggleEdit()">Editar</ion-button>
+            <ion-button *ngIf="canEdit" class="ion-padding-start ion-padding-end" expand="block" color="danger" [disabled]="!canEdit" (click)="deleteMantencion()">Eliminar mantención</ion-button>
+          </ion-card-content>
+        </ion-card>
+
+                <!-- Sección para editar mantención -->
+                <ion-card *ngIf="isEditing && mantencion">
+                  <ion-card-header>
+                    <ion-card-title>Editar mantención</ion-card-title>
+                  </ion-card-header>
+                  <ion-card-content>
+                    <ion-item>
+                      <ion-label position="floating">Nombre de mantención</ion-label>
+                      <ion-input [(ngModel)]="mantencion.nombremantencion"></ion-input>
+                    </ion-item>
+                    <ion-item>
+                      <ion-label position="floating">Estado</ion-label>
+                      <ion-select [(ngModel)]="mantencion.estado">
+                        <ion-select-option value="Pendiente">Pendiente</ion-select-option>
+                        <ion-select-option value="Completa">Completa</ion-select-option>
+                      </ion-select>
+                    </ion-item>
+                    <ion-item>
+                      <ion-label position="floating">Nivel de urgencia</ion-label>
+                      <ion-select [(ngModel)]="mantencion.nivelurgencia">
+                        <ion-select-option value="Nivel bajo">Bajo</ion-select-option>
+                        <ion-select-option value="Nivel medio">Medio</ion-select-option>
+                        <ion-select-option value="Nivel alto">Alto</ion-select-option>
+                      </ion-select>
+                    </ion-item>
+                    <ion-item>
+                      <ion-label position="floating">Detalle</ion-label>
+                      <ion-textarea [(ngModel)]="mantencion.detalle" rows="4"></ion-textarea>
+                    </ion-item>
+                    <br>
+                    <ion-button id="open-loading" class="ion-padding-start ion-padding-end" expand="block" color="success" (click)="saveChanges()">Guardar Cambios</ion-button>
+                    <ion-loading trigger="open-loading" message="Guardando" duration="900" spinner="circles"></ion-loading>
+                    <ion-button class="ion-padding-start ion-padding-end" expand="block" color="medium" (click)="cancelEdit()">Cancelar</ion-button>
+                  </ion-card-content>
+                </ion-card>
+
+        <!-- Reemplazar la card de historial de mecánicos con este nuevo código -->
+        <ion-card class="ion-padding">
+          <ion-card-header>
+            <ion-card-title>Historial de mecánicos</ion-card-title>
+          </ion-card-header>
+          
+          <!-- Botón de aceptar - ahora visible siempre que el usuario tenga permisos y la mantención no esté completa -->
+          <ion-button *ngIf="canAccept && mantencion?.estado !== 'Completa'" 
+                      class="ion-padding-start ion-padding-end" 
+                      expand="block" 
+                      color="success" 
+                      (click)="acceptMantencion()">
+            Aceptar Mantención
+          </ion-button>
+        
+          <ion-card-content>
+            <ion-list *ngIf="mantencion?.acceptances?.length > 0">
+              <ion-item *ngFor="let acceptance of mantencion.acceptances">
+                <ion-label>
+                  <h2>{{ acceptance.userName }}</h2>
+                  <p>{{ acceptance.rol }}</p>
+                  <p>{{ formatDate(acceptance.date) }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+            <p *ngIf="!mantencion?.acceptances?.length" class="ion-text-center">
+              No hay registros de mecánicos asignados
+            </p>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Historial de mantención</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <!-- Lista de comentarios existentes -->
+            <ion-list>
+              <ion-item *ngFor="let comment of mantencion?.comments">
+                <ion-label>
+                  <h2>{{ comment.userName }}</h2>
+                  <p>{{ comment.text }}</p>
+                  <p>{{ formatDate(comment.date) }}</p>
+                  <ion-img *ngIf="comment.imageUrl" [src]="comment.imageUrl" 
+                          (click)="viewFullImage(comment.imageUrl)"
+                          style="max-width: 100px; cursor: pointer;">
+                  </ion-img>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+
+            <!-- Sección para agregar comentarios (solo visible para Mecánicos y Supervisores) -->
+            <div *ngIf="canComment">
+              <ion-item>
+                <b><ion-label position="floating"><h2>Observaciones</h2></ion-label></b>
+                <br>
+                <ion-textarea placeholder="Escriba su observación aquí..." fill="outline" [(ngModel)]="newComment" rows="3"></ion-textarea>
+              </ion-item>
+              <ion-item>
+                <input type="file" (change)="onFileSelected($event)" accept="image/*">
+              </ion-item>
+              <ion-button expand="block" color="tertiary" (click)="addComment()" [disabled]="!newComment.trim()">
+                Publicar Observación
+              </ion-button>
+            </div>
+            
+            <!-- Mensaje informativo para otros roles -->
+            <div *ngIf="!canComment" class="ion-padding ion-text-center">
+              <p>Solo los Mecánicos y Supervisores pueden agregar comentarios.</p>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-tabs>
+      <ion-tab-bar slot="bottom">
+        <ion-tab-button page="Home" href="/home">
+          <ion-icon name="home" color="tertiary"></ion-icon>
+          <ion-label>Inicio</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button page="personal" href="/personal">
+          <ion-icon name="person" color="tertiary"></ion-icon>
+          <ion-label>Personal</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button page="vehiculos" href="/vehiculos">
+          <ion-icon name="car" color="tertiary"></ion-icon>
+          <ion-label>Vehículos</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button page="Mantenciones" href="/mantenciones">
+          <ion-icon name="build" color="tertiary"></ion-icon>
+          <ion-label>Mantenciones</ion-label>
+        </ion-tab-button>
+      </ion-tab-bar>
+    </ion-tabs>
+  </ion-toolbar>
+</ion-footer>
