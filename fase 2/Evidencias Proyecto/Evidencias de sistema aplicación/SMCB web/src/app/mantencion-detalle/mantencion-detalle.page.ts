@@ -24,10 +24,10 @@ export class MantencionDetallePage implements OnInit {
   canComment: boolean = false;
   newComment: string = '';
   selectedFile: File | null = null;
-  // Nuevas propiedades para el perfil
   userPhotoUrl: string = 'assets/default-avatar.svg';
   userName: string = '';
   currentUserId: string = '';
+  darkMode: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -36,7 +36,17 @@ export class MantencionDetallePage implements OnInit {
     private alertController: AlertController,
     private authService: AuthService,
     private storageService: StorageService
-  ) { }
+  ) {
+    const prefersDark = localStorage.getItem('darkMode');
+    if (prefersDark !== null) {
+      this.darkMode = prefersDark === 'true';
+      document.body.classList.toggle('dark', this.darkMode);
+    } else {
+      const prefersDarkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+      this.darkMode = prefersDarkMedia.matches;
+      document.body.classList.toggle('dark', this.darkMode);
+    }
+  }
 
   ngOnInit() {
     this.loadUserPhoto();
@@ -56,18 +66,7 @@ export class MantencionDetallePage implements OnInit {
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.databaseService.getDocument('mantenciones', id).subscribe(
-        (data) => {
-          this.mantencion = data;
-          if (!this.mantencion.estado) {
-            this.mantencion.estado = 'pendiente';
-          }
-          this.cargarDatosVehiculo();
-        },
-        (error) => {
-          console.error('Error fetching mantencion details:', error);
-        }
-      );
+      this.loadMantencionData();
     }
   }
 
@@ -330,5 +329,20 @@ export class MantencionDetallePage implements OnInit {
 
   viewFullImage(imageUrl: string) {
     window.open(imageUrl, '_blank');
+  }
+
+  toggleDarkMode(event: any) {
+    this.darkMode = event.detail.checked;
+    document.body.classList.toggle('dark', this.darkMode);
+    localStorage.setItem('darkMode', String(this.darkMode));
+  }
+
+  async signOut() {
+    try {
+      await this.authService.logout();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
   }
 }

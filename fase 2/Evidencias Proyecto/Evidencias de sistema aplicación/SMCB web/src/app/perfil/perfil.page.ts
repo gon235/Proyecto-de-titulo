@@ -32,6 +32,10 @@ export class PerfilPage implements OnInit {
   canEdit: boolean = false;
   isSupervisor: boolean = false;
   mantencionesList: any[] = [];
+  darkMode: boolean = false;
+  userRole: string = '';
+  userPhotoUrl: string = 'assets/default-avatar.svg';
+  userName: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -41,17 +45,50 @@ export class PerfilPage implements OnInit {
     private alertController: AlertController,
     private loadingCtrl: LoadingController,
     private authService: AuthService,
-
   ) { }
 
   ngOnInit() {
+    const prefersDark = localStorage.getItem('darkMode');
+    if (prefersDark !== null) {
+      this.darkMode = prefersDark === 'true';
+      document.body.classList.toggle('dark', this.darkMode);
+    } else {
+      const prefersDarkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+      this.darkMode = prefersDarkMedia.matches;
+      document.body.classList.toggle('dark', this.darkMode);
+    }
+
     this.authService.user$.subscribe(user => {
       this.currentUserId = user ? user.uid : null;
       this.loadPersonalData();
       if (this.currentUserId) {
         this.loadMantenciones();
+        this.loadUserData();
       }
     });
+  }
+
+  loadUserData() {
+    if (this.currentUserId) {
+      this.databaseService.getDocument('personal', this.currentUserId).subscribe(
+        (personal: any) => {
+          if (personal) {
+            this.userName = `${personal.nombres}`;
+            this.userRole = personal.rol;
+            if (personal.imagen) {
+              this.storageService.getFileUrl(personal.imagen).subscribe(
+                url => {
+                  this.userPhotoUrl = url;
+                },
+                error => {
+                  this.userPhotoUrl = 'assets/default-avatar.svg';
+                }
+              );
+            }
+          }
+        }
+      );
+    }
   }
 
   loadPersonalData() {
@@ -293,4 +330,20 @@ export class PerfilPage implements OnInit {
       }
     }
   }
+
+  toggleDarkMode(event: any) {
+    this.darkMode = event.detail.checked;
+    document.body.classList.toggle('dark', this.darkMode);
+    localStorage.setItem('darkMode', String(this.darkMode));
+  }
+
+  async signOut() {
+    try {
+      await this.authService.logout();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  }
+  
 }

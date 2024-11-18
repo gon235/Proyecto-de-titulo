@@ -41,6 +41,11 @@ export class PerfilvehiculoPage implements OnInit {
   vehicleImage: File | null = null;
   canEdit: boolean = false;
   currentUserId: string | null = null;
+  darkMode: boolean = false;
+  userRole: string = '';
+  userName: string = '';
+  userPhotoUrl: string = 'assets/default-avatar.svg';
+  userData: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -49,15 +54,42 @@ export class PerfilvehiculoPage implements OnInit {
     private storageService: StorageService,
     private alertController: AlertController,
     private authService: AuthService
-  ) { }
+  ) {
+    // Inicializar el modo oscuro
+    const prefersDark = localStorage.getItem('darkMode');
+    if (prefersDark !== null) {
+      this.darkMode = prefersDark === 'true';
+      document.body.classList.toggle('dark', this.darkMode);
+    } else {
+      const prefersDarkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+      this.darkMode = prefersDarkMedia.matches;
+      document.body.classList.toggle('dark', this.darkMode);
+    }
+  }
 
   ngOnInit() {
     this.authService.user$.subscribe(user => {
       if (user) {
         this.currentUserId = user.uid;
         this.databaseService.getDocument('personal', user.uid).subscribe((userData: any) => {
-          // Only allow Supervisor role to edit
+          this.userRole = userData?.rol || '';
+          this.userName = `${userData?.nombres}`;
+          this.userData = userData;
           this.canEdit = userData?.rol === 'Supervisor';
+          
+          if (userData?.imagen) {
+            this.storageService.getFileUrl(userData.imagen).subscribe(
+              (url: string) => {
+                this.userPhotoUrl = url;
+              },
+              (error) => {
+                this.userPhotoUrl = 'assets/default-avatar.svg';
+              }
+            );
+          } else {
+            this.userPhotoUrl = 'assets/default-avatar.svg';
+          }
+          
           this.loadVehicleData();
         });
       }
@@ -237,5 +269,21 @@ export class PerfilvehiculoPage implements OnInit {
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleString();
+  }
+
+
+  toggleDarkMode(event: any) {
+    this.darkMode = event.detail.checked;
+    document.body.classList.toggle('dark', this.darkMode);
+    localStorage.setItem('darkMode', String(this.darkMode));
+  }
+
+  async signOut() {
+    try {
+      await this.authService.logout();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
   }
 }
