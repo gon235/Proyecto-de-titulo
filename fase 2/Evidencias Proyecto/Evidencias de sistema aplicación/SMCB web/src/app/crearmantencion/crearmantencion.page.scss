@@ -21,20 +21,37 @@ ion-avatar {
   
   // Estilos del sidebar
   ion-menu {
-    --width: 280px;
-    transition: all 0.3s ease;
-    
-    ion-header {
-      ion-toolbar {
-        --background: transparent;
-        --border-style: none;
-        
-        ion-button {
-          --color: var(--ion-color-medium);
-          margin: 8px;
+    ion-list {
+      ion-item {
+        &.selected-item,
+        &.selected-item.item-active,
+        &.selected-item:active,
+        &.selected-item.ion-focused {
+          --background: rgba(var(--ion-color-tertiary-rgb), 0.2) !important;
+          --color: var(--ion-color-tertiary) !important;
+          font-weight: 500;
           
-          &:hover {
-            --color: var(--ion-color-tertiary);
+          ion-icon {
+            color: var(--ion-color-tertiary) !important;
+          }
+          
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--ion-color-tertiary);
+          }
+        }
+  
+        &:hover {
+          --background: rgba(var(--ion-color-tertiary-rgb), 0.1);
+          --color: var(--ion-color-tertiary);
+          
+          ion-icon {
+            color: var(--ion-color-tertiary);
           }
         }
       }
@@ -151,6 +168,12 @@ ion-avatar {
   :host-context(body.dark) {
     ion-menu {
       box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  
+      ion-list {
+        ion-item.selected-item {
+          --background: rgba(var(--ion-color-tertiary-rgb), 0.15);
+        }
+      }
       
       ion-item {
         &:hover {

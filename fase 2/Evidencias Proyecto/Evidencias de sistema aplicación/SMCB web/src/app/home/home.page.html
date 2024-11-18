@@ -13,27 +13,27 @@
       <ion-list lines="none">
           <ion-menu-toggle auto-hide="false">
           <!-- Dashboard -->
-          <ion-item routerLink="/home" routerDirection="root">
+          <ion-item routerLink="/home" routerDirection="root" routerLinkActive="selected-item">
             <ion-icon slot="start" name="home"></ion-icon>
             <ion-label>Dashboard</ion-label>
           </ion-item>
 
           <!-- Crear Mantención -->
-          <ion-item routerLink="/crearmantencion" routerDirection="root" 
+          <ion-item routerLink="/crearmantencion" routerDirection="root" routerLinkActive="selected-item"
                     *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
             <ion-icon slot="start" name="add-circle"></ion-icon>
             <ion-label>Crear Mantención</ion-label>
           </ion-item>
 
           <!-- Crear Vehículo -->
-          <ion-item routerLink="/crearvehiculo" routerDirection="root" 
+          <ion-item routerLink="/crearvehiculo" routerDirection="root" routerLinkActive="selected-item"
                     *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
             <ion-icon slot="start" name="car"></ion-icon>
             <ion-label>Crear Vehículo</ion-label>
           </ion-item>
 
           <!-- Crear Personal -->
-          <ion-item routerLink="/crearpersonal" routerDirection="root" 
+          <ion-item routerLink="/crearpersonal" routerDirection="root" routerLinkActive="selected-item"
                     *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
             <ion-icon slot="start" name="person-add"></ion-icon>
             <ion-label>Crear Personal</ion-label>
@@ -41,19 +41,19 @@
         
           <!-- Personal -->
           <div class="sidebar-footer">
-          <ion-item routerLink="/personal" routerDirection="root">
+          <ion-item routerLink="/personal" routerDirection="root" routerLinkActive="selected-item">
             <ion-icon slot="start" name="people"></ion-icon>
             <ion-label>Personal</ion-label>
           </ion-item>
 
           <!-- Vehículos -->
-          <ion-item routerLink="/vehiculos" routerDirection="root">
+          <ion-item routerLink="/vehiculos" routerDirection="root" routerLinkActive="selected-item">
             <ion-icon slot="start" name="car-sport"></ion-icon>
             <ion-label>Vehículos</ion-label>
           </ion-item>
 
           <!-- Mantenciones -->
-          <ion-item routerLink="/mantenciones" routerDirection="root">
+          <ion-item routerLink="/mantenciones" routerDirection="root" routerLinkActive="selected-item">
             <ion-icon slot="start" name="build"></ion-icon>
             <ion-label>Mantenciones</ion-label>
           </ion-item>
