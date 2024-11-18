@@ -108,10 +108,27 @@
           <ion-col size="12">
             <ion-card>
               <ion-card-header>
-                <ion-card-title>Ejemplo</ion-card-title>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <ion-card-title>Gráfico comparativo de mantenciones</ion-card-title>
+                  <ion-item lines="none" style="--padding-start: 0;">
+                    <ion-label style="white-space: nowrap; margin-right: 10px;">Filtrar por urgencia:</ion-label>
+                    <ion-select 
+                      [(ngModel)]="selectedUrgencia" 
+                      (ionChange)="onUrgenciaChange($event)"
+                      interface="popover"
+                      [interfaceOptions]="{ backdropDismiss: true }">
+                      <ion-select-option value="todos">Todos</ion-select-option>
+                      <ion-select-option value="Nivel alto">Nivel Alto</ion-select-option>
+                      <ion-select-option value="Nivel medio">Nivel Medio</ion-select-option>
+                      <ion-select-option value="Nivel bajo">Nivel Bajo</ion-select-option>
+                    </ion-select>
+                  </ion-item>
+                </div>
               </ion-card-header>
               <ion-card-content>
-                
+                <div style="position: relative; height: 25vh; width: 100%;">
+                  <canvas id="mantencionesChart"></canvas>
+                </div>
               </ion-card-content>
             </ion-card>
           </ion-col>
@@ -184,7 +201,10 @@
                   </div>
                   <!-- Días del mes -->
                   <div class="calendar-grid">
-                    <div class="calendar-day" *ngFor="let day of calendarDays" [class.today]="day.isToday">
+                    <div class="calendar-day" 
+                         *ngFor="let day of calendarDays" 
+                         [class.today]="day.isToday"
+                         [class.current-month]="day.isCurrentMonth">
                       <span [class.current-month]="day.isCurrentMonth">{{day.day}}</span>
                       <div class="badge-container" *ngIf="day.events?.length">
                         <ion-badge 

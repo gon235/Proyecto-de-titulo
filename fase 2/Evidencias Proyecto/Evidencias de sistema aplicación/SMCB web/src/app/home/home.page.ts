@@ -5,6 +5,9 @@ import { AuthService } from '../services/auth.service';
 import { StorageService } from '../services/storage.service';
 import { Router } from '@angular/router';
 import { Subscription, Observable } from 'rxjs';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 interface Mantencion {
   id: string;
@@ -30,6 +33,8 @@ export class HomePage implements OnInit, OnDestroy {
   calendarDays: any[] = [];
   currentMonth: string = '';
   vehiculos: Observable<any[]>;
+  mantencionesChart: any;
+  selectedUrgencia: string = 'todos';
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -52,7 +57,6 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // Realizar una única suscripción al usuario autenticado
     const userSub = this.authService.user$.subscribe(user => {
       if (user && user.uid) {
         this.currentUserId = user.uid;
@@ -60,8 +64,8 @@ export class HomePage implements OnInit, OnDestroy {
         this.loadMantenciones();
         this.loadMisMantenciones(user.uid);
         this.generateCalendar();
+        this.createMantencionesChart();
       } else {
-        // Manejar el caso en que no hay usuario autenticado
         this.userPhotoUrl = 'assets/default-avatar.svg';
         this.userName = '';
       }
@@ -70,9 +74,93 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Cancelar todas las suscripciones cuando el componente se destruya
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.subscriptions = [];
+    if (this.mantencionesChart) {
+      this.mantencionesChart.destroy();
+    }
+  }
+
+  createMantencionesChart() {
+    const canvas = document.getElementById('mantencionesChart') as HTMLCanvasElement;
+    if (!canvas) return;
+  
+    if (this.mantencionesChart) {
+      this.mantencionesChart.destroy();
+    }
+  
+    const currentDate = new Date();
+    const months: string[] = [];
+    const monthsData = [];
+  
+    // Obtener datos de los últimos 6 meses
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      months.push(date.toLocaleString('es-ES', { month: 'short' }));
+    }
+  
+    const chartSub = this.databaseService.getCollection('mantenciones').subscribe(mantenciones => {
+      // Calcular datos para cada mes
+      const data = months.map((_, index) => {
+        const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - (5 - index), 1);
+        return mantenciones.filter(m => {
+          const mDate = new Date(m.fechahora);
+          return mDate.getMonth() === date.getMonth() && 
+                 mDate.getFullYear() === date.getFullYear() &&
+                 (this.selectedUrgencia === 'todos' || m.nivelurgencia === this.selectedUrgencia);
+        }).length;
+      });
+  
+      this.mantencionesChart = new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels: months,
+          datasets: [{
+            label: 'Mantenciones',
+            data: data,
+            borderColor: this.darkMode ? 'rgba(75, 192, 192, 1)' : 'rgba(54, 162, 235, 1)',
+            backgroundColor: this.darkMode ? 'rgba(75, 192, 192, 0.2)' : 'rgba(54, 162, 235, 0.2)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: this.darkMode ? 'rgba(75, 192, 192, 1)' : 'rgba(54, 162, 235, 1)',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              display: true
+            },
+            title: {
+              display: true,
+              text: 'Tendencia de mantenciones - Últimos 6 meses'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          }
+        }
+      });
+    });
+  
+    this.subscriptions.push(chartSub);
+  }
+
+  onUrgenciaChange(event: any) {
+    this.selectedUrgencia = event.detail.value;
+    this.createMantencionesChart();
   }
 
   // Carga la foto de perfil del usuario

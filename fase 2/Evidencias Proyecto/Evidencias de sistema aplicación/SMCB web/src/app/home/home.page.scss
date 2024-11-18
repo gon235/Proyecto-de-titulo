@@ -290,8 +290,8 @@ ion-split-pane {
 
 // Estilo para el calendario
 .calendar-container {
-  max-width: 900px; // Ancho máximo del calendario
-  margin: 0 auto; // Centrar el calendario
+  max-width: 900px;
+  margin: 0 auto;
   padding: 8px;
   
   .calendar-header {
@@ -318,7 +318,22 @@ ion-split-pane {
       min-height: 80px;
       padding: 4px;
       border-radius: 8px;
-      background: var(--ion-color-light);
+      background: var(--ion-color-light-shade);
+      transition: background-color 0.2s ease;
+
+      // Estilo para días que no son del mes actual
+      &:not(.current-month) {
+        opacity: 0.4;
+        background: var(--ion-color-light-shade);
+        
+        span {
+          color: var(--ion-color-medium);
+        }
+        
+        .badge-container {
+          opacity: 0.7;
+        }
+      }
 
       .badge-container {
         position: absolute;
@@ -345,27 +360,6 @@ ion-split-pane {
           }
         }
       }
-      
-      .event-list {
-        position: absolute;
-        bottom: 2px;
-        left: 2px;
-        right: 2px;
-        max-height: 50px;
-        overflow-y: auto;
-        font-size: 10px;
-        
-        .event-item {
-          margin: 2px 0;
-          padding: 2px 4px;
-          border-radius: 3px;
-          color: white;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-      }
-    
       
       span {
         &.current-month {
