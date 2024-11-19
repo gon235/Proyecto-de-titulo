@@ -91,59 +91,99 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   createMantencionesChart() {
-    // 1. Obtener el canvas
     const canvas = document.getElementById('mantencionesChart') as HTMLCanvasElement;
     if (!canvas) return;
   
-    // 2. Destruir el gráfico existente si hay uno
     if (this.mantencionesChart) {
       this.mantencionesChart.destroy();
-      this.mantencionesChart = null; // Importante limpiar la referencia
+      this.mantencionesChart = null;
     }
   
-    // 3. Preparar datos
     const currentDate = new Date();
     const months: string[] = [];
   
-    // Obtener datos de los últimos 6 meses
     for (let i = 5; i >= 0; i--) {
       const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
       months.push(date.toLocaleString('es-ES', { month: 'short' }));
     }
   
-    // 4. Crear nuevo gráfico con los datos actualizados
     const chartSub = this.databaseService.getCollection('mantenciones').subscribe({
       next: (mantenciones) => {
-        // Calcular datos para cada mes
-        const data = months.map((_, index) => {
+        const nivelesUrgencia = ['Nivel alto', 'Nivel medio', 'Nivel bajo'];
+        const datasets = nivelesUrgencia.map(nivel => {
+          const data = months.map((_, index) => {
+            const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - (5 - index), 1);
+            return mantenciones.filter(m => {
+              const mDate = new Date(m.fechahora);
+              return mDate.getMonth() === date.getMonth() && 
+                     mDate.getFullYear() === date.getFullYear() &&
+                     (this.selectedUrgencia === 'todos' || this.selectedUrgencia === nivel) &&
+                     m.nivelurgencia === nivel;
+            }).length;
+          });
+  
+          const colors: Record<string, { border: string; background: string }> = {
+            'Nivel alto': {
+              border: 'rgba(255, 99, 132, 1)',
+              background: 'rgba(255, 99, 132, 0.2)'
+            },
+            'Nivel medio': {
+              border: 'rgba(255, 206, 86, 1)',
+              background: 'rgba(255, 206, 86, 0.2)'
+            },
+            'Nivel bajo': {
+              border: 'rgba(75, 192, 192, 1)',
+              background: 'rgba(75, 192, 192, 0.2)'
+            }
+          };
+  
+          return {
+            label: nivel,
+            data: data,
+            borderColor: colors[nivel].border,
+            backgroundColor: colors[nivel].background,
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: colors[nivel].border,
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6
+          };
+        });
+  
+        // Agregar dataset para el total de mantenciones
+        const totalData = months.map((_, index) => {
           const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - (5 - index), 1);
           return mantenciones.filter(m => {
             const mDate = new Date(m.fechahora);
             return mDate.getMonth() === date.getMonth() && 
                    mDate.getFullYear() === date.getFullYear() &&
-                   (this.selectedUrgencia === 'todos' || m.nivelurgencia === this.selectedUrgencia);
+                   (this.selectedUrgencia === 'todos' || this.selectedUrgencia === m.nivelurgencia);
           }).length;
         });
   
-        // 5. Crear configuración del gráfico
+        datasets.push({
+          label: 'Total mantenciones',
+          data: totalData,
+          borderColor: 'rgba(153, 102, 255, 1)',
+          backgroundColor: 'rgba(153, 102, 255, 0.2)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: 'rgba(153, 102, 255, 1)',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        });
+  
         const config = {
           type: 'line',
           data: {
             labels: months,
-            datasets: [{
-              label: 'Mantenciones',
-              data: data,
-              borderColor: this.darkMode ? 'rgba(75, 192, 192, 1)' : 'rgba(54, 162, 235, 1)',
-              backgroundColor: this.darkMode ? 'rgba(75, 192, 192, 0.2)' : 'rgba(54, 162, 235, 0.2)',
-              borderWidth: 2,
-              fill: true,
-              tension: 0.4,
-              pointBackgroundColor: this.darkMode ? 'rgba(75, 192, 192, 1)' : 'rgba(54, 162, 235, 1)',
-              pointBorderColor: '#fff',
-              pointBorderWidth: 2,
-              pointRadius: 4,
-              pointHoverRadius: 6
-            }]
+            datasets: datasets
           },
           options: {
             responsive: true,
@@ -155,7 +195,7 @@ export class HomePage implements OnInit, OnDestroy {
               },
               title: {
                 display: true,
-                text: 'Tendencia de mantenciones - Últimos 6 meses'
+                text: 'Tendencia de mantenciones por nivel de urgencia'
               }
             },
             scales: {
@@ -169,7 +209,6 @@ export class HomePage implements OnInit, OnDestroy {
           }
         };
   
-        // 6. Crear nuevo gráfico
         this.mantencionesChart = new Chart(canvas, config as any);
       },
       error: (error) => {
@@ -177,7 +216,6 @@ export class HomePage implements OnInit, OnDestroy {
       }
     });
   
-    // 7. Agregar suscripción al array de suscripciones
     this.subscriptions.push(chartSub);
   }
 
