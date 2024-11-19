@@ -36,6 +36,7 @@ export class HomePage implements OnInit, OnDestroy {
   mantencionesChart: any;
   selectedUrgencia: string = 'todos';
   private subscriptions: Subscription[] = [];
+  private calendarSubscription: Subscription | null = null;
 
   constructor(
     private databaseService: DatabaseService,
@@ -74,24 +75,35 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-    this.subscriptions = [];
+    // Destruir el gráfico si existe
     if (this.mantencionesChart) {
       this.mantencionesChart.destroy();
+      this.mantencionesChart = null;
     }
+  
+    // Cancelar todas las suscripciones del calendario
+    if (this.calendarSubscription) {
+      this.calendarSubscription.unsubscribe();
+    }
+    
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions = [];
   }
 
   createMantencionesChart() {
+    // 1. Obtener el canvas
     const canvas = document.getElementById('mantencionesChart') as HTMLCanvasElement;
     if (!canvas) return;
   
+    // 2. Destruir el gráfico existente si hay uno
     if (this.mantencionesChart) {
       this.mantencionesChart.destroy();
+      this.mantencionesChart = null; // Importante limpiar la referencia
     }
   
+    // 3. Preparar datos
     const currentDate = new Date();
     const months: string[] = [];
-    const monthsData = [];
   
     // Obtener datos de los últimos 6 meses
     for (let i = 5; i >= 0; i--) {
@@ -99,62 +111,73 @@ export class HomePage implements OnInit, OnDestroy {
       months.push(date.toLocaleString('es-ES', { month: 'short' }));
     }
   
-    const chartSub = this.databaseService.getCollection('mantenciones').subscribe(mantenciones => {
-      // Calcular datos para cada mes
-      const data = months.map((_, index) => {
-        const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - (5 - index), 1);
-        return mantenciones.filter(m => {
-          const mDate = new Date(m.fechahora);
-          return mDate.getMonth() === date.getMonth() && 
-                 mDate.getFullYear() === date.getFullYear() &&
-                 (this.selectedUrgencia === 'todos' || m.nivelurgencia === this.selectedUrgencia);
-        }).length;
-      });
+    // 4. Crear nuevo gráfico con los datos actualizados
+    const chartSub = this.databaseService.getCollection('mantenciones').subscribe({
+      next: (mantenciones) => {
+        // Calcular datos para cada mes
+        const data = months.map((_, index) => {
+          const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - (5 - index), 1);
+          return mantenciones.filter(m => {
+            const mDate = new Date(m.fechahora);
+            return mDate.getMonth() === date.getMonth() && 
+                   mDate.getFullYear() === date.getFullYear() &&
+                   (this.selectedUrgencia === 'todos' || m.nivelurgencia === this.selectedUrgencia);
+          }).length;
+        });
   
-      this.mantencionesChart = new Chart(canvas, {
-        type: 'line',
-        data: {
-          labels: months,
-          datasets: [{
-            label: 'Mantenciones',
-            data: data,
-            borderColor: this.darkMode ? 'rgba(75, 192, 192, 1)' : 'rgba(54, 162, 235, 1)',
-            backgroundColor: this.darkMode ? 'rgba(75, 192, 192, 0.2)' : 'rgba(54, 162, 235, 0.2)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.4,
-            pointBackgroundColor: this.darkMode ? 'rgba(75, 192, 192, 1)' : 'rgba(54, 162, 235, 1)',
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2,
-            pointRadius: 4,
-            pointHoverRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'top',
-              display: true
-            },
-            title: {
-              display: true,
-              text: 'Tendencia de mantenciones - Últimos 6 meses'
-            }
+        // 5. Crear configuración del gráfico
+        const config = {
+          type: 'line',
+          data: {
+            labels: months,
+            datasets: [{
+              label: 'Mantenciones',
+              data: data,
+              borderColor: this.darkMode ? 'rgba(75, 192, 192, 1)' : 'rgba(54, 162, 235, 1)',
+              backgroundColor: this.darkMode ? 'rgba(75, 192, 192, 0.2)' : 'rgba(54, 162, 235, 0.2)',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.4,
+              pointBackgroundColor: this.darkMode ? 'rgba(75, 192, 192, 1)' : 'rgba(54, 162, 235, 1)',
+              pointBorderColor: '#fff',
+              pointBorderWidth: 2,
+              pointRadius: 4,
+              pointHoverRadius: 6
+            }]
           },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                stepSize: 1
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'top',
+                display: true
+              },
+              title: {
+                display: true,
+                text: 'Tendencia de mantenciones - Últimos 6 meses'
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  stepSize: 1
+                }
               }
             }
           }
-        }
-      });
+        };
+  
+        // 6. Crear nuevo gráfico
+        this.mantencionesChart = new Chart(canvas, config as any);
+      },
+      error: (error) => {
+        console.error('Error al cargar datos para el gráfico:', error);
+      }
     });
   
+    // 7. Agregar suscripción al array de suscripciones
     this.subscriptions.push(chartSub);
   }
 
@@ -263,6 +286,11 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   generateCalendar() {
+    // Cancelar suscripción anterior si existe
+    if (this.calendarSubscription) {
+      this.calendarSubscription.unsubscribe();
+    }
+
     // Reiniciar los días del calendario
     this.calendarDays = [];
 
@@ -272,17 +300,20 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.currentMonth = today.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
 
-    const mantencionesSub = this.databaseService.getCollection('mantenciones').subscribe(
+    this.calendarSubscription = this.databaseService.getCollection('mantenciones').subscribe(
       (mantenciones: Mantencion[]) => {
+        // Limpiar el array antes de agregar nuevos días
+        this.calendarDays = [];
+
         const monthMantenciones = mantenciones.filter(m => {
           const mDate = new Date(m.fechahora);
           return mDate.getMonth() === today.getMonth() && 
                  mDate.getFullYear() === today.getFullYear();
         });
 
-        // Calcular días previos (ajustado para comenzar en lunes)
+        // Días del mes anterior
         let prevMonthDays = firstDay.getDay() - 1;
-        if (prevMonthDays === -1) prevMonthDays = 6; // Si es domingo, mostrar 6 días previos
+        if (prevMonthDays === -1) prevMonthDays = 6;
 
         const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
         for (let i = prevMonthDays - 1; i >= 0; i--) {
@@ -294,9 +325,8 @@ export class HomePage implements OnInit, OnDestroy {
           });
         }
 
-        // Días del mes actual con sus mantenciones
+        // Días del mes actual
         for (let i = 1; i <= lastDay.getDate(); i++) {
-          const currentDate = new Date(today.getFullYear(), today.getMonth(), i);
           const dayMantenciones = monthMantenciones.filter(m => {
             const mDate = new Date(m.fechahora);
             return mDate.getDate() === i;
@@ -310,7 +340,7 @@ export class HomePage implements OnInit, OnDestroy {
           });
         }
 
-        // Días del siguiente mes para completar la última semana
+        // Días del mes siguiente
         const remainingDays = 42 - this.calendarDays.length;
         for (let i = 1; i <= remainingDays; i++) {
           this.calendarDays.push({
@@ -323,7 +353,9 @@ export class HomePage implements OnInit, OnDestroy {
       },
       error => console.error('Error cargando mantenciones del calendario:', error)
     );
-    this.subscriptions.push(mantencionesSub);
+
+    // Agregar al array de suscripciones
+    this.subscriptions.push(this.calendarSubscription);
   }
 
   goToMantencionDetalle(mantencionId: string) {
