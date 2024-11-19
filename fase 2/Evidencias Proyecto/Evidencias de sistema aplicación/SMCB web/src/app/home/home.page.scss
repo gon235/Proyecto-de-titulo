@@ -240,9 +240,13 @@ ion-split-pane {
   ion-card {
     ion-card-header {
       ion-card-title {
-        color: white;
+        color: rgb(255, 255, 255);
       }
     }
+  }
+
+  ion-card-content {
+    color: rgb(255, 255, 255);
   }
 
   ion-split-pane {
