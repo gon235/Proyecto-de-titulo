@@ -164,6 +164,8 @@ ion-content {
     }
   }
 
+  
+
   // Botón de acción
   ion-button {
     --border-radius: var(--input-border-radius);
@@ -297,4 +299,41 @@ ion-split-pane {
 .align-right {
   display: flex;
   justify-content: flex-end;
+}
+
+.filter-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  align-items: start;
+
+  .filter-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    ion-select {
+      width: 100%;
+      padding: 8px;
+      border-radius: var(--input-border-radius);
+      background: var(--ion-item-background);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+      
+      &:hover {
+        background: var(--ion-item-background-hover);
+      }
+    }
+
+    ion-button {
+      margin-top: 4px;
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }

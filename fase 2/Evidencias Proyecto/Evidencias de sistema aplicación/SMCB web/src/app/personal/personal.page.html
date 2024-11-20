@@ -111,32 +111,44 @@
                           [(ngModel)]="searchQuery"
                           (ionInput)="filterPersonales()">
             </ion-searchbar>
-            
-            <ion-card *ngIf="!['Bombero', 'Mecánico'].includes(userRole)">
-              <div class="ion-padding">
-                <ion-button expand="block" color="tertiary" routerLink="/crearpersonal">Crear personal</ion-button>
-              </div>
-            </ion-card>
 
             <ion-card>
               <div class="ion-padding">
                 <div class="filter-container">
-                  <ion-text color="tertiary">
-                    <b>Filtrar:</b>
-                  </ion-text>
-                  <ion-select placeholder="Filtrar por Rol" [(ngModel)]="selectedRol" (ionChange)="filterPersonales()">
-                    <ion-select-option value="">Todos los roles</ion-select-option>
-                    <ion-select-option value="Supervisor">Supervisor</ion-select-option>
-                    <ion-select-option value="Mecánico">Mecánico</ion-select-option>
-                    <ion-select-option value="Bombero">Bombero</ion-select-option>
-                  </ion-select>
-                  <ion-select placeholder="Filtrar por Rango" [(ngModel)]="selectedRango" (ionChange)="filterPersonales()">
-                    <ion-select-option value="">Todos los rangos</ion-select-option>
-                    <ion-select-option value="Capitán">Capitán</ion-select-option>
-                    <ion-select-option value="Comandante">Comandante</ion-select-option>
-                    <ion-select-option value="Teniente">Teniente</ion-select-option>
-                    <ion-select-option value="Voluntario">Voluntario</ion-select-option>
-                  </ion-select>
+                  <div class="filter-column">
+                    <ion-text color="tertiary">
+                      <b>Filtrar por Rol:</b>
+                    </ion-text>
+                    <ion-select placeholder="Filtrar por Rol" [(ngModel)]="selectedRol" (ionChange)="filterPersonales()">
+                      <ion-select-option value="">Todos los roles</ion-select-option>
+                      <ion-select-option value="Supervisor">Supervisor</ion-select-option>
+                      <ion-select-option value="Mecánico">Mecánico</ion-select-option>
+                      <ion-select-option value="Bombero">Bombero</ion-select-option>
+                    </ion-select>
+                  </div>
+            
+                  <div class="filter-column">
+                    <ion-text color="tertiary">
+                      <b>Filtrar por Rango:</b>
+                    </ion-text>
+                    <ion-select placeholder="Filtrar por Rango" [(ngModel)]="selectedRango" (ionChange)="filterPersonales()">
+                      <ion-select-option value="">Todos los rangos</ion-select-option>
+                      <ion-select-option value="Capitán">Capitán</ion-select-option>
+                      <ion-select-option value="Comandante">Comandante</ion-select-option>
+                      <ion-select-option value="Teniente">Teniente</ion-select-option>
+                      <ion-select-option value="Voluntario">Voluntario</ion-select-option>
+                    </ion-select>
+                  </div>
+            
+                  <div class="filter-column" *ngIf="!['Bombero', 'Mecánico'].includes(userRole)">
+                    <ion-text color="tertiary">
+                      <b>&nbsp;</b>
+                    </ion-text>
+                    <ion-button color="tertiary" routerLink="/crearpersonal">
+                      <ion-icon slot="start" name="add"></ion-icon>
+                      Crear personal
+                    </ion-button>
+                  </div>
                 </div>
               </div>
             </ion-card>
