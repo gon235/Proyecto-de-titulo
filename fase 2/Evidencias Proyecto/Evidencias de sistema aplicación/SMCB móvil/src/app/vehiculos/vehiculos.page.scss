@@ -16,6 +16,19 @@
     }
   }
 
+  .list-container {
+    max-height: calc(80vh - 250px); // Ajusta según el espacio que ocupen los elementos superiores
+    overflow-y: auto;
+    
+    ion-list {
+      height: 100%;
+    }
+  }
+  
+  ion-content {
+    --padding-bottom: 5px; // Altura del ion-footer
+  }
+
   // Estilos para el modo oscuro
   :host-context(body.dark) {
     ion-card-title {

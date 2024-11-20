@@ -117,13 +117,13 @@ ion-content {
   --background: #ffffff;
 
   ion-card {
-    margin: 2rem auto;
+    margin: 0.5rem auto;
     max-width: 1000px;
     border-radius: var(--card-border-radius);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.20);
     background: var(--ion-background-color);
     animation: fadeIn 0.5s ease-out;
-    padding: 2rem;
+    padding: 0.5rem;
     
     &:hover {
       transform: translateY(-2px);
@@ -298,3 +298,50 @@ ion-split-pane {
   display: flex;
   justify-content: flex-end;
 }
+
+.scrollable-list {
+  max-height: calc(100vh - 300px); // Ajusta para el header y los filtros
+  overflow-y: auto;
+  
+  // Estilizar scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  ion-list {
+    margin: 1;
+    padding: 0;
+  }
+}
+
+// Ajuste para modo oscuro para la barras de desplazamiento
+:host-context(body.dark) {
+  .scrollable-list {
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.4);
+      }
+    }
+  }
+}
+

@@ -153,8 +153,8 @@
               </div>
             </ion-card>
             
-            <ion-card>
-              <div class="list-container">
+            <ion-card class="list-card">
+              <div class="scrollable-list">
                 <ion-list [inset]="true">
                   <ion-item *ngFor="let personal of filteredPersonales$ | async" [routerLink]="['/perfil', personal.id]" detail>
                     <ion-icon slot="start" name="person-circle-outline"></ion-icon>

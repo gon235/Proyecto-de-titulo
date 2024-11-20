@@ -142,7 +142,7 @@
                 <ion-card-title>Vehículos operativos</ion-card-title>
               </ion-card-header>
               <ion-card-content>
-                <ion-list style="height: 554px; overflow-y: auto;">
+                <ion-list class="scrollable-list" style="height: 554px; overflow-y: auto;">
                   <ng-container *ngFor="let vehiculo of vehiculos | async">
                     <ion-item *ngIf="vehiculo.estado === 'Operativo'"
                               [routerLink]="['/perfilvehiculo', vehiculo.id]"
@@ -165,7 +165,7 @@
                 <ion-card-title>Vehículos en mantención</ion-card-title>
               </ion-card-header>
               <ion-card-content>
-                <ion-list style="height: 554px; overflow-y: auto;">
+                <ion-list class="scrollable-list" style="height: 554px; overflow-y: auto;">
                   <ng-container *ngFor="let vehiculo of vehiculos | async">
                     <ion-item *ngIf="vehiculo.estado === 'En mantenimiento'"
                               [routerLink]="['/perfilvehiculo', vehiculo.id]"

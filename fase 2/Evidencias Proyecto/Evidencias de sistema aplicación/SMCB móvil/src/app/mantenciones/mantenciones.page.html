@@ -79,8 +79,10 @@
     </ion-row>
   </ion-grid>
 
-  <ion-card>
-    <ion-list>
+  <div class="ion-padding">
+  <ion-card class="list-card">
+    <div class="list-container">
+    <ion-list [inset]="true">
       <ion-item *ngFor="let mantencion of mantencionesFiltradas" [routerLink]="['/mantencion-detalle', mantencion.id]" detail>
         <ion-label>
           <h2>{{ mantencion.nombremantencion }}</h2>
@@ -92,7 +94,9 @@
         </ion-label>
       </ion-item>
     </ion-list>
+  </div>
   </ion-card>
+</div>
 </ion-content>
 
 <ion-footer>

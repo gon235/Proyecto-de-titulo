@@ -52,8 +52,8 @@
           </div>
         </ion-card>
 
-        <ion-card>
-          <div class="list-container" style="overflow-y: auto;">
+        <ion-card class="list-card">
+          <div class="list-container">
             <ion-list [inset]="true">
               <ion-item *ngFor="let vehicle of filteredVehicles$ | async" [routerLink]="['/perfilvehiculo', vehicle.id]" detail>
                 <ion-icon slot="start" name="car-outline"></ion-icon>
