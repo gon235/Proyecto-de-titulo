@@ -65,7 +65,7 @@ export class HomePage implements OnInit, OnDestroy {
         this.loadMantenciones();
         this.loadMisMantenciones(user.uid);
         this.generateCalendar();
-        this.createMantencionesChart();
+        this.createMantencionesChart([]);
       } else {
         this.userPhotoUrl = 'assets/default-avatar.svg';
         this.userName = '';
@@ -80,23 +80,32 @@ export class HomePage implements OnInit, OnDestroy {
       this.mantencionesChart.destroy();
       this.mantencionesChart = null;
     }
-  
-    // Cancelar todas las suscripciones del calendario
+    
+    // Limpiar todas las suscripciones
     if (this.calendarSubscription) {
       this.calendarSubscription.unsubscribe();
     }
     
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach(sub => {
+      if (sub) sub.unsubscribe();
+    });
     this.subscriptions = [];
   }
 
-  createMantencionesChart() {
-    const canvas = document.getElementById('mantencionesChart') as HTMLCanvasElement;
+  createMantencionesChart(mantenciones: any[]) {
+    const canvas = document.getElementById('mantencionesChartEscritorio') as HTMLCanvasElement;
     if (!canvas) return;
   
+    // Destruir el gráfico existente si existe
     if (this.mantencionesChart) {
       this.mantencionesChart.destroy();
       this.mantencionesChart = null;
+    }
+  
+    // Limpiar el canvas
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
   
     const currentDate = new Date();
@@ -221,7 +230,17 @@ export class HomePage implements OnInit, OnDestroy {
 
   onUrgenciaChange(event: any) {
     this.selectedUrgencia = event.detail.value;
-    this.createMantencionesChart();
+    
+    // Destruir el gráfico existente
+    if (this.mantencionesChart) {
+      this.mantencionesChart.destroy();
+      this.mantencionesChart = null;
+    }
+    
+    // Crear el nuevo gráfico
+    setTimeout(() => {
+      this.createMantencionesChart(this.mantenciones);
+    }, 0);
   }
 
   // Carga la foto de perfil del usuario

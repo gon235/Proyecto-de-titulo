@@ -18,6 +18,12 @@
             <ion-label>Dashboard</ion-label>
           </ion-item>
 
+          <!-- Reportes -->
+          <ion-item routerLink="/reportes" routerDirection="root" routerLinkActive="selected-item">
+            <ion-icon slot="start" name="bar-chart"></ion-icon>
+            <ion-label>Reportes</ion-label>
+          </ion-item>
+
           <!-- Crear Mantención -->
           <ion-item routerLink="/crearmantencion" routerDirection="root" routerLinkActive="selected-item"
                     *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
