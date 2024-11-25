@@ -117,18 +117,26 @@
 
   <ion-grid>
     <ion-row>
-      <ion-col>
+      <ion-col size="12" size-md="7">
         <ion-card *ngIf="!isEditing && vehicle">
-          <ion-card-header>
-            <ion-card-title>{{ vehicle.nombrevehiculo }}</ion-card-title>
-            <ion-card-subtitle>{{ vehicle.marca }} {{ vehicle.modelo }}</ion-card-subtitle>
-          </ion-card-header>
           <ion-card-content>
             <div class="profile-image-container">
               <ion-img [src]="imageUrl" [alt]="'Imagen del ' + vehicle.nombrevehiculo" *ngIf="imageUrl" class="profile-image"></ion-img>
             </div>
             <p *ngIf="!imageUrl">No hay imagen disponible</p>
             <br>
+            <ion-item>
+              <ion-label position="floating">Nombre</ion-label>
+              <ion-input [(ngModel)]="vehicle.nombrevehiculo" [disabled]="true"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Marca</ion-label>
+              <ion-input [(ngModel)]="vehicle.marca" [disabled]="true"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Modelo</ion-label>
+              <ion-input [(ngModel)]="vehicle.modelo" [disabled]="true"></ion-input>
+            </ion-item>
             <ion-item>
               <ion-label position="floating">Estado</ion-label>
               <ion-input [(ngModel)]="vehicle.estado" [disabled]="true"></ion-input>
@@ -141,7 +149,12 @@
               <ion-label position="floating">Patente</ion-label>
               <ion-input [(ngModel)]="vehicle.patente" [disabled]="true"></ion-input>
             </ion-item>
+            <ion-item>
+              <ion-label position="floating">Imagen del vehículo</ion-label> <br>
+              <ion-input type="file" (change)="onFileSelected($event)" [disabled]="!isEditing"></ion-input>
+            </ion-item>
             <br>
+            <div class="align-right">
             <ion-button 
               *ngIf="!isEditing && canEdit" 
               class="ion-padding-start ion-padding-end" 
@@ -158,6 +171,7 @@
               (click)="deleteVehicle()">
               Eliminar vehículo
             </ion-button>
+          </div>
           </ion-card-content>
         </ion-card>
 
@@ -208,6 +222,7 @@
               <ion-label position="floating">Imagen del vehículo</ion-label>
               <ion-input type="file" (change)="onFileSelected($event)"></ion-input>
             </ion-item>
+            <div class="align-right">
             <ion-button 
               class="ion-padding-start ion-padding-end" 
               expand="block" 
@@ -222,12 +237,18 @@
               (click)="cancelEdit()">
               Cancelar
             </ion-button>
+          </div>
           </ion-card-content>
         </ion-card>
+      </ion-col>
 
+      <ion-col size="12" size-md="5">
         <ion-card>
           <ion-list *ngIf="maintenances.length > 0">
-            <ion-list-header><h2>Mantenciones</h2></ion-list-header>
+            <ion-card-header>
+              <ion-card-title>Mantenciones</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
             <ion-item *ngFor="let maintenance of maintenances" button [routerLink]="['/mantencion-detalle', maintenance.id]">
               <ion-label>
                 <h2>{{ maintenance.nombremantencion }}</h2>
@@ -235,6 +256,7 @@
                 <p>{{ maintenance.estado }}</p>
               </ion-label>
             </ion-item>
+          </ion-card-content>
           </ion-list>
           <p class="ion-padding" *ngIf="maintenances.length === 0">No se han encontrado registros de mantención.</p>
         </ion-card>

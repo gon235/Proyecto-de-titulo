@@ -125,10 +125,7 @@ ion-content {
     animation: fadeIn 0.5s ease-out;
     padding: 2rem;
     
-    &:hover {
-      transform: translateY(-2px);
-      transition: transform var(--transition-speed) ease;
-    }
+
   }
 
   // Estilos para los inputs
@@ -198,6 +195,7 @@ ion-split-pane {
   }
 
   ion-card {
+    background-color: #1e1e1e;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.40);
   }
 
@@ -207,8 +205,9 @@ ion-split-pane {
 
   ion-item {
     ion-input, ion-select, ion-textarea, ion-datetime {
-      --background: rgba(0, 0, 0, 0.300);
+      --background: rgba(255, 255, 255, 0);
       box-shadow: none;
+      --border-color: var(--ion-color-medium);
     }
   }
 
@@ -232,6 +231,10 @@ ion-split-pane {
       background: #1e1e1e !important;
       color: white;
     }
+  }
+
+  ion-split-pane {
+    --border: 1px solid var(--ion-color-dark);
   }
 }
 

@@ -239,7 +239,7 @@ export class MantencionDetallePage implements OnInit {
 
   async acceptMantencion() {
     if (!this.currentUser || !this.mantencion || this.mantencion.estado === 'Completa') return;
-
+  
     const alert = await this.alertController.create({
       header: 'Confirmar aceptación',
       message: '¿Estás seguro que deseas aceptar esta mantención?',
@@ -255,19 +255,20 @@ export class MantencionDetallePage implements OnInit {
               if (!this.mantencion.acceptances) {
                 this.mantencion.acceptances = [];
               }
-
+  
               const acceptanceRecord = {
                 userId: this.currentUser.id,
                 userName: `${this.currentUser.nombres} ${this.currentUser.apellidos}`,
                 rol: this.currentUser.rol,
                 date: new Date().toISOString()
               };
-
+  
               this.mantencion.acceptances.push(acceptanceRecord);
               this.mantencion.assignedTo = this.currentUser.id;
               this.mantencion.assignedToName = `${this.currentUser.nombres} ${this.currentUser.apellidos}`;
               this.mantencion.lastAssignmentDate = new Date().toISOString();
-
+              this.mantencion.aceptada = true; // Agregamos esta línea
+  
               await this.databaseService.updateDocument('mantenciones', this.mantencion.id, this.mantencion);
               
               const successAlert = await this.alertController.create({
@@ -291,7 +292,7 @@ export class MantencionDetallePage implements OnInit {
         }
       ]
     });
-
+  
     await alert.present();
   }
 

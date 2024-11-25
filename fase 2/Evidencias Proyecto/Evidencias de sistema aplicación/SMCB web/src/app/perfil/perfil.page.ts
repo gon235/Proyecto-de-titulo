@@ -94,83 +94,75 @@ export class PerfilPage implements OnInit {
   loadPersonalData() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      console.log('ID del perfil a cargar:', id); // Debug
+      console.log('ID del perfil a cargar:', id);
   
       this.databaseService.getDocument('personal', id).subscribe(
         (personal: Personal | undefined) => {
           if (personal) {
-            console.log('Personal data cargada:', personal); // Debug
+            console.log('Personal data cargada:', personal);
             this.personal = personal;
-            
-            // Asegurar que exista un rol por defecto
+  
             if (!this.personal.rol) {
               this.personal.rol = 'Bombero';
             }
-            
-            // Guardar copia original de los datos
+  
             this.originalPersonal = {...personal};
   
-            // Verificar permisos de edición
             if (this.currentUserId) {
               this.databaseService.getDocument('personal', this.currentUserId).subscribe(
                 (currentUser: any) => {
-                  console.log('Datos del usuario actual:', currentUser); // Debug
-                  
-                  this.canEdit = 
-                    this.currentUserId === this.personal?.id || 
+                  this.canEdit =
+                    this.currentUserId === this.personal?.id ||
                     (currentUser?.rol === 'Supervisor');
-                  
+  
                   this.isSupervisor = currentUser?.rol === 'Supervisor';
-                  
-                  console.log('Permisos:', {
-                    canEdit: this.canEdit,
-                    isSupervisor: this.isSupervisor
-                  }); // Debug
+                },
+                error => {
+                  console.error('Error al cargar datos del usuario actual:', error);
                 }
               );
             }
   
-            // Cargar imagen de perfil si existe
             if (this.personal.imagen) {
               this.loadImage(this.personal.imagen);
             } else {
-              console.log('No hay imagen de perfil');
+              this.imageUrl = 'assets/default-avatar.svg';
             }
   
-            // Cargar mantenciones si es un mecánico
             if (this.personal.rol === 'Mecánico') {
-              this.databaseService.getCollection('mantenciones')
-                .subscribe(mantenciones => {
-                  console.log('Todas las mantenciones:', mantenciones); // Debug
-                  
-                  this.mantencionesList = mantenciones.filter(m => 
-                    m.assignedTo === id && 
-                    m.estado === 'Pendiente' &&
-                    m.aceptada === true
-                  );
-                  
-                  // Ordenar por fecha
-                  this.mantencionesList.sort((a, b) => 
-                    new Date(b.fechahora).getTime() - new Date(a.fechahora).getTime()
-                  );
-                  
-                  console.log('Mantenciones filtradas:', this.mantencionesList); // Debug
-                });
+              console.log('Cargando mantenciones para mecánico:', id);
+              this.databaseService.getMantencionesByMecanico(id).subscribe(
+                mantenciones => {
+                  console.log('Mantenciones obtenidas:', mantenciones);
+                  this.mantencionesList = mantenciones;
+                  if (this.mantencionesList.length === 0) {
+                    console.log('No hay mantenciones para este mecánico.');
+                  }
+                },
+                error => {
+                  console.error('Error al cargar mantenciones:', error);
+                  this.mantencionesList = [];
+                }
+              );
             } else {
               this.mantencionesList = [];
-              console.log('No es mecánico, no se cargan mantenciones');
             }
-  
           } else {
             console.error('No se encontró el personal');
+            this.personal = null;
+            this.mantencionesList = [];
           }
         },
         error => {
           console.error('Error cargando datos del personal:', error);
+          this.personal = null;
+          this.mantencionesList = [];
         }
       );
     } else {
       console.error('No se proporcionó ID para cargar el perfil');
+      this.personal = null;
+      this.mantencionesList = [];
     }
   }
 

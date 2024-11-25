@@ -160,27 +160,6 @@ ion-menu {
     }
   }
 
-  .sidebar-footer {
-    border-top: 1px solid rgba(var(--ion-color-medium-rgb), 0.2);
-    padding-top: 8px;
-    margin-top: 8px;
-
-    ion-item {
-      --min-height: 48px;
-
-      &:last-child {
-        margin-bottom: 16px;
-      }
-    }
-
-    ion-toggle {
-      --background: var(--ion-color-medium);
-      --background-checked: var(--ion-color-tertiary);
-      --handle-background: #fff;
-      --handle-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-  }
-
   &.collapsed {
     --width: 70px;
 
@@ -278,12 +257,6 @@ ion-split-pane {
       }
     }
   }
-
-  .sidebar-footer {
-    border-top-color: rgba(255,255,255,0.1);
-  }
-
-  
 }
 
 // Estilos responsivos

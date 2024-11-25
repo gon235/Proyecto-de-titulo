@@ -143,7 +143,17 @@
             </ion-item>
             
             <ion-item>
-              <ion-input name="patente" label="Patente (*)" labelPlacement="stacked" placeholder="" [clearInput]="true" [(ngModel)]="newDatoV.patente" required>
+              <ion-input 
+                name="patente" 
+                label="Patente (*)" 
+                labelPlacement="stacked" 
+                placeholder="Sin puntos ni guiones"
+                [clearInput]="true"
+                [(ngModel)]="newDatoV.patente"
+                (ionInput)="validarPatente($event)"
+                maxlength="6"
+                [counter]="true"
+                required>
               </ion-input>
             </ion-item>
             

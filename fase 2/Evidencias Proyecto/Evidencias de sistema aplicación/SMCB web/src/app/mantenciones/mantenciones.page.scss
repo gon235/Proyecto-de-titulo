@@ -26,6 +26,50 @@ ion-avatar {
   }
 }
 
+ion-toolbar {
+  .search-wrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+  }
+
+  .custom-searchbar {
+    --box-shadow: none;
+    padding: 0;
+    width: 100%;
+    --placeholder-align: left;
+    --placeholder-padding-start: 8px;
+    text-align: left;
+    --border-radius: 20px; 
+    --background: var(--ion-color-light);
+  }
+
+  ion-buttons[slot="end"] {
+    margin-left: auto;
+  }
+
+  // Media queries para diferentes tamaños de pantalla
+  @media (max-width: 768px) {
+    .search-wrapper {
+      width: 300px; // Más estrecho para tablets
+    }
+  }
+
+  @media (max-width: 576px) {
+    .search-wrapper {
+      position: static;
+      transform: none;
+      width: 50%;
+      margin: 0 10px; // Añade un pequeño margen en los lados
+    }
+
+    ion-title {
+      display: none; // Opcional: oculta el título en pantallas muy pequeñas
+    }
+  }
+}
+
 // Estilos del sidebar
 ion-menu {
   ion-list {
@@ -125,10 +169,7 @@ ion-content {
     animation: fadeIn 0.5s ease-out;
     padding: 0.5rem;
     
-    &:hover {
-      transform: translateY(-2px);
-      transition: transform var(--transition-speed) ease;
-    }
+
   }
 
   // Estilos para los inputs
@@ -198,6 +239,7 @@ ion-split-pane {
   }
 
   ion-card {
+    background-color: #1e1e1e;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.40);
   }
 
@@ -232,6 +274,10 @@ ion-split-pane {
       background: #1e1e1e !important;
       color: white;
     }
+  }
+  
+  ion-split-pane {
+    --border: 1px solid var(--ion-color-dark);
   }
 }
 
@@ -300,7 +346,7 @@ ion-split-pane {
 }
 
 .scrollable-list {
-  max-height: calc(100vh - 300px); // Ajusta para el header y los filtros
+  max-height: calc(100vh - 250px); // Ajusta para el header y los filtros
   overflow-y: auto;
   
   // Estilizar scrollbar
@@ -345,3 +391,37 @@ ion-split-pane {
   }
 }
 
+ion-grid {
+  ion-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      background: rgba(var(--ion-color-tertiary-rgb), 0.1);
+    }
+    
+    &.selected {
+      background: rgba(var(--ion-color-tertiary-rgb), 0.15);
+      border: 1px solid var(--ion-color-tertiary);
+    }
+  }
+}
+
+// Ajuste para modo oscuro
+:host-context(body.dark) {
+  ion-grid {
+    ion-card {
+      &:hover {
+        background: rgba(var(--ion-color-tertiary-rgb), 0.2);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+      }
+      
+      &.selected {
+        background: rgba(var(--ion-color-tertiary-rgb), 0.25);
+        border: 1px solid var(--ion-color-tertiary);
+      }
+    }
+  }
+}

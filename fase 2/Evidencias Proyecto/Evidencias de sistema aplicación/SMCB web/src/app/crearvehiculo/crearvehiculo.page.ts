@@ -195,4 +195,16 @@ export class CrearvehiculoPage implements OnInit {
       console.error('Error al cerrar sesión:', error);
     }
   }
+
+  validarPatente(event: any) {
+    const input = event.target as HTMLInputElement;
+    // Remove any characters that aren't letters or numbers
+    input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
+    // Limit to 6 characters
+    if (input.value.length > 6) {
+      input.value = input.value.slice(0, 6);
+    }
+    // Update the model
+    this.newDatoV.patente = input.value;
+  }
 }

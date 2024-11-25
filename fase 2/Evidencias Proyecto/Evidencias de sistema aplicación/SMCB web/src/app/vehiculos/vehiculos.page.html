@@ -92,6 +92,16 @@
           <ion-menu-button></ion-menu-button>
         </ion-buttons>
         <ion-title>Vehículos</ion-title>
+
+        <ion-buttons slot="primary" class="search-wrapper">
+          <ion-searchbar 
+          class="custom-searchbar"
+          color="light" 
+          placeholder="Buscar"
+          [(ngModel)]="searchQuery"
+          (ionInput)="filterVehicles()">
+        </ion-searchbar>
+        </ion-buttons>
         
         <ion-buttons slot="end">
           <div [routerLink]="['/perfil', currentUserId]" style="display: flex; align-items: center; cursor: pointer;">
@@ -113,11 +123,6 @@
       <ion-grid>
         <ion-row>
           <ion-col class="ion-padding">
-            <ion-searchbar color="light" 
-                         placeholder="Buscar"
-                         [(ngModel)]="searchQuery"
-                         (ionInput)="filterVehicles()">
-            </ion-searchbar>
 
             <ion-card>
               <div class="ion-padding">

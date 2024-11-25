@@ -113,8 +113,9 @@
     <ion-content [fullscreen]="true" *ngIf="personal">
       <ion-grid>
         <ion-row>
-          <ion-col>
-            <ion-card>
+          <!-- Primera columna: Datos personales -->
+          <ion-col size="12" size-md="7">
+            <ion-card class="animated-card">
               <ion-card-header>
                 <ion-card-title>{{ personal.nombres }} {{ personal.apellidos }}</ion-card-title>
               </ion-card-header>
@@ -126,6 +127,7 @@
                   <p>No hay imagen disponible</p>
                 </ng-template>
                 <br>
+                <!-- Campos de datos personales -->
                 <ion-item>
                   <ion-label position="floating">Nombres</ion-label>
                   <ion-input [(ngModel)]="personal.nombres" [disabled]="!isEditing"></ion-input>
@@ -144,17 +146,11 @@
                 </ion-item>
                 <ion-item>
                   <ion-label position="floating">Rango</ion-label>
-                  <ion-input 
-                    [(ngModel)]="personal.rango" 
-                    [disabled]="!isEditing || (!isSupervisor && isEditing)">
-                  </ion-input>
+                  <ion-input [(ngModel)]="personal.rango" [disabled]="!isEditing || (!isSupervisor && isEditing)"></ion-input>
                 </ion-item>
-                
                 <ion-item>
                   <ion-label position="floating">Rol</ion-label>
-                  <ion-select 
-                    [(ngModel)]="personal.rol" 
-                    [disabled]="!isEditing || (!isSupervisor && isEditing)">
+                  <ion-select [(ngModel)]="personal.rol" [disabled]="!isEditing || (!isSupervisor && isEditing)">
                     <ion-select-option value="Supervisor">Supervisor</ion-select-option>
                     <ion-select-option value="Mecánico">Mecánico</ion-select-option>
                     <ion-select-option value="Bombero">Bombero</ion-select-option>
@@ -165,41 +161,46 @@
                   <ion-input type="file" (change)="onFileSelected($event)" [disabled]="!isEditing"></ion-input>
                 </ion-item>
                 <br>
-                <ion-button 
-                  *ngIf="!isEditing && canEdit" 
-                  class="ion-padding-start ion-padding-end" 
-                  expand="block" 
-                  color="tertiary" 
-                  (click)="editPersonal()">
+                <!-- Botones de acción -->
+                <div class="align-right">
+                <ion-button *ngIf="!isEditing && canEdit" class="ion-padding-start ion-padding-end" expand="block" color="tertiary" (click)="editPersonal()">
                   Editar
                 </ion-button>
-
-                <ion-button 
-                  *ngIf="isEditing && canEdit" 
-                  class="ion-padding-start ion-padding-end" 
-                  expand="block" 
-                  color="success" 
-                  (click)="savePersonal()">
+                <ion-button *ngIf="isEditing && canEdit" class="ion-padding-start ion-padding-end" expand="block" color="success" (click)="savePersonal()">
                   Guardar cambios
                 </ion-button>
-
-                <ion-button 
-                  *ngIf="isEditing && canEdit" 
-                  class="ion-padding-start ion-padding-end" 
-                  expand="block" 
-                  color="medium" 
-                  (click)="cancelEdit()">
+                <ion-button *ngIf="isEditing && canEdit" class="ion-padding-start ion-padding-end" expand="block" color="medium" (click)="cancelEdit()">
                   Cancelar
                 </ion-button>
-
-                <ion-button 
-                  *ngIf="canEdit" 
-                  class="ion-padding-start ion-padding-end" 
-                  expand="block" 
-                  color="danger" 
-                  (click)="deletePersonal()">
+                <ion-button *ngIf="canEdit" class="ion-padding-start ion-padding-end" expand="block" color="danger" (click)="deletePersonal()">
                   Eliminar Perfil
                 </ion-button>
+              </div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+    
+          <!-- Segunda columna: Mantenciones -->
+          <ion-col size="12" size-md="5">
+            <ion-card *ngIf="personal?.rol === 'Mecánico' || personal?.rol === 'Supervisor' || personal?.rol === 'Bombero'" class="animated-card">
+              <ion-card-header>
+                <ion-card-title>Mantenciones pendientes asignadas</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-list>
+                  <ion-item *ngFor="let mantencion of mantencionesList" (click)="goToMantencionDetalle(mantencion.id)" button>
+                    <ion-label>
+                      <h2>{{ mantencion.titulo }}</h2>
+                      <p>Descripción: {{ mantencion.nombremantencion }}</p>
+                      <p>Estado: {{ mantencion.estado }}</p>
+                      <p>Fecha: {{ mantencion.fechahora | date:'dd/MM/yyyy HH:mm' }}</p>
+                    </ion-label>
+                  </ion-item>
+                  <ion-item *ngIf="mantencionesList.length === 0">
+                    <ion-label *ngIf="personal?.rol === 'Mecánico'">No hay mantenciones pendientes asignadas.</ion-label>
+                    <ion-label *ngIf="personal?.rol === 'Supervisor' || personal?.rol === 'Bombero'">Solo los perfiles con rol de mecánico pueden ver sus mantenciones pendientes asignadas.</ion-label>
+                  </ion-item>
+                </ion-list>
               </ion-card-content>
             </ion-card>
           </ion-col>
