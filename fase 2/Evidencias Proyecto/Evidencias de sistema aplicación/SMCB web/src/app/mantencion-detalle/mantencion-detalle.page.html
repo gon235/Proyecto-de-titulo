@@ -18,7 +18,8 @@
           </ion-item>
 
           <!-- Reportes -->
-          <ion-item routerLink="/reportes" routerDirection="root" routerLinkActive="selected-item">
+          <ion-item routerLink="/reportes" routerDirection="root" routerLinkActive="selected-item"
+          *ngIf="!['Bombero', 'Mecánico'].includes(currentUser?.rol)">
             <ion-icon slot="start" name="bar-chart"></ion-icon>
             <ion-label>Reportes</ion-label>
           </ion-item>
@@ -46,7 +47,8 @@
         
           <!-- Personal -->
           <div class="sidebar-footer">
-            <ion-item routerLink="/personal" routerDirection="root">
+            <ion-item routerLink="/personal" routerDirection="root"
+            *ngIf="!['Bombero', 'Mecánico'].includes(currentUser?.rol)">
               <ion-icon slot="start" name="people"></ion-icon>
               <ion-label>Personal</ion-label>
             </ion-item>
