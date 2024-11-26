@@ -301,3 +301,10 @@ ion-split-pane {
   display: flex;
   justify-content: flex-end;
 }
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}

@@ -163,8 +163,10 @@
               </ion-label>
             </ion-item>
             <br>
-            <ion-button *ngIf="canEdit" class="ion-padding-start ion-padding-end" expand="block" color="tertiary" (click)="toggleEdit()">Editar</ion-button>
-            <ion-button *ngIf="canEdit" class="ion-padding-start ion-padding-end" expand="block" color="danger" [disabled]="!canEdit" (click)="deleteMantencion()">Eliminar mantención</ion-button>
+            <div class="action-buttons">
+              <ion-button *ngIf="canEdit" class="ion-padding-end" color="tertiary" (click)="toggleEdit()">Editar</ion-button>
+              <ion-button *ngIf="canEdit" class="ion-padding-end" color="danger" [disabled]="!canEdit" (click)="deleteMantencion()">Eliminar mantención</ion-button>
+            </div>
           </ion-card-content>
         </ion-card>
 
@@ -198,9 +200,11 @@
                       <ion-textarea [(ngModel)]="mantencion.detalle" rows="4"></ion-textarea>
                     </ion-item>
                     <br>
-                    <ion-button id="open-loading" class="ion-padding-start ion-padding-end" expand="block" color="success" (click)="saveChanges()">Guardar Cambios</ion-button>
-                    <ion-loading trigger="open-loading" message="Guardando" duration="900" spinner="circles"></ion-loading>
-                    <ion-button class="ion-padding-start ion-padding-end" expand="block" color="medium" (click)="cancelEdit()">Cancelar</ion-button>
+                    <div class="action-buttons">
+                      <ion-button id="open-loading" color="success" (click)="saveChanges()">Guardar cambios</ion-button>
+                      <ion-loading trigger="open-loading" message="Guardando" duration="900" spinner="circles"></ion-loading>
+                      <ion-button color="medium" (click)="cancelEdit()">Cancelar</ion-button>
+                    </div>
                   </ion-card-content>
                 </ion-card>
 
@@ -216,7 +220,7 @@
                       expand="block" 
                       color="success" 
                       (click)="acceptMantencion()">
-            Aceptar Mantención
+            Aceptar mantención
           </ion-button>
         
           <ion-card-content>
