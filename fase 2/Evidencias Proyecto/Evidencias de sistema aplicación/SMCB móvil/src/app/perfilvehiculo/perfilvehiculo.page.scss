@@ -1,65 +1,334 @@
-.profile-image-container {
-    width: 100%;
-    height: 100%;
-    max-width: 400px;
-    max-height: 400px;
-    margin: 0 auto;
-    overflow: hidden;
-    border-radius: 3%;
+// Variables globales
+:root {
+  --card-border-radius: 16px;
+  --input-border-radius: 8px;
+  --transition-speed: 0.3s;
+}
+
+// Estilos del avatar
+ion-avatar {
+  width: 40px;
+  height: 40px;
+  margin-right: 16px;
+  border: 2px solid var(--ion-color-tertiary);
+  padding: 2px;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
   }
-  
-  .profile-image {
+
+  img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 50%;
   }
-
-  // Estilos para el modo oscuro
-  :host-context(body.dark) {
-    ion-card-title {
-        color: white;
-    }
-
-    ion-title {
-        color: white;
-    }
-
-    ion-label {
-        color: white;
-    }
-
-    ion-input {
-        color: white;
-    }
 }
 
-// Estilos globales para el alert del select en modo oscuro
-::ng-deep body.dark {
-  .alert-wrapper {
-      background: #1e1e1e;
+// Estilos del sidebar
+ion-menu {
+  ion-list {
+    ion-item {
+      &.selected-item,
+      &.selected-item.item-active,
+      &.selected-item:active,
+      &.selected-item.ion-focused {
+        --background: rgba(var(--ion-color-tertiary-rgb), 0.2) !important;
+        --color: var(--ion-color-tertiary) !important;
+        font-weight: 500;
+        
+        ion-icon {
+          color: var(--ion-color-tertiary) !important;
+        }
+        
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 3px;
+          background: var(--ion-color-tertiary);
+        }
+      }
+
+      &:hover {
+        --background: rgba(var(--ion-color-tertiary-rgb), 0.1);
+        --color: var(--ion-color-tertiary);
+        
+        ion-icon {
+          color: var(--ion-color-tertiary);
+        }
+      }
+    }
   }
 
-  .alert-radio-label {
+  .sidebar-logo {
+    padding: 24px 16px;
+    max-width: 180px;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+  }
+
+  ion-content {
+    --background: var(--ion-background-color);
+
+    ion-list {
+      background: transparent;
+      padding: 8px;
+
+      ion-item {
+        --background: transparent;
+        --border-radius: 8px;
+        --padding-start: 16px;
+        margin-bottom: 4px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+
+        &:hover {
+          --background: rgba(var(--ion-color-tertiary-rgb), 0.1);
+          --color: var(--ion-color-tertiary);
+          
+          ion-icon {
+            color: var(--ion-color-tertiary);
+            transform: translateX(2px);
+          }
+        }
+
+        ion-icon {
+          font-size: 22px;
+          margin-right: 16px;
+          color: var(--ion-color-medium);
+          transition: all 0.2s ease;
+        }
+
+        ion-label {
+          font-size: 15px;
+          letter-spacing: 0.2px;
+        }
+      }
+    }
+  }
+}
+
+// Estilos del contenido principal
+ion-content {
+  --background: #ffffff;
+
+  .profile-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem 0;
+    max-height: 400px; // Limitar altura del contenedor
+    width: 100%;
+    overflow: hidden; // Evitar desbordamiento
+  }
+
+  .profile-image {
+    max-height: 400px;
+    max-width: 100%; // Asegurar que no exceda el ancho del contenedor
+    width: auto;
+    height: auto; // Permitir redimensionamiento proporcional
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  ion-card {
+    margin: 2rem auto;
+    max-width: 1000px;
+    border-radius: var(--card-border-radius);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.20);
+    background: var(--ion-background-color);
+    animation: fadeIn 0.5s ease-out;
+    padding: 2rem;
+    
+  }
+
+  // Estilos para los inputs
+  ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --background: transparent;
+    margin-bottom: 1.5rem;
+
+    ion-input, ion-select, ion-textarea, ion-datetime {
+      --padding-start: 16px;
+      --padding-end: 16px;
+      --padding-top: 12px;
+      --padding-bottom: 12px;
+      --border-radius: var(--input-border-radius);
+      --background: var(--ion-item-background);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+      margin-top: 8px;
+      
+      &:hover {
+        --background: var(--ion-item-background-hover);
+      }
+    }
+
+    ion-textarea {
+      min-height: 150px;
+    }
+
+    &:focus-within {
+      ion-input, ion-select, ion-textarea, ion-datetime {
+        --background: rgba(var(--ion-color-tertiary-rgb), 0.05);
+      }
+    }
+  }
+
+  // Botón de acción
+  ion-button {
+    --border-radius: var(--input-border-radius);
+    margin: 1.5rem 0;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 200px;
+    
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}
+
+// Configuración del split-pane
+ion-split-pane {
+  --side-width: 280px;
+  --side-max-width: 280px;
+  --side-min-width: 70px;
+  --border: 1px solid var(--ion-color-light);
+  
+  ion-menu {
+    box-shadow: 0 0 20px rgba(0,0,0,0.08);
+  }
+}
+
+// Modo oscuro
+:host-context(body.dark) {
+  ion-content {
+    --background: #121212;
+  }
+
+  ion-card {
+    background-color: #1e1e1e;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.40);
+  }
+
+  ion-menu {
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  }
+
+  ion-item {
+    ion-input, ion-select, ion-textarea, ion-datetime {
+      --background: rgba(255, 255, 255, 0);
+      box-shadow: none;
+      --border-color: var(--ion-color-medium);
+    }
+  }
+
+  .list-md {
+    --ion-item-background: rgba(0, 0, 0, 0);
+  }
+
+  ion-card-title, ion-title, ion-label, ion-input {
+    color: white;
+  }
+
+  ion-datetime {
+    background: #1e1e1e;
+    
+    .datetime-text,
+    ::part(button) {
       color: white !important;
+    }
+
+    .time-body {
+      background: #1e1e1e !important;
+      color: white;
+    }
+  }
+
+  ion-split-pane {
+    --border: 1px solid var(--ion-color-dark);
+  }
+}
+
+// Estilos del alert en modo oscuro
+::ng-deep body.dark {
+  .alert-wrapper {
+    background: #1e1e1e;
+  }
+
+  .alert-radio-label,
+  .alert-title,
+  .alert-sub-title {
+    color: white !important;
   }
 
   .alert-radio-group {
-      background: #1e1e1e;
-  }
-
-  .alert-title {
-      color: white;
-  }
-
-  .alert-sub-title {
-      color: white;
+    background: #1e1e1e;
   }
 
   .alert-radio-inner {
-      background-color: white !important;
+    background-color: white !important;
   }
 
   .alert-button {
-      color: var(--ion-color-primary) !important;
+    color: var(--ion-color-primary) !important;
   }
+}
+
+// Animaciones
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+// Media queries
+@media (max-width: 768px) {
+  ion-menu {
+    --width: 260px;
+    
+    .sidebar-logo {
+      max-width: 160px;
+      padding: 20px 12px;
+    }
+  }
+
+  ion-card {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  ion-button {
+    width: 100%;
+  }
+}
+
+// Utilidades
+.align-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+ion-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+}
+
+ion-content {
+  --padding-bottom: 56px; // Ajusta este valor según la altura de tu footer
 }

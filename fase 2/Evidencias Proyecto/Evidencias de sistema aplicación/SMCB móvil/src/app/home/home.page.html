@@ -1,99 +1,268 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
+<ion-split-pane contentId="main-content" when="md">
+  <!-- Sidebar -->
+  <ion-menu contentId="main-content">
+    <ion-header>
 
-    <ion-buttons slot="start">
-      <ion-button (click)="mostrarMenu()">
-        <ion-icon slot="icon-only" name="menu-outline"></ion-icon>        
-      </ion-button>
-    </ion-buttons>
+    </ion-header>
 
-    <ion-title>
-      Inicio
-    </ion-title>
+    <ion-content>
+      <ion-img  
+        [src]="darkMode ? 'assets/img/SMCB-dark-mode.svg' : 'assets/img/SMCB-normal.svg'" 
+        class="sidebar-logo">
+      </ion-img>
+      <ion-list lines="none">
+          <ion-menu-toggle auto-hide="false">
+          <!-- Dashboard -->
+          <ion-item routerLink="/home" routerDirection="root" routerLinkActive="selected-item">
+            <ion-icon slot="start" name="home"></ion-icon>
+            <ion-label>Dashboard</ion-label>
+          </ion-item>
 
-    <ion-buttons slot="end">
-      <div [routerLink]="['/perfil', currentUserId]" style="display: flex; align-items: center; cursor: pointer;">
-        <ion-text class="ion-padding-end">
-          <strong>{{ userName }}</strong>
-        </ion-text>
-        <ion-avatar>
-          <img [src]="userPhotoUrl" 
-               (error)="userPhotoUrl = 'assets/default-avatar.svg'"
-               alt="Perfil"
-               onerror="this.src='assets/default-avatar.svg'">
-        </ion-avatar>
-      </div>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+          <!-- Reportes -->
+          <ion-item routerLink="/reportes" routerDirection="root" routerLinkActive="selected-item"
+                    *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
+            <ion-icon slot="start" name="bar-chart"></ion-icon>
+            <ion-label>Reportes</ion-label>
+          </ion-item>
 
-<ion-content class="ion-padding" [fullscreen]="true">
-  <br>
+          <!-- Crear Mantención -->
+          <ion-item routerLink="/crearmantencion" routerDirection="root" routerLinkActive="selected-item"
+                    *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
+            <ion-icon slot="start" name="add-circle"></ion-icon>
+            <ion-label>Crear Mantención</ion-label>
+          </ion-item>
 
-    <ion-col class="ion-padding" *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
-    <div class="ion-padding-start ion-padding-end">
-      <ion-button color="tertiary" expand="block" size="large" routerLink="/crearmantencion">
-        <ion-icon slot="start" name="add-circle"></ion-icon>
-        Crear mantención
-      </ion-button>
-    </div>
-  </ion-col>
-  
-  <ion-col class="ion-padding" *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
-    <div class="ion-padding-start ion-padding-end">
-      <ion-button color="tertiary" expand="block" size="large" routerLink="/crearpersonal">
-        <ion-icon slot="start" name="add-circle"></ion-icon>
-        Crear personal
-      </ion-button>
-    </div>
-  </ion-col>
-  
-  <ion-col class="ion-padding" *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
-    <div class="ion-padding-start ion-padding-end">
-      <ion-button color="tertiary" expand="block" size="large" routerLink="/crearvehiculo">
-        <ion-icon slot="start" name="add-circle"></ion-icon>
-        Crear vehículo
-      </ion-button>
-    </div>
-  </ion-col>
+          <!-- Crear Vehículo -->
+          <ion-item routerLink="/crearvehiculo" routerDirection="root" routerLinkActive="selected-item"
+                    *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
+            <ion-icon slot="start" name="car"></ion-icon>
+            <ion-label>Crear Vehículo</ion-label>
+          </ion-item>
 
-  <ion-card *ngIf="userData?.rol === 'Mecánico'">
-    <ion-text>
-      <h4 class="ion-padding">Mis mantenciones asignadas</h4>
-    </ion-text>
-    <ion-list>
-      <ion-item *ngFor="let mantencion of misMantenciones" [routerLink]="['/mantencion-detalle', mantencion.id]" detail>
-        <ion-icon slot="start" name="build"></ion-icon>
-        <ion-label>
-          <h2>{{ mantencion.nombremantencion }}</h2>
-          <p>Fecha: {{ formatDate(mantencion.fechahora) }}</p>
-          <p>Urgencia: {{ mantencion.nivelurgencia }}</p>
-        </ion-label>
-      </ion-item>
-      <ion-item *ngIf="misMantenciones.length === 0">
-        <ion-label>
-          <p>No tienes mantenciones pendientes asignadas</p>
-        </ion-label>
-      </ion-item>
+          <!-- Crear Personal -->
+          <ion-item routerLink="/crearpersonal" routerDirection="root" routerLinkActive="selected-item"
+                    *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
+            <ion-icon slot="start" name="person-add"></ion-icon>
+            <ion-label>Crear Personal</ion-label>
+          </ion-item>
+        
+          <!-- Personal -->
+          <div class="sidebar-footer">
+          <ion-item routerLink="/personal" routerDirection="root" routerLinkActive="selected-item"
+                    *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
+            <ion-icon slot="start" name="people"></ion-icon>
+            <ion-label>Personal</ion-label>
+          </ion-item>
 
-    </ion-list>
-  </ion-card>
+          <!-- Vehículos -->
+          <ion-item routerLink="/vehiculos" routerDirection="root" routerLinkActive="selected-item">
+            <ion-icon slot="start" name="car-sport"></ion-icon>
+            <ion-label>Vehículos</ion-label>
+          </ion-item>
 
-  <ion-card>
-    <ion-text>
-      <h4 class="ion-padding-start ion-padding-end">Próximas mantenciones pendientes</h4>
-    </ion-text>
-    <ion-list>
-      <ion-item *ngFor="let mantencion of mantenciones" [routerLink]="['/mantencion-detalle', mantencion.id]" detail>
-        <ion-icon slot="start" name="time"></ion-icon>
-        <ion-label>
-          <h2>{{ mantencion.nombremantencion }}</h2>
-          <p>{{ formatDate(mantencion.fechahora) }}</p>
-        </ion-label>
-      </ion-item>
-    </ion-list>
-  </ion-card>
-</ion-content>
+          <!-- Mantenciones -->
+          <ion-item routerLink="/mantenciones" routerDirection="root" routerLinkActive="selected-item">
+            <ion-icon slot="start" name="build"></ion-icon>
+            <ion-label>Mantenciones</ion-label>
+          </ion-item>
+        </div>
+        </ion-menu-toggle>
+
+        <!-- Footer options -->
+        <div class="sidebar-footer">
+        <br>
+          <ion-item>
+            <ion-icon slot="start" name="moon"></ion-icon>
+            <ion-label>Modo Oscuro</ion-label>
+            <ion-toggle [checked]="darkMode" (ionChange)="toggleDarkMode($event)"></ion-toggle>
+          </ion-item>
+
+          <ion-item (click)="signOut()" button>
+            <ion-icon slot="start" name="log-out"></ion-icon>
+            <ion-label>Cerrar Sesión</ion-label>
+          </ion-item>
+        </div>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <!-- Contenido Principal -->
+  <div class="ion-page" id="main-content">
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>Inicio</ion-title>
+        <ion-buttons slot="end">
+          <div [routerLink]="['/perfil', currentUserId]" style="display: flex; align-items: center; cursor: pointer;">
+            <ion-text class="ion-padding-end">
+              <strong>{{ userName }}</strong>
+            </ion-text>
+            <ion-avatar>
+              <img [src]="userPhotoUrl" 
+                   (error)="userPhotoUrl = 'assets/default-avatar.svg'"
+                   alt="Perfil">
+            </ion-avatar>
+          </div>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <ion-grid>
+
+      <ion-row>
+        <ion-col size="12">
+        <ion-card *ngIf="userData?.rol === 'Mecánico'">
+          <ion-text>
+            <h4 class="ion-padding">Mis mantenciones asignadas</h4>
+          </ion-text>
+          <ion-list>
+            <ion-item *ngFor="let mantencion of misMantenciones" [routerLink]="['/mantencion-detalle', mantencion.id]" detail>
+              <ion-icon slot="start" name="build"></ion-icon>
+              <ion-label>
+                <h2>{{ mantencion.nombremantencion }}</h2>
+                <p>Fecha: {{ formatDate(mantencion.fechahora) }}</p>
+                <p>Urgencia: {{ mantencion.nivelurgencia }}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item *ngIf="misMantenciones.length === 0">
+              <ion-label>
+                <p>No tienes mantenciones pendientes asignadas</p>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+        <ion-row>
+          <ion-col size="12">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Gráfico comparativo de mantenciones</ion-card-title>
+                <ion-row class="ion-padding-top">
+                  <ion-col>
+                    <ion-item lines="none">
+                      <ion-label style="white-space: nowrap; margin-right: 10px;">Filtrar por urgencia:</ion-label>
+                      <ion-select 
+                        [(ngModel)]="selectedUrgencia" 
+                        (ionChange)="onUrgenciaChange($event)"
+                        interface="popover"
+                        [interfaceOptions]="{ backdropDismiss: true }">
+                        <ion-select-option value="todos">Todos</ion-select-option>
+                        <ion-select-option value="Nivel alto">Nivel Alto</ion-select-option>
+                        <ion-select-option value="Nivel medio">Nivel Medio</ion-select-option>
+                        <ion-select-option value="Nivel bajo">Nivel Bajo</ion-select-option>
+                      </ion-select>
+                    </ion-item>
+                  </ion-col>
+                </ion-row>
+              </ion-card-header>
+              <ion-card-content>
+                <div class="chart-container">
+                  <canvas id="mantencionesChartEscritorio"></canvas>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <!-- Vehículos operativos -->
+          <ion-col size="12" size-md="3">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Vehículos operativos</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-list class="scrollable-list" style="height: 300px; overflow-y: auto;">
+                  <ng-container *ngFor="let vehiculo of vehiculos | async">
+                    <ion-item *ngIf="vehiculo.estado === 'Operativo'"
+                              [routerLink]="['/perfilvehiculo', vehiculo.id]"
+                              detail="true">
+                      <ion-label>
+                        <h2>{{vehiculo.nombrevehiculo}}</h2>
+                        <p>Patente: {{vehiculo.patente}}</p>
+                      </ion-label>
+                    </ion-item>
+                  </ng-container>
+                </ion-list>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+
+          <!-- Vehículos en mantención -->
+          <ion-col size="12" size-md="3">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Vehículos en mantención</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-list class="scrollable-list" style="height: 300px; overflow-y: auto;">
+                  <ng-container *ngFor="let vehiculo of vehiculos | async">
+                    <ion-item *ngIf="vehiculo.estado === 'En mantenimiento'"
+                              [routerLink]="['/perfilvehiculo', vehiculo.id]"
+                              detail="true">
+                      <ion-label>
+                        <h2>{{vehiculo.nombrevehiculo}}</h2>
+                        <p>Patente: {{vehiculo.patente}}</p>
+                      </ion-label>
+                    </ion-item>
+                  </ng-container>
+                </ion-list>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+
+          <!-- Calendario de mantenciones del mes -->
+          <ion-col size="12" size-md="6">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Calendario {{currentMonth}}</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <div class="calendar-container">
+                  <!-- Días de la semana -->
+                  <div class="calendar-header">
+                    <div>Lun</div>
+                    <div>Mar</div>
+                    <div>Mié</div>
+                    <div>Jue</div>
+                    <div>Vie</div>
+                    <div>Sáb</div>
+                    <div>Dom</div>
+                  </div>
+                  <!-- Días del mes -->
+                  <div class="calendar-grid">
+                    <div class="calendar-day" 
+                         *ngFor="let day of calendarDays" 
+                         [class.today]="day.isToday"
+                         [class.current-month]="day.isCurrentMonth"
+                         (click)="showDayMantenciones(day)">
+                      <span [class.current-month]="day.isCurrentMonth">{{day.day}}</span>
+                      <div class="badge-container" *ngIf="day.events?.length">
+                        <ion-badge 
+                          *ngFor="let event of day.events"
+                          [color]="getBadgeColor(event.nivelurgencia)"
+                          class="event-badge"
+                          [title]="event.nombremantencion">
+                          {{event.nombremantencion}}
+                        </ion-badge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ion-card-content>
+            </ion-card>
+            
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
+  </div>
+</ion-split-pane>
 
 <ion-footer>
   <ion-toolbar>

@@ -23,7 +23,7 @@ const routes: Routes = [
   {
     path: 'personal',
     loadChildren: () => import('./personal/personal.module').then( m => m.PersonalPageModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, RoleGuard]
   },
   {
     path: 'vehiculos',
@@ -33,7 +33,7 @@ const routes: Routes = [
   {
     path: 'notificaciones',
     loadChildren: () => import('./notificaciones/notificaciones.module').then( m => m.NotificacionesPageModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, RoleGuard]
   },
   {
     path: 'perfil/:id',
@@ -70,7 +70,13 @@ const routes: Routes = [
   },
   {
     path: 'mantenciones',
-    loadChildren: () => import('./mantenciones/mantenciones.module').then( m => m.MantencionesPageModule)
+    loadChildren: () => import('./mantenciones/mantenciones.module').then( m => m.MantencionesPageModule),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'reportes',
+    loadChildren: () => import('./reportes/reportes.module').then( m => m.ReportesPageModule),
+    canActivate: [AuthGuard, RoleGuard]
   },
 ];
 

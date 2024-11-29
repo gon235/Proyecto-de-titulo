@@ -5,6 +5,7 @@ import { StorageService } from '../services/storage.service';
 import { AlertController } from '@ionic/angular';
 import { map } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
+import { MenuController, Platform } from '@ionic/angular';
 
 interface Vehicle {
   id: string;
@@ -41,6 +42,11 @@ export class PerfilvehiculoPage implements OnInit {
   vehicleImage: File | null = null;
   canEdit: boolean = false;
   currentUserId: string | null = null;
+  darkMode: boolean = false;
+  userRole: string = '';
+  userName: string = '';
+  userPhotoUrl: string = 'assets/default-avatar.svg';
+  userData: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -48,21 +54,89 @@ export class PerfilvehiculoPage implements OnInit {
     private databaseService: DatabaseService,
     private storageService: StorageService,
     private alertController: AlertController,
-    private authService: AuthService
-  ) { }
+    private authService: AuthService,
+    private menuCtrl: MenuController,
+    private platform: Platform
+) {
+    this.platform.ready().then(() => {
+      this.enableMenu();
+    });
+    // Inicializar el modo oscuro
+    const prefersDark = localStorage.getItem('darkMode');
+    if (prefersDark !== null) {
+      this.darkMode = prefersDark === 'true';
+      document.body.classList.toggle('dark', this.darkMode);
+    } else {
+      const prefersDarkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+      this.darkMode = prefersDarkMedia.matches;
+      document.body.classList.toggle('dark', this.darkMode);
+    }
+  }
 
   ngOnInit() {
+    // Habilitar el menú lateral
+    this.menuCtrl.enable(true);
+    this.enableMenu();
+  
+    // Agregar listener para el estado del menú
+    this.menuCtrl.isEnabled('main-menu').then(enabled => {
+      if (!enabled) {
+        this.enableMenu();
+      }
+    });
+  
+    // Suscripción al usuario autenticado y carga de datos
     this.authService.user$.subscribe(user => {
       if (user) {
         this.currentUserId = user.uid;
         this.databaseService.getDocument('personal', user.uid).subscribe((userData: any) => {
-          // Only allow Supervisor role to edit
+          this.userRole = userData?.rol || '';
+          this.userName = `${userData?.nombres}`;
+          this.userData = userData;
           this.canEdit = userData?.rol === 'Supervisor';
+          
+          if (userData?.imagen) {
+            this.storageService.getFileUrl(userData.imagen).subscribe(
+              (url: string) => {
+                this.userPhotoUrl = url;
+              },
+              (error) => {
+                this.userPhotoUrl = 'assets/default-avatar.svg';
+              }
+            );
+          } else {
+            this.userPhotoUrl = 'assets/default-avatar.svg';
+          }
+          
           this.loadVehicleData();
         });
       }
     });
+  
+    // Configurar el menú lateral para dispositivos móviles
+    if (window.innerWidth < 768) {
+      this.menuCtrl.swipeGesture(true);
+    }
   }
+
+  async enableMenu() {
+    await this.menuCtrl.enable(true, 'main-menu');
+    await this.menuCtrl.swipeGesture(true, 'main-menu');
+}
+
+async toggleMenu() {
+  const isOpen = await this.menuCtrl.isOpen('main-menu');
+  if (isOpen) {
+      await this.menuCtrl.close('main-menu');
+  } else {
+      await this.menuCtrl.open('main-menu');
+  }
+}
+
+ionViewWillEnter() {
+  this.menuCtrl.enable(true, 'main-menu');
+  this.menuCtrl.swipeGesture(true, 'main-menu');
+}
 
   loadVehicleData() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -237,5 +311,21 @@ export class PerfilvehiculoPage implements OnInit {
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleString();
+  }
+
+
+  toggleDarkMode(event: any) {
+    this.darkMode = event.detail.checked;
+    document.body.classList.toggle('dark', this.darkMode);
+    localStorage.setItem('darkMode', String(this.darkMode));
+  }
+
+  async signOut() {
+    try {
+      await this.authService.logout();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
   }
 }

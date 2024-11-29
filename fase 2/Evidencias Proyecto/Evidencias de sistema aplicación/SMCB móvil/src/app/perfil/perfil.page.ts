@@ -5,6 +5,7 @@ import { StorageService } from '../services/storage.service';
 import { AlertController } from '@ionic/angular';
 import { LoadingController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
+import { MenuController, Platform } from '@ionic/angular';
 
 interface Personal {
   id: string;
@@ -32,6 +33,10 @@ export class PerfilPage implements OnInit {
   canEdit: boolean = false;
   isSupervisor: boolean = false;
   mantencionesList: any[] = [];
+  darkMode: boolean = false;
+  userRole: string = '';
+  userPhotoUrl: string = 'assets/default-avatar.svg';
+  userName: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -41,99 +46,174 @@ export class PerfilPage implements OnInit {
     private alertController: AlertController,
     private loadingCtrl: LoadingController,
     private authService: AuthService,
-
-  ) { }
+    private menuCtrl: MenuController,
+    private platform: Platform
+  ) {
+    this.platform.ready().then(() => {
+      this.enableMenu();
+    });
+  }
 
   ngOnInit() {
+    // Habilitar el menú lateral
+    this.menuCtrl.enable(true);
+    this.enableMenu();
+
+      // Agregar listener para el estado del menú
+  this.menuCtrl.isEnabled('main-menu').then(enabled => {
+    if (!enabled) {
+      this.enableMenu();
+    }
+  });
+  
+    // Configuración del modo oscuro
+    const prefersDark = localStorage.getItem('darkMode');
+    if (prefersDark !== null) {
+      this.darkMode = prefersDark === 'true';
+      document.body.classList.toggle('dark', this.darkMode);
+    } else {
+      const prefersDarkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+      this.darkMode = prefersDarkMedia.matches;
+      document.body.classList.toggle('dark', this.darkMode);
+  
+      // Observer para cambios en el modo oscuro del sistema
+      prefersDarkMedia.addEventListener('change', (e) => {
+        this.darkMode = e.matches;
+        document.body.classList.toggle('dark', this.darkMode);
+        localStorage.setItem('darkMode', String(this.darkMode));
+      });
+    }
+  
+    // Suscripción al usuario autenticado
     this.authService.user$.subscribe(user => {
       this.currentUserId = user ? user.uid : null;
       this.loadPersonalData();
       if (this.currentUserId) {
         this.loadMantenciones();
+        this.loadUserData();
       }
     });
+  
+    // Configurar el menú lateral para dispositivos móviles
+    if (window.innerWidth < 768) {
+      this.menuCtrl.swipeGesture(true);
+    }
+  }
+
+  async enableMenu() {
+    await this.menuCtrl.enable(true, 'main-menu'); // Especifica el ID del menú
+    await this.menuCtrl.swipeGesture(true, 'main-menu');
+  }
+
+  async toggleMenu() {
+    const isOpen = await this.menuCtrl.isOpen('main-menu');
+    if (isOpen) {
+      await this.menuCtrl.close('main-menu');
+    } else {
+      await this.menuCtrl.open('main-menu');
+    }
+  }
+
+  ionViewWillEnter() {
+    this.menuCtrl.enable(true, 'main-menu');
+    this.menuCtrl.swipeGesture(true, 'main-menu');
+  }
+
+  loadUserData() {
+    if (this.currentUserId) {
+      this.databaseService.getDocument('personal', this.currentUserId).subscribe(
+        (personal: any) => {
+          if (personal) {
+            this.userName = `${personal.nombres}`;
+            this.userRole = personal.rol;
+            if (personal.imagen) {
+              this.storageService.getFileUrl(personal.imagen).subscribe(
+                url => {
+                  this.userPhotoUrl = url;
+                },
+                error => {
+                  this.userPhotoUrl = 'assets/default-avatar.svg';
+                }
+              );
+            }
+          }
+        }
+      );
+    }
   }
 
   loadPersonalData() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      console.log('ID del perfil a cargar:', id); // Debug
+      console.log('ID del perfil a cargar:', id);
   
       this.databaseService.getDocument('personal', id).subscribe(
         (personal: Personal | undefined) => {
           if (personal) {
-            console.log('Personal data cargada:', personal); // Debug
+            console.log('Personal data cargada:', personal);
             this.personal = personal;
-            
-            // Asegurar que exista un rol por defecto
+  
             if (!this.personal.rol) {
               this.personal.rol = 'Bombero';
             }
-            
-            // Guardar copia original de los datos
+  
             this.originalPersonal = {...personal};
   
-            // Verificar permisos de edición
             if (this.currentUserId) {
               this.databaseService.getDocument('personal', this.currentUserId).subscribe(
                 (currentUser: any) => {
-                  console.log('Datos del usuario actual:', currentUser); // Debug
-                  
-                  this.canEdit = 
-                    this.currentUserId === this.personal?.id || 
+                  this.canEdit =
+                    this.currentUserId === this.personal?.id ||
                     (currentUser?.rol === 'Supervisor');
-                  
+  
                   this.isSupervisor = currentUser?.rol === 'Supervisor';
-                  
-                  console.log('Permisos:', {
-                    canEdit: this.canEdit,
-                    isSupervisor: this.isSupervisor
-                  }); // Debug
+                },
+                error => {
+                  console.error('Error al cargar datos del usuario actual:', error);
                 }
               );
             }
   
-            // Cargar imagen de perfil si existe
             if (this.personal.imagen) {
               this.loadImage(this.personal.imagen);
             } else {
-              console.log('No hay imagen de perfil');
+              this.imageUrl = 'assets/default-avatar.svg';
             }
   
-            // Cargar mantenciones si es un mecánico
             if (this.personal.rol === 'Mecánico') {
-              this.databaseService.getCollection('mantenciones')
-                .subscribe(mantenciones => {
-                  console.log('Todas las mantenciones:', mantenciones); // Debug
-                  
-                  this.mantencionesList = mantenciones.filter(m => 
-                    m.assignedTo === id && 
-                    m.estado === 'Pendiente' &&
-                    m.aceptada === true
-                  );
-                  
-                  // Ordenar por fecha
-                  this.mantencionesList.sort((a, b) => 
-                    new Date(b.fechahora).getTime() - new Date(a.fechahora).getTime()
-                  );
-                  
-                  console.log('Mantenciones filtradas:', this.mantencionesList); // Debug
-                });
+              console.log('Cargando mantenciones para mecánico:', id);
+              this.databaseService.getMantencionesByMecanico(id).subscribe(
+                mantenciones => {
+                  console.log('Mantenciones obtenidas:', mantenciones);
+                  this.mantencionesList = mantenciones;
+                  if (this.mantencionesList.length === 0) {
+                    console.log('No hay mantenciones para este mecánico.');
+                  }
+                },
+                error => {
+                  console.error('Error al cargar mantenciones:', error);
+                  this.mantencionesList = [];
+                }
+              );
             } else {
               this.mantencionesList = [];
-              console.log('No es mecánico, no se cargan mantenciones');
             }
-  
           } else {
             console.error('No se encontró el personal');
+            this.personal = null;
+            this.mantencionesList = [];
           }
         },
         error => {
           console.error('Error cargando datos del personal:', error);
+          this.personal = null;
+          this.mantencionesList = [];
         }
       );
     } else {
       console.error('No se proporcionó ID para cargar el perfil');
+      this.personal = null;
+      this.mantencionesList = [];
     }
   }
 
@@ -293,4 +373,20 @@ export class PerfilPage implements OnInit {
       }
     }
   }
+
+  toggleDarkMode(event: any) {
+    this.darkMode = event.detail.checked;
+    document.body.classList.toggle('dark', this.darkMode);
+    localStorage.setItem('darkMode', String(this.darkMode));
+  }
+
+  async signOut() {
+    try {
+      await this.authService.logout();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  }
+  
 }

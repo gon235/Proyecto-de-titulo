@@ -1,82 +1,188 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home" color="tertiary"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Personal</ion-title>
-    
-    <ion-buttons slot="end">
-      <div [routerLink]="['/perfil', currentUserId]" style="display: flex; align-items: center; cursor: pointer;">
-        <ion-text class="ion-padding-end">
-          <strong>{{ userName }}</strong>
-        </ion-text>
-        <ion-avatar>
-          <img [src]="userPhotoUrl" 
-               (error)="userPhotoUrl = 'assets/default-avatar.svg'"
-               alt="Perfil"
-               onerror="this.src='assets/default-avatar.svg'">
-        </ion-avatar>
-      </div>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<ion-split-pane contentId="main-content" when="md">
+  <!-- Sidebar -->
+  <ion-menu contentId="main-content">
+    <ion-header>
 
-<ion-content fullscreen>
-  <ion-grid>
-    <ion-row>
-      <ion-col class="ion-padding">
-        <ion-searchbar color="light" placeholder="Buscar"
-                       [(ngModel)]="searchQuery"
-                       (ionInput)="filterPersonales()">
+    </ion-header>
+
+    <ion-content>
+      <ion-img  
+        [src]="darkMode ? 'assets/img/SMCB-dark-mode.svg' : 'assets/img/SMCB-normal.svg'" 
+        class="sidebar-logo">
+      </ion-img>
+      <ion-list lines="none">
+          <ion-menu-toggle auto-hide="false">
+          <!-- Dashboard -->
+          <ion-item routerLink="/home" routerDirection="root" routerLinkActive="selected-item">
+            <ion-icon slot="start" name="home"></ion-icon>
+            <ion-label>Dashboard</ion-label>
+          </ion-item>
+
+          <!-- Reportes -->
+          <ion-item routerLink="/reportes" routerDirection="root" routerLinkActive="selected-item">
+            <ion-icon slot="start" name="bar-chart"></ion-icon>
+            <ion-label>Reportes</ion-label>
+          </ion-item>
+
+          <!-- Crear Mantención -->
+          <ion-item routerLink="/crearmantencion" routerDirection="root" routerLinkActive="selected-item"
+                    *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
+            <ion-icon slot="start" name="add-circle"></ion-icon>
+            <ion-label>Crear Mantención</ion-label>
+          </ion-item>
+
+          <!-- Crear Vehículo -->
+          <ion-item routerLink="/crearvehiculo" routerDirection="root" routerLinkActive="selected-item"
+                    *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
+            <ion-icon slot="start" name="car"></ion-icon>
+            <ion-label>Crear Vehículo</ion-label>
+          </ion-item>
+
+          <!-- Crear Personal -->
+          <ion-item routerLink="/crearpersonal" routerDirection="root" routerLinkActive="selected-item"
+                    *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
+            <ion-icon slot="start" name="person-add"></ion-icon>
+            <ion-label>Crear Personal</ion-label>
+          </ion-item>
+        
+          <!-- Personal -->
+          <div class="sidebar-footer">
+          <ion-item routerLink="/personal" routerDirection="root" routerLinkActive="selected-item">
+            <ion-icon slot="start" name="people"></ion-icon>
+            <ion-label>Personal</ion-label>
+          </ion-item>
+
+          <!-- Vehículos -->
+          <ion-item routerLink="/vehiculos" routerDirection="root" routerLinkActive="selected-item">
+            <ion-icon slot="start" name="car-sport"></ion-icon>
+            <ion-label>Vehículos</ion-label>
+          </ion-item>
+
+          <!-- Mantenciones -->
+          <ion-item routerLink="/mantenciones" routerDirection="root" routerLinkActive="selected-item">
+            <ion-icon slot="start" name="build"></ion-icon>
+            <ion-label>Mantenciones</ion-label>
+          </ion-item>
+        </div>
+        </ion-menu-toggle>
+
+        <!-- Footer options -->
+        <div class="sidebar-footer">
+        <br>
+          <ion-item>
+            <ion-icon slot="start" name="moon"></ion-icon>
+            <ion-label>Modo Oscuro</ion-label>
+            <ion-toggle [checked]="darkMode" (ionChange)="toggleDarkMode($event)"></ion-toggle>
+          </ion-item>
+
+          <ion-item (click)="signOut()" button>
+            <ion-icon slot="start" name="log-out"></ion-icon>
+            <ion-label>Cerrar Sesión</ion-label>
+          </ion-item>
+        </div>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <!-- Contenido Principal -->
+  <div class="ion-page" id="main-content">
+    <ion-header [translucent]="true">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>Personal</ion-title>
+
+        <ion-buttons slot="primary" class="search-wrapper">
+          <ion-searchbar 
+          class="custom-searchbar"
+          color="light" 
+          placeholder="Buscar"
+          [(ngModel)]="searchQuery"
+          (ionInput)="filterPersonales()">
         </ion-searchbar>
+        </ion-buttons>
         
-        <!-- <ion-card *ngIf="userRole !== 'Bombero'"> -->
-          <ion-card *ngIf="!['Bombero', 'Mecánico'].includes(userRole)">
-          <div class="ion-padding">
-            <ion-button expand="block" color="tertiary" routerLink="/crearpersonal">Crear personal</ion-button>
+        <ion-buttons slot="end">
+          <div [routerLink]="['/perfil', currentUserId]" style="display: flex; align-items: center; cursor: pointer;">
+            <ion-text class="ion-padding-end">
+              <strong>{{ userName }}</strong>
+            </ion-text>
+            <ion-avatar>
+              <img [src]="userPhotoUrl" 
+                   (error)="userPhotoUrl = 'assets/default-avatar.svg'"
+                   alt="Perfil"
+                   onerror="this.src='assets/default-avatar.svg'">
+            </ion-avatar>
           </div>
-        </ion-card>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
 
-        <ion-card>
-          <div class="ion-padding">
-            <div class="filter-container">
-              <ion-text color="tertiary">
-                <b>Filtrar:</b>
-              </ion-text>
-              <ion-select placeholder="Filtrar por Rol" [(ngModel)]="selectedRol" (ionChange)="filterPersonales()">
-                <ion-select-option value="">Todos los roles</ion-select-option>
-                <ion-select-option value="Supervisor">Supervisor</ion-select-option>
-                <ion-select-option value="Mecánico">Mecánico</ion-select-option>
-                <ion-select-option value="Bombero">Bombero</ion-select-option>
-              </ion-select>
-              <ion-select placeholder="Filtrar por Rango" [(ngModel)]="selectedRango" (ionChange)="filterPersonales()">
-                <ion-select-option value="">Todos los rangos</ion-select-option>
-                <ion-select-option value="Capitán">Capitán</ion-select-option>
-                <ion-select-option value="Comandante">Comandante</ion-select-option>
-                <ion-select-option value="Teniente">Teniente</ion-select-option>
-                <ion-select-option value="Voluntario">Voluntario</ion-select-option>
-              </ion-select>
-            </div>
-          </div>
-        </ion-card>
-        
-        <ion-card class="list-card">
-          <div class="list-container">
-            <ion-list [inset]="true">
-              <ion-item *ngFor="let personal of filteredPersonales$ | async" [routerLink]="['/perfil', personal.id]" detail>
-                <ion-icon slot="start" name="person-circle-outline"></ion-icon>
-                <ion-label>
-                  <h2>{{ personal.nombres }} {{ personal.apellidos }}</h2>
-                  <p>{{ personal.email }} <br> {{ personal.rol }}</p>
-                </ion-label>
-              </ion-item>
-            </ion-list>
-          </div>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content>
+    <ion-content fullscreen>
+      <ion-grid>
+        <ion-row>
+          <ion-col class="ion-padding">
+            <ion-card>
+              <div class="ion-padding">
+                <div class="filter-container">
+                  <div class="filter-column">
+                    <ion-text color="tertiary">
+                      <b>Filtrar por Rol:</b>
+                    </ion-text>
+                    <ion-select placeholder="Filtrar por Rol" [(ngModel)]="selectedRol" (ionChange)="filterPersonales()">
+                      <ion-select-option value="">Todos los roles</ion-select-option>
+                      <ion-select-option value="Supervisor">Supervisor</ion-select-option>
+                      <ion-select-option value="Mecánico">Mecánico</ion-select-option>
+                      <ion-select-option value="Bombero">Bombero</ion-select-option>
+                    </ion-select>
+                  </div>
+            
+                  <div class="filter-column">
+                    <ion-text color="tertiary">
+                      <b>Filtrar por Rango:</b>
+                    </ion-text>
+                    <ion-select placeholder="Filtrar por Rango" [(ngModel)]="selectedRango" (ionChange)="filterPersonales()">
+                      <ion-select-option value="">Todos los rangos</ion-select-option>
+                      <ion-select-option value="Capitán">Capitán</ion-select-option>
+                      <ion-select-option value="Comandante">Comandante</ion-select-option>
+                      <ion-select-option value="Teniente">Teniente</ion-select-option>
+                      <ion-select-option value="Voluntario">Voluntario</ion-select-option>
+                    </ion-select>
+                  </div>
+            
+                  <div class="filter-column" *ngIf="!['Bombero', 'Mecánico'].includes(userRole)">
+                    <ion-text color="tertiary">
+                      <b>&nbsp;</b>
+                    </ion-text>
+                    <ion-button color="tertiary" routerLink="/crearpersonal">
+                      <ion-icon slot="start" name="add"></ion-icon>
+                      Crear personal
+                    </ion-button>
+                  </div>
+                </div>
+              </div>
+            </ion-card>
+            
+            <ion-card class="list-card">
+              <div class="scrollable-list">
+                <ion-list [inset]="true">
+                  <ion-item *ngFor="let personal of filteredPersonales$ | async" [routerLink]="['/perfil', personal.id]" detail>
+                    <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+                    <ion-label>
+                      <h2>{{ personal.nombres }} {{ personal.apellidos }}</h2>
+                      <p>{{ personal.email }} <br> {{ personal.rol }}</p>
+                    </ion-label>
+                  </ion-item>
+                </ion-list>
+              </div>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
+  </div>
+</ion-split-pane>
 
 <ion-footer>
   <ion-toolbar>

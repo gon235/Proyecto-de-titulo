@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DatabaseService } from '../services/database.service';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { MenuController, Platform, AlertController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 import { StorageService } from '../services/storage.service';
 import { switchMap } from 'rxjs/operators';
@@ -24,10 +24,10 @@ export class MantencionDetallePage implements OnInit {
   canComment: boolean = false;
   newComment: string = '';
   selectedFile: File | null = null;
-  // Nuevas propiedades para el perfil
   userPhotoUrl: string = 'assets/default-avatar.svg';
   userName: string = '';
   currentUserId: string = '';
+  darkMode: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -35,10 +35,46 @@ export class MantencionDetallePage implements OnInit {
     private router: Router,
     private alertController: AlertController,
     private authService: AuthService,
-    private storageService: StorageService
-  ) { }
+    private storageService: StorageService,
+    private menuCtrl: MenuController,
+    private platform: Platform
+) {
+    // Inicializar menú cuando la plataforma esté lista
+    this.platform.ready().then(() => {
+        this.enableMenu();
+    });
+
+    // Configuración del modo oscuro
+    const prefersDark = localStorage.getItem('darkMode');
+    if (prefersDark !== null) {
+        this.darkMode = prefersDark === 'true';
+        document.body.classList.toggle('dark', this.darkMode);
+    } else {
+        const prefersDarkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+        this.darkMode = prefersDarkMedia.matches;
+        document.body.classList.toggle('dark', this.darkMode);
+        
+        // Observer para cambios en el modo oscuro del sistema
+        prefersDarkMedia.addEventListener('change', (e) => {
+            this.darkMode = e.matches;
+            document.body.classList.toggle('dark', this.darkMode);
+            localStorage.setItem('darkMode', String(this.darkMode));
+        });
+    }
+}
 
   ngOnInit() {
+    // Habilitar el menú lateral
+    this.menuCtrl.enable(true);
+    this.enableMenu();
+
+    // Agregar listener para el estado del menú
+    this.menuCtrl.isEnabled('main-menu').then(enabled => {
+        if (!enabled) {
+            this.enableMenu();
+        }
+    });
+    
     this.loadUserPhoto();
     this.authService.user$.pipe(
       switchMap(user => {
@@ -56,20 +92,28 @@ export class MantencionDetallePage implements OnInit {
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.databaseService.getDocument('mantenciones', id).subscribe(
-        (data) => {
-          this.mantencion = data;
-          if (!this.mantencion.estado) {
-            this.mantencion.estado = 'pendiente';
-          }
-          this.cargarDatosVehiculo();
-        },
-        (error) => {
-          console.error('Error fetching mantencion details:', error);
-        }
-      );
+      this.loadMantencionData();
     }
   }
+
+async enableMenu() {
+  await this.menuCtrl.enable(true, 'main-menu');
+  await this.menuCtrl.swipeGesture(true, 'main-menu');
+}
+
+async toggleMenu() {
+  const isOpen = await this.menuCtrl.isOpen('main-menu');
+  if (isOpen) {
+      await this.menuCtrl.close('main-menu');
+  } else {
+      await this.menuCtrl.open('main-menu');
+  }
+}
+
+ionViewWillEnter() {
+  this.menuCtrl.enable(true, 'main-menu');
+  this.menuCtrl.swipeGesture(true, 'main-menu');
+}
 
   loadUserPhoto() {
     this.authService.user$.subscribe(user => {
@@ -240,7 +284,7 @@ export class MantencionDetallePage implements OnInit {
 
   async acceptMantencion() {
     if (!this.currentUser || !this.mantencion || this.mantencion.estado === 'Completa') return;
-
+  
     const alert = await this.alertController.create({
       header: 'Confirmar aceptación',
       message: '¿Estás seguro que deseas aceptar esta mantención?',
@@ -256,19 +300,20 @@ export class MantencionDetallePage implements OnInit {
               if (!this.mantencion.acceptances) {
                 this.mantencion.acceptances = [];
               }
-
+  
               const acceptanceRecord = {
                 userId: this.currentUser.id,
                 userName: `${this.currentUser.nombres} ${this.currentUser.apellidos}`,
                 rol: this.currentUser.rol,
                 date: new Date().toISOString()
               };
-
+  
               this.mantencion.acceptances.push(acceptanceRecord);
               this.mantencion.assignedTo = this.currentUser.id;
               this.mantencion.assignedToName = `${this.currentUser.nombres} ${this.currentUser.apellidos}`;
               this.mantencion.lastAssignmentDate = new Date().toISOString();
-
+              this.mantencion.aceptada = true; // Agregamos esta línea
+  
               await this.databaseService.updateDocument('mantenciones', this.mantencion.id, this.mantencion);
               
               const successAlert = await this.alertController.create({
@@ -292,7 +337,7 @@ export class MantencionDetallePage implements OnInit {
         }
       ]
     });
-
+  
     await alert.present();
   }
 
@@ -330,5 +375,20 @@ export class MantencionDetallePage implements OnInit {
 
   viewFullImage(imageUrl: string) {
     window.open(imageUrl, '_blank');
+  }
+
+  toggleDarkMode(event: any) {
+    this.darkMode = event.detail.checked;
+    document.body.classList.toggle('dark', this.darkMode);
+    localStorage.setItem('darkMode', String(this.darkMode));
+  }
+
+  async signOut() {
+    try {
+      await this.authService.logout();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
   }
 }

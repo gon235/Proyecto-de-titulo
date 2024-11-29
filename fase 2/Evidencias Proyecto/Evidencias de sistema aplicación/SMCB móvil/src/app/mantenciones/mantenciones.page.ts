@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DatabaseService } from '../services/database.service';
 import { AuthService } from '../services/auth.service';
 import { StorageService } from '../services/storage.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mantenciones',
@@ -19,21 +20,45 @@ export class MantencionesPage implements OnInit {
   filtroActual: string = 'todas';
   searchTerm: string = '';
   
-  // Propiedades para el usuario
+  // Propiedades para el usuario y sidebar
   userPhotoUrl: string = 'assets/default-avatar.svg';
   userName: string = '';
   userData: any;
   currentUserId: string = '';
+  darkMode: boolean = false;
+  userRole: string = '';
 
   constructor(
     private databaseService: DatabaseService,
     private authService: AuthService,
-    private storageService: StorageService
-  ) { }
+    private storageService: StorageService,
+    private router: Router
+  ) {
+    const prefersDark = localStorage.getItem('darkMode');
+    if (prefersDark !== null) {
+      this.darkMode = prefersDark === 'true';
+      document.body.classList.toggle('dark', this.darkMode);
+    } else {
+      const prefersDarkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+      this.darkMode = prefersDarkMedia.matches;
+      document.body.classList.toggle('dark', this.darkMode);
+    }
+  }
 
   ngOnInit() {
     this.loadMantenciones();
     this.loadUserPhoto();
+    this.getCurrentUserRole();
+  }
+
+  async getCurrentUserRole() {
+    this.authService.user$.subscribe(user => {
+      if (user) {
+        this.databaseService.getDocument('personal', user.uid).subscribe((userData: any) => {
+          this.userRole = userData?.rol || '';
+        });
+      }
+    });
   }
 
   loadUserPhoto() {
@@ -172,6 +197,22 @@ export class MantencionesPage implements OnInit {
         return 'success';
       default:
         return 'medium';
+    }
+  }
+
+  // Métodos para el sidebar
+  toggleDarkMode(event: any) {
+    this.darkMode = event.detail.checked;
+    document.body.classList.toggle('dark', this.darkMode);
+    localStorage.setItem('darkMode', String(this.darkMode));
+  }
+
+  async signOut() {
+    try {
+      await this.authService.logout();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
     }
   }
 }

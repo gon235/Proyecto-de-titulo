@@ -1,13 +1,114 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home" color="tertiary"></ion-back-button>
-    </ion-buttons>
-    <ion-title>
-      Perfil del Vehículo
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-split-pane contentId="main-content" when="md">
+  <!-- Sidebar -->
+  <ion-menu contentId="main-content" menuId="main-menu">
+    <ion-header>
+    </ion-header>
+
+    <ion-content>
+      <ion-img  
+        [src]="darkMode ? 'assets/img/SMCB-dark-mode.svg' : 'assets/img/SMCB-normal.svg'" 
+        class="sidebar-logo">
+      </ion-img>
+      <ion-list lines="none">
+        <ion-menu-toggle auto-hide="false">
+          <!-- Dashboard -->
+          <ion-item routerLink="/home" routerDirection="root">
+            <ion-icon slot="start" name="home"></ion-icon>
+            <ion-label>Dashboard</ion-label>
+          </ion-item>
+
+          <!-- Reportes -->
+          <ion-item routerLink="/reportes" routerDirection="root" routerLinkActive="selected-item"
+          *ngIf="!['Bombero', 'Mecánico'].includes(userRole)">
+            <ion-icon slot="start" name="bar-chart"></ion-icon>
+            <ion-label>Reportes</ion-label>
+          </ion-item>
+
+          <!-- Crear Mantención -->
+          <ion-item routerLink="/crearmantencion" routerDirection="root" 
+                    *ngIf="!['Bombero', 'Mecánico'].includes(userRole)">
+            <ion-icon slot="start" name="add-circle"></ion-icon>
+            <ion-label>Crear Mantención</ion-label>
+          </ion-item>
+
+          <!-- Crear Vehículo -->
+          <ion-item routerLink="/crearvehiculo" routerDirection="root" 
+                    *ngIf="!['Bombero', 'Mecánico'].includes(userRole)">
+            <ion-icon slot="start" name="car"></ion-icon>
+            <ion-label>Crear Vehículo</ion-label>
+          </ion-item>
+
+          <!-- Crear Personal -->
+          <ion-item routerLink="/crearpersonal" routerDirection="root" 
+                    *ngIf="!['Bombero', 'Mecánico'].includes(userRole)">
+            <ion-icon slot="start" name="person-add"></ion-icon>
+            <ion-label>Crear Personal</ion-label>
+          </ion-item>
+        
+          <!-- Personal -->
+          <div class="sidebar-footer">
+            <ion-item routerLink="/personal" routerDirection="root"
+            *ngIf="!['Bombero', 'Mecánico'].includes(userRole)">
+              <ion-icon slot="start" name="people"></ion-icon>
+              <ion-label>Personal</ion-label>
+            </ion-item>
+
+            <!-- Vehículos -->
+            <ion-item routerLink="/vehiculos" routerDirection="root">
+              <ion-icon slot="start" name="car-sport"></ion-icon>
+              <ion-label>Vehículos</ion-label>
+            </ion-item>
+
+            <!-- Mantenciones -->
+            <ion-item routerLink="/mantenciones" routerDirection="root">
+              <ion-icon slot="start" name="build"></ion-icon>
+              <ion-label>Mantenciones</ion-label>
+            </ion-item>
+          </div>
+        </ion-menu-toggle>
+
+        <!-- Footer options -->
+        <div class="sidebar-footer">
+          <br>
+          <ion-item>
+            <ion-icon slot="start" name="moon"></ion-icon>
+            <ion-label>Modo Oscuro</ion-label>
+            <ion-toggle [checked]="darkMode" (ionChange)="toggleDarkMode($event)"></ion-toggle>
+          </ion-item>
+
+          <ion-item (click)="signOut()" button>
+            <ion-icon slot="start" name="log-out"></ion-icon>
+            <ion-label>Cerrar Sesión</ion-label>
+          </ion-item>
+        </div>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+    <!-- Contenido Principal -->
+    <div class="ion-page" id="main-content">
+      <ion-header [translucent]="true">
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-menu-button (click)="toggleMenu()"></ion-menu-button>
+          </ion-buttons>
+          <ion-title>Perfil vehículo</ion-title>
+          
+          <ion-buttons slot="end">
+            <div [routerLink]="['/perfil', currentUserId]" style="display: flex; align-items: center; cursor: pointer;">
+              <ion-text class="ion-padding-end">
+                <strong>{{ userName }}</strong>
+              </ion-text>
+              <ion-avatar>
+                <img [src]="userPhotoUrl" 
+                     (error)="userPhotoUrl = 'assets/default-avatar.svg'"
+                     alt="Perfil"
+                     onerror="this.src='assets/default-avatar.svg'">
+              </ion-avatar>
+            </div>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
@@ -18,18 +119,26 @@
 
   <ion-grid>
     <ion-row>
-      <ion-col>
+      <ion-col size="12" size-md="7">
         <ion-card *ngIf="!isEditing && vehicle">
-          <ion-card-header>
-            <ion-card-title>{{ vehicle.nombrevehiculo }}</ion-card-title>
-            <ion-card-subtitle>{{ vehicle.marca }} {{ vehicle.modelo }}</ion-card-subtitle>
-          </ion-card-header>
           <ion-card-content>
             <div class="profile-image-container">
               <ion-img [src]="imageUrl" [alt]="'Imagen del ' + vehicle.nombrevehiculo" *ngIf="imageUrl" class="profile-image"></ion-img>
             </div>
             <p *ngIf="!imageUrl">No hay imagen disponible</p>
             <br>
+            <ion-item>
+              <ion-label position="floating">Nombre</ion-label>
+              <ion-input [(ngModel)]="vehicle.nombrevehiculo" [disabled]="true"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Marca</ion-label>
+              <ion-input [(ngModel)]="vehicle.marca" [disabled]="true"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Modelo</ion-label>
+              <ion-input [(ngModel)]="vehicle.modelo" [disabled]="true"></ion-input>
+            </ion-item>
             <ion-item>
               <ion-label position="floating">Estado</ion-label>
               <ion-input [(ngModel)]="vehicle.estado" [disabled]="true"></ion-input>
@@ -42,7 +151,12 @@
               <ion-label position="floating">Patente</ion-label>
               <ion-input [(ngModel)]="vehicle.patente" [disabled]="true"></ion-input>
             </ion-item>
+            <ion-item>
+              <ion-label position="floating">Imagen del vehículo</ion-label> <br>
+              <ion-input type="file" (change)="onFileSelected($event)" [disabled]="!isEditing"></ion-input>
+            </ion-item>
             <br>
+
             <ion-button 
               *ngIf="!isEditing && canEdit" 
               class="ion-padding-start ion-padding-end" 
@@ -59,6 +173,7 @@
               (click)="deleteVehicle()">
               Eliminar vehículo
             </ion-button>
+
           </ion-card-content>
         </ion-card>
 
@@ -109,6 +224,7 @@
               <ion-label position="floating">Imagen del vehículo</ion-label>
               <ion-input type="file" (change)="onFileSelected($event)"></ion-input>
             </ion-item>
+
             <ion-button 
               class="ion-padding-start ion-padding-end" 
               expand="block" 
@@ -123,12 +239,18 @@
               (click)="cancelEdit()">
               Cancelar
             </ion-button>
+
           </ion-card-content>
         </ion-card>
+      </ion-col>
 
+      <ion-col size="12" size-md="5">
         <ion-card>
           <ion-list *ngIf="maintenances.length > 0">
-            <ion-list-header><h2>Mantenciones</h2></ion-list-header>
+            <ion-card-header>
+              <ion-card-title>Mantenciones</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
             <ion-item *ngFor="let maintenance of maintenances" button [routerLink]="['/mantencion-detalle', maintenance.id]">
               <ion-label>
                 <h2>{{ maintenance.nombremantencion }}</h2>
@@ -136,6 +258,7 @@
                 <p>{{ maintenance.estado }}</p>
               </ion-label>
             </ion-item>
+          </ion-card-content>
           </ion-list>
           <p class="ion-padding" *ngIf="maintenances.length === 0">No se han encontrado registros de mantención.</p>
         </ion-card>
@@ -143,6 +266,9 @@
     </ion-row>
   </ion-grid>
 </ion-content>
+
+</div>
+</ion-split-pane>
 
 <ion-footer>
   <ion-toolbar>

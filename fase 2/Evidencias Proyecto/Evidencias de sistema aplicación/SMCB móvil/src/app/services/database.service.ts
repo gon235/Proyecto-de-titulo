@@ -80,9 +80,8 @@ export class DatabaseService {
   }
 
   getMantencionesByMecanico(mecanicoId: string) {
-    return this.firestore.collection('mantenciones', ref => 
+    return this.firestore.collection('mantenciones', ref =>
       ref.where('assignedTo', '==', mecanicoId)
-         .where('estado', '==', 'Pendiente')
          .where('aceptada', '==', true)
     ).snapshotChanges().pipe(
       map(actions => actions.map(a => {

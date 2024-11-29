@@ -20,7 +20,7 @@
 
           <!-- Reportes -->
           <ion-item routerLink="/reportes" routerDirection="root" routerLinkActive="selected-item"
-                    *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
+          *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
             <ion-icon slot="start" name="bar-chart"></ion-icon>
             <ion-label>Reportes</ion-label>
           </ion-item>
@@ -49,7 +49,7 @@
           <!-- Personal -->
           <div class="sidebar-footer">
           <ion-item routerLink="/personal" routerDirection="root" routerLinkActive="selected-item"
-                    *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
+          *ngIf="!['Bombero', 'Mecánico'].includes(userData?.rol)">
             <ion-icon slot="start" name="people"></ion-icon>
             <ion-label>Personal</ion-label>
           </ion-item>
@@ -93,7 +93,7 @@
         <ion-buttons slot="start">
           <ion-menu-button></ion-menu-button>
         </ion-buttons>
-        <ion-title>Crear mantención</ion-title>
+        <ion-title>Reportes</ion-title>
         <ion-buttons slot="end">
           <div [routerLink]="['/perfil', currentUserId]" style="display: flex; align-items: center; cursor: pointer;">
             <ion-text class="ion-padding-end">
@@ -110,52 +110,62 @@
     </ion-header>
 
     <ion-content class="ion-padding">
-      <ion-card>
-        <ion-col>
-          <div class="ion-padding-start ion-padding-end">
-            <ion-item>
-              <ion-select name="selvehiculo" label="Seleccionar vehículo (*)" labelPlacement="stacked" label-placement="floating" (ionChange)="onVehicleSelect($event)" required>
-                <ion-select-option *ngFor="let dato of datosV" [value]="dato.id">
-                  {{ dato.nombrevehiculo }} - Patente {{dato.patente}}
-                </ion-select-option>
-              </ion-select>
-            </ion-item>
-            <br>
-            <ion-item>
-              <ion-input name="nombremantencion" type="text" label="Nombre mantenimiento (*)" labelPlacement="stacked" [clearInput]="true" [(ngModel)]="newDatoM.nombremantencion" required></ion-input>
-            </ion-item>
-            <br>
-            <ion-item>
-              <ion-select name="nivelurgencia" label="Nivel de urgencia (*)" labelPlacement="stacked" label-placement="floating" [(ngModel)]="newDatoM.nivelurgencia" required>
-                <ion-select-option value="Nivel bajo">Bajo</ion-select-option>
-                <ion-select-option value="Nivel medio">Medio</ion-select-option>
-                <ion-select-option value="Nivel alto">Alto</ion-select-option>
-              </ion-select>
-            </ion-item>
-            <br>
-            <ion-item>
-              <ion-datetime name="fechahora" color="tertiary" 
-                           displayFormat="DD/MM/YYYY HH:mm" 
-                           pickerFormat="DD MMM YYYY HH:mm"
-                           min="{{ today | date:'yyyy-MM-dd' }}"
-                           [(ngModel)]="newDatoM.fechahora">
-                <span slot="time-label">Hora</span>
-              </ion-datetime>
-            </ion-item>
-            <br>
-            <ion-label class="ion-padding">(*) Campos obligatorios</ion-label>
-            <br><br><br>
-            <ion-item>
-              <ion-textarea name="detalle" class="responsive-textarea" label="Detalle" fill="outline" labelPlacement="floating" placeholder="" style="height: 200px;" [(ngModel)]="newDatoM.detalle"></ion-textarea>
-            </ion-item>
-            <br>
-            <div class="align-right">
-              <ion-button id="open-loading" expand="block" type="submit" (click)="addDatosMantencion()" color="tertiary" class="ion-padding-start ion-padding-end">Crear</ion-button>
-              <ion-loading trigger="open-loading" message="Guardando" duration="1000" spinner="circles"></ion-loading>
+      <div style="display: flex; justify-content: flex-end; padding: 16px;">
+        <ion-button (click)="exportarPDF()" color="primary">
+          <ion-icon slot="start" name="download-outline"></ion-icon>
+          Exportar a PDF
+        </ion-button>
+      </div>
+      <div class="dashboard-container" class="ion-padding-end">
+
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Gráfico comparativo de mantenciones</ion-card-title>
+            <ion-row class="ion-padding-top">
+              <ion-col>
+                <ion-item lines="none">
+                  <ion-label style="white-space: nowrap; margin-right: 10px;">Filtrar por urgencia:</ion-label>
+                  <ion-select 
+                    [(ngModel)]="selectedUrgencia" 
+                    (ionChange)="onUrgenciaChange($event)"
+                    interface="popover"
+                    [interfaceOptions]="{ backdropDismiss: true }">
+                    <ion-select-option value="todos">Todos</ion-select-option>
+                    <ion-select-option value="Nivel alto">Nivel Alto</ion-select-option>
+                    <ion-select-option value="Nivel medio">Nivel Medio</ion-select-option>
+                    <ion-select-option value="Nivel bajo">Nivel Bajo</ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="chart-container">
+              <canvas id="mantencionesChart"></canvas>
             </div>
-          </div>
-        </ion-col>
-      </ion-card>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Vehículos con más mantenciones</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <canvas id="vehiculosMasMantencionesChart" style="height: 300px; width: 100%;"></canvas>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Vehículos con la mayor y menor cantidad de mantenciones por nivel de urgencia</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <canvas id="vehiculosUrgenciaChart" style="width: 100%; height: 400px;"></canvas>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
     </ion-content>
   </div>
 </ion-split-pane>

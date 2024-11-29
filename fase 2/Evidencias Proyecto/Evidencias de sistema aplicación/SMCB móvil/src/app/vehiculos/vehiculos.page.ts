@@ -4,6 +4,7 @@ import { AuthService } from '../services/auth.service';
 import { StorageService } from '../services/storage.service';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 interface Vehicle {
   id: string;
@@ -28,15 +29,27 @@ export class VehiculosPage implements OnInit {
   userName: string = '';
   userData: any;
   currentUserId: string = '';
+  darkMode: boolean = false;
 
   constructor(
     private databaseService: DatabaseService,
     private authService: AuthService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private router: Router
   ) {
     this.vehicles$ = this.databaseService.getCollection('vehiculos') as Observable<Vehicle[]>;
     this.filteredVehicles$ = this.vehicles$;
     this.getCurrentUserRole();
+
+    const prefersDark = localStorage.getItem('darkMode');
+    if (prefersDark !== null) {
+      this.darkMode = prefersDark === 'true';
+      document.body.classList.toggle('dark', this.darkMode);
+    } else {
+      const prefersDarkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+      this.darkMode = prefersDarkMedia.matches;
+      document.body.classList.toggle('dark', this.darkMode);
+    }
   }
 
   async getCurrentUserRole() {
@@ -117,4 +130,20 @@ export class VehiculosPage implements OnInit {
       )
     );
   }
+
+  toggleDarkMode(event: any) {
+    this.darkMode = event.detail.checked;
+    document.body.classList.toggle('dark', this.darkMode);
+    localStorage.setItem('darkMode', String(this.darkMode));
+  }
+
+  async signOut() {
+    try {
+      await this.authService.logout();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  }
+
 }
