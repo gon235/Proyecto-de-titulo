@@ -1,16 +1,25 @@
 # **SMCB**
 
-Proyecto de título
+## Proyecto de título
 
-Integrantes:
+### Integrantes:
 
-Kevin Carrasco
-Gonzalo Rubilar
-Eder Dureaux
+- [Kevin Carrasco]
+- [Gonzalo Rubilar]
+- [Eder Dureaux]
 
-La aplicacion en Ionic:
+### Levantar el servidor
 
-1. Instalar node.js / npm y Ionic
-2. ingresar al directorio src desde cmd
-3. npm install
-4. Ionic serve 
+### 
+
+```bash
+ionic serve
+```
+
+## Tecnologías utilizadas en el proyecto
+
+- [Ionic framework](https://ionicframework.com/)
+- [Angular](https://angular.dev/)
+- [Node.js](https://nodejs.org)
+- [Firebase](https://firebase.google.com)
+
