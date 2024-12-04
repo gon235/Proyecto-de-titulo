@@ -4,9 +4,9 @@
 
 ### Integrantes:
 
-- [Kevin Carrasco]
-- [Gonzalo Rubilar]
-- [Eder Dureaux]
+- Kevin Carrasco
+- Gonzalo Rubilar
+- Eder Dureaux
 
 ### Levantar el servidor
 
